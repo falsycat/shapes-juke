@@ -4,12 +4,12 @@ module sjscript.preprocess;
 import std.algorithm,
        std.array,
        std.conv,
-       std.exception,
        std.range,
        std.range.primitives,
        std.typecons;
 
-import sjscript.Token;
+import sjscript.Token,
+       sjscript.exception;
 
 ///
 unittest {
@@ -40,6 +40,12 @@ EOS";
       }
 EOS";
     assert(Tokenize(src).equal(["0", "1", "2"].cycle().take(9)));
+  }
+  {
+    enum src = q"EOS
+      $unknown_template
+EOS";
+    assertThrown!PreprocessException(Tokenize(src).array);
   }
 }
 
@@ -114,9 +120,10 @@ private struct Preprocessor(R)
 
       if (nest == 0) break;
       PopFrontWithoutPreprocess();
-      (!empty).enforce();
+      (!empty).enforce(
+          "all tokens are consumed when expecting close brace", result[][$-1]);
     }
-    (result[].length >= 2).enforce();
+    assert(result[].length >= 2);
     return result[][1..$-1];
   }
 
@@ -139,39 +146,53 @@ private struct Preprocessor(R)
     Preprocess();
   }
   void DefineTemplate() {
+    const command = front;
     PopFrontWithoutPreprocess();
-    (!empty).enforce();
+    (!empty).enforce(
+        "all tokens are consumed when expecting template name", command);
 
     const name = front;
-    (name.type == TokenType.Ident).enforce();
+    (name.type == TokenType.Ident).enforce(
+        "found unexpected token when expecting template body", name);
     PopFrontWithoutPreprocess();
-    (!empty).enforce();
+    (!empty).enforce(
+        "all tokens are consumed when expecting template body", command);
 
-    (front.type == TokenType.OpenBrace).enforce();
+    (front.type == TokenType.OpenBrace).enforce(
+        "found unexpected token when expecting template body", name);
     templates_[name.text] = PopFrontBlockWithoutPreprocess();
     PopFrontWithoutPreprocess();
   }
   void ExpandRepeat() {
+    const command = front;
     PopFrontWithoutPreprocess();
-    (!empty).enforce();
+    (!empty).enforce(
+        "all tokens are consumed when expecting counter name or count", command);
 
     string counter_name;
+    Token counter_name_token;
     if (front.type == TokenType.Ident) {
-      counter_name = front.text;
+      counter_name_token = front;
+      counter_name       = counter_name_token.text;
       PopFrontWithoutPreprocess();
-      (!empty).enforce();
+      (!empty).enforce(
+          "all tokens are consumed when expecting count", command);
     }
     if (counter_name != "") {
-      (!status_.map!"a.counter_name".canFind(counter_name)).enforce();
-      (!templates_.keys.canFind(counter_name)).enforce();
+      (!status_.map!"a.counter_name".canFind(counter_name) &&
+       !templates_.keys.canFind(counter_name)).
+        enforce("the counter name is duplicated", counter_name_token);
     }
 
-    (front.type == TokenType.Number).enforce();
+    (front.type == TokenType.Number).enforce(
+        "found unexpected token when expecting count", front);
     const count = front.text.to!float.to!int;
     PopFrontWithoutPreprocess();
-    (!empty).enforce();
+    (!empty).enforce(
+        "all tokens are consumed when expecting repeat body", command);
 
-    (front.type == TokenType.OpenBrace).enforce();
+    (front.type == TokenType.OpenBrace).enforce(
+        "found unexpected token when expecting repeat body", front);
     ExpansionState state;
     state.tokens       = PopFrontBlockWithoutPreprocess();
     state.counter_max  = count.to!size_t;
@@ -182,13 +203,16 @@ private struct Preprocessor(R)
   }
   void ExpandTemplate() {
     const name = front.text[1..$];
-    (name != "").enforce();
-    (!status_.map!"a.name".canFind(name)).enforce();
+    (name != "").
+      enforce("invalid template specification", front);
+    (!status_.map!"a.name".canFind(name)).
+      enforce("recursively template expansion", front);
 
     Token[] body;
     const counter = GetCounterValue(name);
     if (counter.isNull) {
-      (name in templates_).enforce();
+      (name in templates_).
+        enforce("the template is unknown", front);
       body = templates_[name];
     } else {
       body = [Token(counter.get.to!string, TokenType.Number)];
@@ -214,4 +238,9 @@ private struct Preprocessor(R)
   Token[][string] templates_;
 
   ExpansionState[] status_;
+}
+
+private void enforce(T)(T val, string msg, lazy Token token,
+    string file = __FILE__, size_t line = __LINE__) {
+  if (!val) throw new PreprocessException(msg, token, file, line);
 }

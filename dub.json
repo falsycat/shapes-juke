@@ -1,0 +1,7 @@
+{
+  "name": "shapes-juke",
+
+  "targetType": "none",
+
+  "subPackages": ["sjscript"]
+}

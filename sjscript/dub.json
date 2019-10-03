@@ -1,0 +1,9 @@
+{
+  "name": "sjscript",
+
+  "targetPath": ".bin",
+
+  "dependencies": {
+    "dast": {"path": "../thirdparty/dast"}
+  }
+}

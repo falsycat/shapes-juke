@@ -1,0 +1,3 @@
+[submodule "thirdparty/dast"]
+	path = thirdparty/dast
+	url = https://gogs.enigmatical.work/kajironagi/dast.git

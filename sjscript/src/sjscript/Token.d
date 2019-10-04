@@ -64,11 +64,16 @@ enum TokenType {
   @TextCompleteMatcher!"{" OpenBrace,
   @TextCompleteMatcher!"}" CloseBrace,
 
+  @TextCompleteMatcher!"[" OpenBracket,
+  @TextCompleteMatcher!"]" CloseBracket,
+
   @TextCompleteMatcher!"(" OpenParen,
   @TextCompleteMatcher!")" CloseParen,
 
   @TextCompleteMatcher!"," Comma,
   @TextCompleteMatcher!";" SemiColon,
+
+  @TextCompleteMatcher!".." DoubleDot,
 
   @TextCompleteMatcher!"="  Assign,
   @TextCompleteMatcher!"+=" AddAssign,

@@ -1,6 +1,8 @@
 /// License: MIT
 module sjscript.parse;
 
+import std.conv;
+
 import dast.parse;
 
 import sjscript.Expression,
@@ -13,7 +15,7 @@ unittest {
   import dast.tokenize : Tokenize;
 
   enum src = q"EOS
-    framebuffer 0 {
+    framebuffer [0..5] {
       a = 0;
       b += 0;
     }
@@ -60,8 +62,14 @@ private class RuleSet {
         target.text, period, params, CreateTokenPos(target, closebrace));
   }
 
-  static Period ParsePeriod(@(TokenType.Number) Token) {  // TODO
-    return Period(0, 0);
+  static Period ParsePeriod(
+      @(TokenType.OpenBracket) Token,
+      @(TokenType.Number) Token begin,
+      @(TokenType.DoubleDot) Token,
+      @(TokenType.Number) Token end,
+      @(TokenType.CloseBracket) Token) {
+    return Period(
+        begin.text.to!float.to!int, end.text.to!float.to!int);
   }
 
   static Parameter[] ParseParameterListFirstItem(Parameter param) {

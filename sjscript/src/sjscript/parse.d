@@ -1,7 +1,8 @@
 /// License: MIT
 module sjscript.parse;
 
-import std.conv;
+import std.conv,
+       std.range.primitives;
 
 import dast.parse;
 
@@ -16,24 +17,21 @@ unittest {
 
   enum src = q"EOS
     framebuffer [0..5] {
-      a = 0;
+      a  = 2 * distance(player_x, player_y);
       b += 0;
     }
 EOS";
-  try {
-    src.
-      Tokenize!TokenType.
-      filter!(x => x.type != TokenType.Whitespace).
-      chain([Token("", TokenType.End)]).
-      Parse().
-      each!writeln;
-  } catch (ParseException!Token e) {
-    "%s at %s".writefln(e.msg, e.token);
-  }
+
+  src.
+    Tokenize!TokenType.
+    filter!(x => x.type != TokenType.Whitespace).
+    chain([Token("", TokenType.End)]).
+    Parse();
 }
 
 ///
-ParametersBlock[] Parse(R)(R tokens) {
+ParametersBlock[] Parse(R)(R tokens)
+    if (isInputRange!R && is(ElementType!R == Token)) {
   return dast.parse.Parse!Whole(tokens, cast(RuleSet) null).blocks;
 }
 
@@ -97,13 +95,64 @@ private class RuleSet {
         ident.text, ParameterType.AddAssign, expr, CreateTokenPos(ident, semicolon));
   }
 
-  static Expression ParseExpression(@(TokenType.Number) Token) {  // TODO
-    return Expression();
+  static Expression ParseExpressionFromFirstTerm(Term term) {
+    return Expression([term]);
+  }
+  static Expression ParseExpressionFromFollowingAddedTerm(
+      Expression expr, @(TokenType.Add) Token, Term term) {
+    return expr + term;
+  }
+  static Expression ParseExpressionFromFollowingSubtractedTerm(
+      Expression expr, @(TokenType.Sub) Token, Term term) {
+    return expr - term;
+  }
+
+  static Term ParseNumberTerm(@(TokenType.Number) Token number) {
+    return Term([Term.Value(number.text.to!float)], []);
+  }
+  static Term ParseVariableTerm(@(TokenType.Ident) Token var) {
+    return Term([Term.Value(var.text)], []);
+  }
+  static Term ParseFunctionCallTerm(FunctionCall fcall) {
+    return Term([Term.Value(fcall)], []);
+  }
+  static Term ParseExpressionTerm(
+      @(TokenType.OpenParen) Token,
+      Expression expr,
+      @(TokenType.CloseParen) Token) {
+    return Term([Term.Value(expr)], []);
+  }
+
+  static Term ParseTermFromMultipledTerm(
+      Term lterm, @(TokenType.Mul) Token, Term rterm) {
+    return lterm * rterm;
+  }
+  static Term ParseTermFromDividedTerm(
+      Term lterm, @(TokenType.Div) Token, Term rterm) {
+    return lterm / rterm;
+  }
+
+  static FunctionCall ParseFunctionCall(
+      @(TokenType.Ident) Token name,
+      @(TokenType.OpenParen) Token,
+      FunctionCallArgs args,
+      @(TokenType.CloseParen) Token) {
+    return FunctionCall(name.text, args.exprs);
+  }
+  static FunctionCallArgs ParseFunctionCallArgsFirstItem(Expression expr) {
+    return FunctionCallArgs([expr]);
+  }
+  static FunctionCallArgs ParseFunctionCallArgsFollowingItem(
+      FunctionCallArgs args, @(TokenType.Comma) Token, Expression expr) {
+    return FunctionCallArgs(args.exprs ~ expr);
   }
 }
 
 private struct Whole {
   ParametersBlock[] blocks;
+}
+private struct FunctionCallArgs {
+  Expression[] exprs;
 }
 
 private TokenPos CreateTokenPos(Token first, Token last) {

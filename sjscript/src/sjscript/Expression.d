@@ -7,11 +7,11 @@ import std.variant;
 struct Expression {
  public:
   ///
-  Term opBinary(string op : "+", T)(T rhs) const {
+  Expression opBinary(string op : "+")(Term rhs) {
     return Expression(terms ~ rhs);
   }
   ///
-  Term opBinary(string op : "-", T)(T rhs) const {
+  Expression opBinary(string op : "-")(Term rhs) {
     return Expression(terms ~ rhs*(-1f));
   }
 
@@ -23,21 +23,35 @@ struct Expression {
 struct Term {
  public:
   ///
-  alias Value = Algebraic!(float, string, FunctionCall);
+  alias Value = Algebraic!(float, string, FunctionCall, Expression);
 
   ///
-  Term opBinary(string op : "*", T)(T rhs) const {
-    return Term(multipled_values ~ Value(rhs), divided_values);
+  Term opBinary(string op : "*", T)(T rhs) {
+    static if (is(T == Term)) {
+      return Term(
+          numerator   ~ rhs.numerator,
+          denominator ~ rhs.denominator);
+    } else {
+      return Term(
+          numerator ~ Value(rhs), denominator);
+    }
   }
   ///
-  Term opBinary(string op : "/", T)(T rhs) const {
-    return Term(multipled_values, divided_values ~ Value(rhs));
+  Term opBinary(string op : "/", T)(T rhs) {
+    static if (is(T == Term)) {
+      return Term(
+          numerator   ~ rhs.denominator,
+          denominator ~ rhs.numerator);
+    } else {
+      return Term(
+          numerator, denominator ~ Value(rhs));
+    }
   }
 
   ///
-  Value[] multipled_values;
+  Value[] numerator;
   ///
-  Value[] divided_values;
+  Value[] denominator;
 }
 
 ///

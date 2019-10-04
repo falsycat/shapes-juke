@@ -4,6 +4,7 @@ module sjscript.preprocess;
 import std.algorithm,
        std.array,
        std.conv,
+       std.format,
        std.range,
        std.range.primitives,
        std.typecons;
@@ -212,7 +213,7 @@ private struct Preprocessor(R)
     const counter = GetCounterValue(name);
     if (counter.isNull) {
       (name in templates_).
-        enforce("the template is unknown", front);
+        enforce("the template (%s) is unknown".format(name), front);
       body = templates_[name];
     } else {
       body = [Token(counter.get.to!string, TokenType.Number)];

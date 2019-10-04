@@ -8,57 +8,53 @@ import std.algorithm,
 import dast.tokenize;
 
 ///
+unittest {
+  import std;
+
+  with (TokenType) {
+    assert("0 0.1 _hoge0_ $hoge".
+        Tokenize!TokenType.
+        map!"a.type".
+        filter!(x => x != Whitespace).
+        equal([Number, Number, Ident, PreprocessCommand]));
+  }
+}
+
+///
 alias TokenPos = dast.tokenize.TokenPos;
 
 ///
 enum TokenType {
-  @TextFuncMatcher!((string text, string next) {
-      const point_index = text.countUntil('.');
-      if (point_index < 0) {
-        if (text.all!isDigit) {
-          if (next.length == 1 && (next[0].isDigit || next[0] == '.')) {
-            return TextMatchResult.Probably;
-          }
-          return TextMatchResult.Completely;
-        }
-      } else {
-        if ((text[0..point_index]~text[point_index+1..$]).all!isDigit) {
-          if (next.length == 1 && next[0].isDigit) {
-            return TextMatchResult.Probably;
-          }
-          return TextMatchResult.Completely;
-        }
-      }
-      return TextMatchResult.Improbably;
+  @TextFuncMatcher!((string text) {
+      const integral_len = text.countUntil!(x => !x.isDigit);
+      if (integral_len <  0) return text.length;
+      if (integral_len == 0) return 0;
+
+      if (text[integral_len]      != '.') return integral_len;
+      if (text[integral_len+1..$] == "")  return integral_len;
+
+      const fraction_len =
+        text[integral_len+1..$].countUntil!(x => !x.isDigit);
+      if (fraction_len <  0) return text.length;
+      if (fraction_len == 0) return integral_len;
+
+      return integral_len + 1 + fraction_len;
     }) Number,
 
-  @TextFuncMatcher!((string text, string next) {
-      const head = text[0].isAlpha || text[0] == '_';
-      const body = text[1..$].all!(
-          x => x.isAlpha || x.isDigit || x == '_');
-      const nexthead = next.length > 0 && (
-          next[0].isAlpha || next[0].isDigit || next[0] == '_');
+  @TextFuncMatcher!((string text) {
+      if (text.length == 0) return 0;
+      if (!text[0].isAlpha && text[0] != '_') return 0;
 
-      if (head && body && !nexthead) return TextMatchResult.Completely;
-      if (head && body &&  nexthead) return TextMatchResult.Probably;
-      return TextMatchResult.Improbably;
+      const index = text[1..$].countUntil!(x => !x.isAlpha && !x.isDigit && x != '_');
+      return index >= 0? index.to!size_t+1: text.length;
     }) Ident,
 
-  @TextFuncMatcher!((string text, string next) {
-      const head = text[0] == '$';
-      if (!head || text.length <= 1) {
-        return head? TextMatchResult.Probably: TextMatchResult.Improbably;
-      }
-      if (text[1] != '_' && !text[1].isAlpha) {
-        return TextMatchResult.Improbably;
-      }
-      if (text[1..$].all!(x => x.isAlpha || x.isDigit || x == '_')) {
-        if (next.length > 0 && (next[0].isAlpha || next[0].isDigit || next[0] == '_')) {
-          return TextMatchResult.Probably;
-        }
-        return TextMatchResult.Completely;
-      }
-      return TextMatchResult.Improbably;
+  @TextFuncMatcher!((string text) {
+      if (text.length < 2 || text[0] != '$') return 0;
+      if (!text[1].isAlpha && text[1] != '_') return 0;
+
+      const index = text[2..$].countUntil!(x => !x.isAlpha && !x.isDigit && x != '_');
+      return index >= 0? index.to!size_t+2: text.length;
     }) PreprocessCommand,
 
   @TextCompleteMatcher!"{" OpenBrace,
@@ -86,13 +82,6 @@ enum TokenType {
   @TextAllMatcher!isWhite Whitespace,
 
   End,
-}
-///
-unittest {
-  with (TokenType) {
-    "0 0.1 _hoge0_ $hoge".Tokenize!TokenType.map!"a.type".equal(
-        [Number, Whitespace, Number, Whitespace, Ident, Whitespace, PreprocessCommand]);
-  }
 }
 
 ///

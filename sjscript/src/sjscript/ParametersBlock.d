@@ -34,6 +34,7 @@ struct Period {
 enum ParameterType {
   Assign,
   AddAssign,
+  OnceAssign,
 }
 
 ///

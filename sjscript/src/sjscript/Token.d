@@ -73,6 +73,7 @@ enum TokenType {
 
   @TextCompleteMatcher!"="  Assign,
   @TextCompleteMatcher!"+=" AddAssign,
+  @TextCompleteMatcher!":=" ColonAssign,
 
   @TextCompleteMatcher!"+" Add,
   @TextCompleteMatcher!"-" Sub,

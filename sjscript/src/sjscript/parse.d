@@ -94,6 +94,14 @@ private class RuleSet {
     return Parameter(
         ident.text, ParameterType.AddAssign, expr, CreateTokenPos(ident, semicolon));
   }
+  static Parameter ParseOnceAssignParameter(
+      @(TokenType.Ident) Token ident,
+      @(TokenType.ColonAssign) Token,
+      Expression expr,
+      @(TokenType.SemiColon) Token semicolon) {
+    return Parameter(
+        ident.text, ParameterType.OnceAssign, expr, CreateTokenPos(ident, semicolon));
+  }
 
   static Expression ParseExpressionFromFirstTerm(Term term) {
     return Expression([term]);

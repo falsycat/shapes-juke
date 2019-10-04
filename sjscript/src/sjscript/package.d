@@ -1,7 +1,8 @@
 /// License: MIT
 module sjscript;
 
-import std.algorithm;
+import std.algorithm,
+       std.range;
 
 import dast.tokenize : Tokenize;
 
@@ -21,6 +22,7 @@ ParametersBlock[] CreateScriptAst(string src) {
     Tokenize!TokenType().
     filter!(x => x.type != TokenType.Whitespace).
     filter!(x => x.type != TokenType.Comment).
+    chain([Token("", TokenType.End)]).
     Preprocess().
     Parse();
 }

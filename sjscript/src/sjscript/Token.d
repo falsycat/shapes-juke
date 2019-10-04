@@ -12,11 +12,11 @@ unittest {
   import std;
 
   with (TokenType) {
-    assert("0 0.1 _hoge0_ $hoge".
+    assert("0 0.1 _hoge0_ $hoge // hoge".
         Tokenize!TokenType.
         map!"a.type".
         filter!(x => x != Whitespace).
-        equal([Number, Number, Ident, PreprocessCommand]));
+        equal([Number, Number, Ident, PreprocessCommand, Comment]));
   }
 }
 
@@ -80,6 +80,12 @@ enum TokenType {
   @TextCompleteMatcher!"/" Div,
 
   @TextAllMatcher!isWhite Whitespace,
+  @TextFuncMatcher!((string text) {
+      if (text.length < 2 || text[0..2] != "//") return 0;
+
+      const index = text.countUntil('\n');
+      return index >= 0? index.to!size_t: text.length;
+    }) Comment,
 
   End,
 }

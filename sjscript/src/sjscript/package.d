@@ -20,6 +20,7 @@ ParametersBlock[] CreateScriptAst(string src) {
   return src.
     Tokenize!TokenType().
     filter!(x => x.type != TokenType.Whitespace).
+    filter!(x => x.type != TokenType.Comment).
     Preprocess().
     Parse();
 }

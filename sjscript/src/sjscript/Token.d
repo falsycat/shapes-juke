@@ -8,6 +8,9 @@ import std.algorithm,
 import dast.tokenize;
 
 ///
+alias TokenPos = dast.tokenize.TokenPos;
+
+///
 enum TokenType {
   @TextFuncMatcher!((string text, string next) {
       const point_index = text.countUntil('.');

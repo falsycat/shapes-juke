@@ -3,5 +3,5 @@
 
   "targetType": "none",
 
-  "subPackages": ["sjscript"]
+  "subPackages": ["sjscript", "sjplayer"]
 }

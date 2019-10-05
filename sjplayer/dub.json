@@ -3,7 +3,12 @@
 
   "targetPath": ".bin",
 
+  "subPackages": [
+    "standalone"
+  ],
+
   "dependencies": {
+    "sjscript": {"path": "../sjscript"},
     "gl4d": {"path": "../thirdparty/gl4d"}
   }
 }

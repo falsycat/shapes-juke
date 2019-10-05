@@ -1,18 +1,23 @@
 /// License: MIT
+///
+/// Types declared in this file are not considered at copying because of processing speed.
+/// So you should add a const qual when use them after parsing.
+///
 module sjscript.Expression;
 
-import std.variant;
+import std.algorithm,
+       std.meta,
+       std.variant;
 
 ///
 struct Expression {
  public:
   ///
-  Expression opBinary(string op : "+")(Term rhs) {
+  Expression opBinary(string op)(Term rhs) if (op == "+" || op == "-") {
+    static if (op == "-") {
+      rhs = rhs * -1f;
+    }
     return Expression(terms ~ rhs);
-  }
-  ///
-  Expression opBinary(string op : "-")(Term rhs) {
-    return Expression(terms ~ rhs*(-1f));
   }
 
   ///
@@ -26,26 +31,19 @@ struct Term {
   alias Value = Algebraic!(float, string, FunctionCall, Expression);
 
   ///
-  Term opBinary(string op : "*", T)(T rhs) {
+  Term opBinary(string op, T)(T rhs) if ((op == "*" || op == "/")) {
     static if (is(T == Term)) {
-      return Term(
-          numerator   ~ rhs.numerator,
-          denominator ~ rhs.denominator);
+      auto rnumerator   = rhs.numerator;
+      auto rdenominator = rhs.denominator;
+    } else static if (staticIndexOf!(T, Value.AllowedTypes) >= 0) {
+      auto    rnumerator = [Value(rhs)];
+      Value[] rdenominator;
     } else {
-      return Term(
-          numerator ~ Value(rhs), denominator);
+      static assert(false);
     }
-  }
-  ///
-  Term opBinary(string op : "/", T)(T rhs) {
-    static if (is(T == Term)) {
-      return Term(
-          numerator   ~ rhs.denominator,
-          denominator ~ rhs.numerator);
-    } else {
-      return Term(
-          numerator, denominator ~ Value(rhs));
-    }
+    static if (op == "/") swap(rnumerator, rdenominator);
+
+    return Term(numerator ~ rnumerator, denominator ~ rdenominator);
   }
 
   ///
@@ -59,7 +57,6 @@ struct FunctionCall {
  public:
   ///
   string name;
-
   ///
   Expression[] args;
 }

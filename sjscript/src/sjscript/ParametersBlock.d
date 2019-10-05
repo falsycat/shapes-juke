@@ -24,10 +24,10 @@ struct ParametersBlock {
 struct Period {
  public:
   ///
-  size_t start;
+  float start;
 
   ///
-  size_t end;
+  float end;
 }
 
 ///

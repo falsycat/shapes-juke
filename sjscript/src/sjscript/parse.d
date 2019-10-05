@@ -8,7 +8,8 @@ import dast.parse;
 
 import sjscript.Expression,
        sjscript.ParametersBlock,
-       sjscript.Token;
+       sjscript.Token,
+       sjscript.calculate;
 
 ///
 unittest {
@@ -62,12 +63,13 @@ private class RuleSet {
 
   static Period ParsePeriod(
       @(TokenType.OpenBracket) Token,
-      @(TokenType.Number) Token begin,
+      Expression start,
       @(TokenType.DoubleDot) Token,
-      @(TokenType.Number) Token end,
+      Expression end,
       @(TokenType.CloseBracket) Token) {
     return Period(
-        begin.text.to!float.to!int, end.text.to!float.to!int);
+        start.CalculateExpression(NullVarStore()),
+        end  .CalculateExpression(NullVarStore()));
   }
 
   static Parameter[] ParseParameterListFirstItem(Parameter param) {

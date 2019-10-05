@@ -16,7 +16,8 @@ $define shoot {
   translate_y += __dir_y;
 }
 
-A [0..10] {
+$define beat {0}
+A [$beat..$beat+10] {
   $define sinwave_add_x {0.5}
   $define sinwave_add_y {0.5}
   $define sinwave_amp_x {0.5}
@@ -24,11 +25,15 @@ A [0..10] {
   $define sinwave_hz    {2}
   $sinwave
 }
-B [10..20] {
+
+$define beat {10}
+B [$beat..$beat+10/2] {
   $define horming_speed {0.1}
   $horming
 }
-C [20..30] {
+
+$define beat {20}
+C [$beat..$beat+10/2] {
   $define shoot_speed {0.1}
   $shoot
 }

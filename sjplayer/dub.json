@@ -1,0 +1,9 @@
+{
+  "name": "sjplayer",
+
+  "targetPath": ".bin",
+
+  "dependencies": {
+    "gl4d": {"path": "../thirdparty/gl4d"}
+  }
+}

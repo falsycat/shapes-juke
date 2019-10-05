@@ -20,12 +20,14 @@ int main(string[] args) {
   scope(exit) sfMusic_destroy(music);
   sfMusic_play(music);
 
+  import sjplayer.ElementProgramSet;
+  auto programs = new ElementProgramSet;
+  scope(exit) programs.destroy();
+
   import sjplayer.CircleElement;
-  auto program = new CircleElementProgram;
-  scope(exit) program.destroy();
   auto element = new CircleElement;
   scope(exit) element.destroy();
-  auto drawer  = new CircleElementDrawer(program, [element]);
+  auto drawer  = new CircleElementDrawer(programs.Get!CircleElementProgram, [element]);
   scope(exit) drawer.destroy();
 
   with (element) {

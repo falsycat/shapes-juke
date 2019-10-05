@@ -68,8 +68,8 @@ private class RuleSet {
       Expression end,
       @(TokenType.CloseBracket) Token) {
     return Period(
-        start.CalculateExpression(NullVarStore()),
-        end  .CalculateExpression(NullVarStore()));
+        start.CalculateExpression(StandardVarStore()),
+        end  .CalculateExpression(StandardVarStore()));
   }
 
   static Parameter[] ParseParameterListFirstItem(Parameter param) {

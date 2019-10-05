@@ -19,13 +19,18 @@ enum IsVarStore(T) =
 static assert(IsVarStore!(float[string]));
 
 ///
-struct NullVarStore {
+struct StandardVarStore {
  public:
   static float opIndex(string name) {
-    // TODO: error handling
-    throw new Exception("undefined variable %s".format(name));
+    switch (name) {
+      case "PI":   return PI;
+      case "PI_2": return PI_2;
+      case "PI_4": return PI_4;
+      case "E":    return E;
+      default: throw new Exception("undefined variable %s".format(name));
+    }
   }
-  static assert(IsVarStore!NullVarStore);
+  static assert(IsVarStore!StandardVarStore);
 }
 
 ///

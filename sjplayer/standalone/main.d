@@ -20,6 +20,27 @@ int main(string[] args) {
   scope(exit) sfMusic_destroy(music);
   sfMusic_play(music);
 
+  import sjplayer.CircleElement;
+  auto program = new CircleElementProgram;
+  scope(exit) program.destroy();
+  auto element = new CircleElement;
+  scope(exit) element.destroy();
+  auto drawer  = new CircleElementDrawer(program, [element]);
+  scope(exit) drawer.destroy();
+
+  with (element) {
+    alive  = true;
+
+    matrix = mat3.identity;
+    matrix.scale(0.5, 0.5, 0.5);
+    matrix.translate(0.1, 0, 0);
+    matrix.transpose();
+
+    weight = 1;
+    smooth = 0.01;
+    color  = vec4(1, 1, 1, 1);
+  }
+
   while (true) {
     sfEvent e;
     sfWindow_pollEvent(win, &e);
@@ -27,6 +48,7 @@ int main(string[] args) {
 
     const msecs = sfMusic_getPlayingOffset(music).microseconds * 1e-6f;
     const beat  = msecs/60f * bpm;
+    drawer.Draw();
 
     sfWindow_display(win);
   }
@@ -51,7 +73,10 @@ sfWindow* Initialize() {
   sfWindow_setVerticalSyncEnabled(win, true);
 
   sfWindow_setActive(win, true).enforce;
+
   gl.ApplyContext();
+  gl.Enable(GL_BLEND);
+  gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   return win;
 }

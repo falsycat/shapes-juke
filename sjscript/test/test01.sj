@@ -1,5 +1,7 @@
 // this is comment
 
+$define pi {3.14}
+
 $define sinwave {
   translate_x = $sinwave_add_x + sin(rtime * $sinwave_hz) * $sinwave_amp_x;
   translate_y = $sinwave_add_y + cos(rtime * $sinwave_hz) * $sinwave_amp_y;
@@ -16,7 +18,7 @@ $define shoot {
   translate_y += __dir_y;
 }
 
-$define beat {0}
+$define beat {sin($pi/4)}
 A [$beat..$beat+10] {
   $define sinwave_add_x {0.5}
   $define sinwave_add_y {0.5}

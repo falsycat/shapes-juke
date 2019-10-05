@@ -2,13 +2,15 @@
 module sjscript.calculate;
 
 import std.algorithm,
+       std.array,
        std.exception,
        std.format,
        std.math,
        std.traits,
        std.variant;
 
-import sjscript.Expression;
+import sjscript.Expression,
+       sjscript.func;
 
 ///
 enum IsVarStore(T) =
@@ -59,7 +61,6 @@ float CalculateTermValue(VarStore)(in Term.Value value, VarStore vars)
 ///
 float CalculateFunction(VarStore)(in FunctionCall fcall, VarStore vars)
     if (IsVarStore!VarStore) {
-  const args = fcall.args.map!(x => x.CalculateExpression(vars));
-  // TODO: calling function
-  return 0;
+  return fcall.name.CallFunction(
+      fcall.args.map!(x => x.CalculateExpression(vars)).array);
 }

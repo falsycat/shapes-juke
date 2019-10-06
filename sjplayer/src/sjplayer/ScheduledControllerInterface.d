@@ -10,7 +10,7 @@ import std.algorithm,
 import sjscript;
 
 import sjplayer.VarStoreInterface,
-       sjplayer.util.compare;
+       sjplayer.util.Period;
 
 ///
 interface ScheduledControllerInterface {

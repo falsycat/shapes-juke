@@ -14,7 +14,7 @@ import sjplayer.ElementInterface,
        sjplayer.ElementProgramSet,
        sjplayer.ScheduledControllerInterface,
        sjplayer.VarStoreInterface,
-       sjplayer.util.compare;
+       sjplayer.util.Period;
 
 ///
 struct ScheduledControllerCreationResult {

@@ -1,5 +1,5 @@
 /// License: MIT
-module sjplayer.util.compare;
+module sjplayer.util.Period;
 
 import sjscript;
 

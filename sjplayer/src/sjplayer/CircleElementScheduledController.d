@@ -1,6 +1,8 @@
 /// License: MIT
 module sjplayer.CircleElementScheduledController;
 
+import std.typecons;
+
 import gl4d;
 
 import sjscript;
@@ -32,16 +34,15 @@ class CircleElementScheduledController :
     element_.weight       = 1;
     element_.smooth       = 0.01;
     element_.color        = vec4(1, 1, 1, 1);
+    super.PrepareOperation(params);
   }
   override void FinalizeOperation(ref in ParametersBlock params) {
     element_.alive = false;
   }
 
-  override float GetVariable(string name) const {
-    throw new Exception("not implemented");  // TODO:
-  }
-  override void SetParameter(ref in Parameter param) {
-    throw new Exception("not implemented");  // TODO:
+  override void SetParameter(Nullable!float time, ref in Parameter param) {
+    // TODO:
+    super.SetParameter(time, param);
   }
 
  private:

@@ -4,7 +4,8 @@ module sjplayer.ScheduledControllerInterface;
 import std.algorithm,
        std.array,
        std.exception,
-       std.format;
+       std.format,
+       std.typecons;
 
 import sjscript;
 
@@ -34,7 +35,7 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
 
       const last_operation = &operations_[next_operation_index_-1];
       if (IsTimeInPeriod(time, last_operation.period)) {
-        ProcessOperation(*last_operation);
+        ProcessOperation(time, *last_operation);
         return;
       }
       FinalizeOperation(*last_operation);
@@ -45,7 +46,7 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
     const next_operation = &operations_[next_operation_index_];
     if (IsTimeInPeriod(time, next_operation.period)) {
       PrepareOperation(*next_operation);
-      ProcessOperation(*next_operation);
+      ProcessOperation(time, *next_operation);
       ++next_operation_index_;
     }
   }
@@ -53,7 +54,7 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
  protected:
   abstract void PrepareOperation(ref in ParametersBlock params);
 
-  abstract void ProcessOperation(ref in ParametersBlock params);
+  abstract void ProcessOperation(float time, ref in ParametersBlock params);
 
   abstract void FinalizeOperation(ref in ParametersBlock params);
 
@@ -79,30 +80,39 @@ abstract class AbstractScheduledControllerWithOperationImpl :
   static struct VarStore {
    public:
     float opIndex(string name) {
-      float result = void;
-      if (!this_.GetVariable(name).collectException(result)) return result;
-      if (!this_.varstore_[name]  .collectException(result)) return result;
-      if (!this_.user_vars_[name] .collectException(result)) return result;
-      throw new Exception("unknown variable %s".format(name));
+      if (!time_.isNull && name == "time") return time_.get;
+      return this_.GetVariable(name);
     }
    private:
     AbstractScheduledControllerWithOperationImpl this_;
+    Nullable!float time_;
   }
 
-  override void ProcessOperation(ref in ParametersBlock params) {
-    foreach (const ref param; params.parameters) {
-      if (param.name.length >= 2 && param.name[0..2] == "__") {
-        user_vars_[param.name[2..$]] =
-          param.rhs.CalculateExpression(VarStore(this));
-        continue;
-      }
-      SetParameter(param);
+  override void PrepareOperation(ref in ParametersBlock params) {
+    params.parameters.
+      filter!(x => x.type == ParameterType.OnceAssign).
+      each  !(x => SetParameter(Nullable!float.init, x));
+  }
+  override void ProcessOperation(float time, ref in ParametersBlock params) {
+    params.parameters.
+      filter!(x => x.type != ParameterType.OnceAssign).
+      each  !(x => SetParameter(time.nullable, x));
+  }
+
+  float GetVariable(string name) const {
+    if (name in user_vars_) return user_vars_[name];
+    return varstore_[name];
+  }
+  void SetParameter(Nullable!float time, ref in Parameter param) {
+    (param.name.length >= 2 && param.name[0..2] == "__").
+      enforce("user defined variables must be prefixed '__'");
+
+    auto value = param.rhs.CalculateExpression(VarStore(this, time));
+    if (param.type == ParameterType.AddAssign) {
+      value += user_vars_[param.name];
     }
+    user_vars_[param.name] = value;
   }
-
-  abstract float GetVariable(string name) const;
-
-  abstract void SetParameter(ref in Parameter param);
 
  private:
   const VarStoreInterface varstore_;

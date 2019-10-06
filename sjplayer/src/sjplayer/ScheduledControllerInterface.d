@@ -2,11 +2,14 @@
 module sjplayer.ScheduledControllerInterface;
 
 import std.algorithm,
-       std.array;
+       std.array,
+       std.exception,
+       std.format;
 
 import sjscript;
 
-import sjplayer.util.compare;
+import sjplayer.VarStoreInterface,
+       sjplayer.util.compare;
 
 ///
 interface ScheduledControllerInterface {
@@ -34,7 +37,7 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
         ProcessOperation(*last_operation);
         return;
       }
-      FinishOperation(*last_operation);
+      FinalizeOperation(*last_operation);
     }
 
     if (next_operation_index_ >= operations_.length) return;
@@ -51,7 +54,7 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
 
   abstract void ProcessOperation(ref in ParametersBlock params);
 
-  abstract void FinishOperation(ref in ParametersBlock params);
+  abstract void FinalizeOperation(ref in ParametersBlock params);
 
  private:
   const ParametersBlock[] operations_;
@@ -59,4 +62,49 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
   float last_operation_time_ = -1;
 
   size_t next_operation_index_;
+}
+
+///
+abstract class AbstractScheduledControllerWithOperationImpl :
+  AbstractScheduledController {
+ public:
+  ///
+  this(in VarStoreInterface varstore, in ParametersBlock[] operations) {
+    super(operations);
+    varstore_ = varstore;
+  }
+
+ protected:
+  static struct VarStore {
+   public:
+    float opIndex(string name) {
+      float result = void;
+      if (!this_.GetVariable(name).collectException(result)) return result;
+      if (!this_.varstore_[name]  .collectException(result)) return result;
+      if (!this_.user_vars_[name] .collectException(result)) return result;
+      throw new Exception("unknown variable %s".format(name));
+    }
+   private:
+    AbstractScheduledControllerWithOperationImpl this_;
+  }
+
+  override void ProcessOperation(ref in ParametersBlock params) {
+    foreach (const ref param; params.parameters) {
+      if (param.name.length >= 2 && param.name[0..2] == "__") {
+        user_vars_[param.name[2..$]] =
+          param.rhs.CalculateExpression(VarStore(this));
+        continue;
+      }
+      SetParameter(param);
+    }
+  }
+
+  abstract float GetVariable(string name) const;
+
+  abstract void SetParameter(ref in Parameter param);
+
+ private:
+  const VarStoreInterface varstore_;
+
+  float[string] user_vars_;
 }

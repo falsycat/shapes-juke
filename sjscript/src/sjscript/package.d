@@ -13,6 +13,7 @@ import sjscript.Token,
 public {
   import sjscript.Expression,
          sjscript.ParametersBlock,
+         sjscript.calculate,
          sjscript.exception;
 }
 

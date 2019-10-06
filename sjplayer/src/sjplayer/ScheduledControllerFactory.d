@@ -67,8 +67,8 @@ struct ElementScheduledControllerFactory(ScheduledController, ElementDrawer)
       controllers ~= new ScheduledController(element, varstore_, serial);
     }
     return ScheduledControllerCreationResult(
-        cast(ElementInterface[])             elements[],
-        cast(ScheduledControllerInterface[]) controllers[],
+        elements[]   .map!(x => cast(ElementInterface)             x).array,
+        controllers[].map!(x => cast(ScheduledControllerInterface) x).array,
         new ElementDrawer(program_, elements[]));
   }
 

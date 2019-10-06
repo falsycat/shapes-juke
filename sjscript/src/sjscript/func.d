@@ -36,7 +36,7 @@ float CallFunction(string name, float[] args) {
 
     // ---- conditional switch
     case "step":  EnforceArgs!2; return args[1] > args[0]? 1: 0;
-    case "clamp": EnforceArgs!3; return clamp(args[0], args[1], args[3]);
+    case "clamp": EnforceArgs!3; return clamp(args[0], args[1], args[2]);
 
     default: throw new Exception("unknown exception");
   }

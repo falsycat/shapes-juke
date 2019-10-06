@@ -10,6 +10,7 @@ import std.algorithm,
 import sjscript;
 
 import sjplayer.VarStoreInterface,
+       sjplayer.util.Parameter,
        sjplayer.util.Period;
 
 ///
@@ -89,6 +90,7 @@ abstract class AbstractScheduledControllerWithOperationImpl :
   }
 
   override void PrepareOperation(ref in ParametersBlock params) {
+    user_vars_.clear();
     params.parameters.
       filter!(x => x.type == ParameterType.OnceAssign).
       each  !(x => SetParameter(Nullable!float.init, x));
@@ -106,12 +108,9 @@ abstract class AbstractScheduledControllerWithOperationImpl :
   void SetParameter(Nullable!float time, ref in Parameter param) {
     (param.name.length >= 2 && param.name[0..2] == "__").
       enforce("user defined variables must be prefixed '__'");
-
-    auto value = param.rhs.CalculateExpression(VarStore(this, time));
-    if (param.type == ParameterType.AddAssign) {
-      value += user_vars_[param.name];
-    }
-    user_vars_[param.name] = value;
+    user_vars_[param.name] = 0;
+    user_vars_[param.name].
+      CalculateParameter(param, VarStore(this, time));
   }
 
  private:

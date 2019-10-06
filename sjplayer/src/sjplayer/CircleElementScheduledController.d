@@ -10,7 +10,8 @@ import sjscript;
 import sjplayer.CircleElement,
        sjplayer.ScheduledControllerFactory,
        sjplayer.ScheduledControllerInterface,
-       sjplayer.VarStoreInterface;
+       sjplayer.VarStoreInterface,
+       sjplayer.util.Parameter;
 
 ///
 class CircleElementScheduledController :
@@ -41,8 +42,15 @@ class CircleElementScheduledController :
   }
 
   override void SetParameter(Nullable!float time, ref in Parameter param) {
-    // TODO:
-    super.SetParameter(time, param);
+    auto vars = VarStore(this, time);
+    switch (param.name) {
+      case "damage":       return element_.damage.      CalculateParameter(param, vars);
+      case "nearness_coe": return element_.nearness_coe.CalculateParameter(param, vars);
+      case "weight":       return element_.weight.      CalculateParameter(param, vars);
+      case "smooth":       return element_.smooth.      CalculateParameter(param, vars);
+
+      default: return super.SetParameter(time, param);
+    }
   }
 
  private:

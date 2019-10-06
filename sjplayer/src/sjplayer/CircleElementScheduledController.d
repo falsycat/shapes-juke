@@ -6,6 +6,7 @@ import gl4d;
 import sjscript;
 
 import sjplayer.CircleElement,
+       sjplayer.ScheduledControllerFactory,
        sjplayer.ScheduledControllerInterface,
        sjplayer.VarStoreInterface;
 
@@ -46,3 +47,9 @@ class CircleElementScheduledController :
  private:
   CircleElement element_;
 }
+
+///
+alias CircleElementScheduledControllerFactory =
+  ElementScheduledControllerFactory!(
+      CircleElementScheduledController,
+      CircleElementDrawer);

@@ -7,6 +7,8 @@ import derelict.sfml2.audio,
 
 import gl4d;
 
+import sjplayer;
+
 int main(string[] args) {
   (args.length == 4).enforce;
   const music_file  = args[1];
@@ -20,28 +22,10 @@ int main(string[] args) {
   scope(exit) sfMusic_destroy(music);
   sfMusic_play(music);
 
-  import sjplayer.ElementProgramSet;
   auto programs = new ElementProgramSet;
   scope(exit) programs.destroy();
 
-  import sjplayer.CircleElement;
-  auto element = new CircleElement;
-  scope(exit) element.destroy();
-  auto drawer  = new CircleElementDrawer(programs.Get!CircleElementProgram, [element]);
-  scope(exit) drawer.destroy();
-
-  with (element) {
-    alive  = true;
-
-    matrix = mat3.identity;
-    matrix.scale(0.5, 0.5, 0.5);
-    matrix.translate(0.1, 0, 0);
-    matrix.transpose();
-
-    weight = 1;
-    smooth = 0.01;
-    color  = vec4(1, 1, 1, 1);
-  }
+  auto context = script_file.readText.CreateContextFromText(programs);
 
   while (true) {
     sfEvent e;
@@ -50,8 +34,11 @@ int main(string[] args) {
 
     const msecs = sfMusic_getPlayingOffset(music).microseconds * 1e-6f;
     const beat  = msecs/60f * bpm;
-    drawer.Draw();
 
+    context.OperateScheduledControllers(beat);
+
+    gl.Clear(GL_COLOR_BUFFER_BIT);
+    context.DrawElements();
     sfWindow_display(win);
   }
   return 0;

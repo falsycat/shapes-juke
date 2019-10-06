@@ -152,7 +152,7 @@ class CircleElementProgram {
       float r = length(uv_);
       float w = 1 - weight_;
       return
-        smoothstep(w, w+smooth_, r) *
+        smoothstep(w-smooth_, w, r) *
         (1 - smoothstep(1-smooth_, 1, r));
     }
 

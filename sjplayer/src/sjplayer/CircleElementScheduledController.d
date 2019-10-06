@@ -28,9 +28,9 @@ class CircleElementScheduledController :
     element_.alive        = true;
     element_.damage       = 0;
     element_.nearness_coe = 0;
-    element_.matrix       = mat3.identity;
+    element_.matrix       = mat3.identity.transposed;
     element_.weight       = 1;
-    element_.smooth       = 0;
+    element_.smooth       = 0.01;
     element_.color        = vec4(1, 1, 1, 1);
   }
   override void FinalizeOperation(ref in ParametersBlock params) {

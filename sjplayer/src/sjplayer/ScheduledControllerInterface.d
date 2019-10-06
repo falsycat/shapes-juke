@@ -35,8 +35,9 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
       assert(next_operation_index_ <= operations_.length);
 
       const last_operation = &operations_[next_operation_index_-1];
-      if (IsTimeInPeriod(time, last_operation.period)) {
-        ProcessOperation(time, *last_operation);
+      const period         = last_operation.period;
+      if (IsTimeInPeriod(time, period)) {
+        ProcessOperation(period.ConvertToRelativeTime(time), *last_operation);
         return;
       }
       FinalizeOperation(*last_operation);
@@ -47,7 +48,8 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
     const next_operation = &operations_[next_operation_index_];
     if (IsTimeInPeriod(time, next_operation.period)) {
       PrepareOperation(*next_operation);
-      ProcessOperation(time, *next_operation);
+      ProcessOperation(
+          next_operation.period.ConvertToRelativeTime(time), *next_operation);
       ++next_operation_index_;
     }
   }

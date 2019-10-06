@@ -4,15 +4,16 @@ module sjplayer;
 import sjscript;
 
 public {
-  import sjplayer.ElementProgramSet;
+  import sjplayer.Context,
+         sjplayer.ElementProgramSet;
 }
 
 ///
-auto CreateContextFromText(string src, ElementProgramSet programs) {
+Context CreateContextFromText(string src, ElementProgramSet programs) {
   return src.CreateScriptAst().CreateContextFromScriptAst(programs);
 }
 ///
-auto CreateContextFromScriptAst(
+Context CreateContextFromScriptAst(
     ParametersBlock[] params, ElementProgramSet programs) {
   // TODO:
   assert(false);

@@ -1,10 +1,15 @@
 /// License: MIT
 module sjplayer.Context;
 
-import std.algorithm;
+import std.algorithm,
+       std.typecons;
+
+import sjscript;
 
 import sjplayer.ElementInterface,
-       sjplayer.ScheduledControllerInterface;
+       sjplayer.ElementProgramSet,
+       sjplayer.ScheduledControllerInterface,
+       sjplayer.VarStoreInterface;
 
 ///
 struct Context {
@@ -12,6 +17,25 @@ struct Context {
   @disable this();
   @disable this(this);
 
+  ///
+  this(ParametersBlock[] params, ElementProgramSet programs) {
+    auto varstore = new BlackHole!VarStoreInterface;
+
+    import sjplayer.CircleElementScheduledController;
+    auto factories = tuple(
+        tuple(
+          "circle",
+          CircleElementScheduledControllerFactory(programs, varstore),
+        ),
+      );
+    foreach (factory; factories) {
+      auto result = factory[1].
+        Create(params.filter!(x => x.name == factory[0]));
+      elements_    ~= result.elements;
+      drawers_     ~= result.drawer;
+      controllers_ ~= result.controllers;
+    }
+  }
   ///
   ~this() {
     controllers_.each!destroy;

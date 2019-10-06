@@ -15,6 +15,5 @@ Context CreateContextFromText(string src, ElementProgramSet programs) {
 ///
 Context CreateContextFromScriptAst(
     ParametersBlock[] params, ElementProgramSet programs) {
-  // TODO:
-  assert(false);
+  return Context(params, programs);
 }

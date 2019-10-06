@@ -45,6 +45,7 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
     const next_operation = &operations_[next_operation_index_];
     if (IsTimeInPeriod(time, next_operation.period)) {
       PrepareOperation(*next_operation);
+      ProcessOperation(*next_operation);
       ++next_operation_index_;
     }
   }

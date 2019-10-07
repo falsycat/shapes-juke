@@ -111,8 +111,7 @@ abstract class AbstractScheduledControllerWithOperationImpl :
     (param.name.length >= 2 && param.name[0..2] == "__").
       enforce("user defined variables must be prefixed '__'");
     user_vars_[param.name] = 0;
-    user_vars_[param.name].
-      CalculateParameter(param, VarStore(this, time));
+    param.CalculateParameter(user_vars_[param.name], VarStore(this, time));
   }
 
  private:

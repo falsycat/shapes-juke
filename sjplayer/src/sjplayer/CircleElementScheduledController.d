@@ -11,6 +11,7 @@ import sjplayer.CircleElement,
        sjplayer.ScheduledControllerFactory,
        sjplayer.ScheduledControllerInterface,
        sjplayer.VarStoreInterface,
+       sjplayer.util.MatrixFactory,
        sjplayer.util.Parameter;
 
 ///
@@ -35,7 +36,14 @@ class CircleElementScheduledController :
     element_.weight       = 1;
     element_.smooth       = 0.01;
     element_.color        = vec4(1, 1, 1, 1);
+
+    matrix_factory_ = matrix_factory_.init;
+
     super.PrepareOperation(params);
+  }
+  override void ProcessOperation(float time, ref in ParametersBlock params) {
+    super.ProcessOperation(time, params);
+    element_.matrix = matrix_factory_.Create().transposed;
   }
   override void FinalizeOperation(ref in ParametersBlock params) {
     element_.alive = false;
@@ -44,17 +52,21 @@ class CircleElementScheduledController :
   override void SetParameter(Nullable!float time, ref in Parameter param) {
     auto vars = VarStore(this, time);
     switch (param.name) {
-      case "damage":       return element_.damage.      CalculateParameter(param, vars);
-      case "nearness_coe": return element_.nearness_coe.CalculateParameter(param, vars);
-      case "weight":       return element_.weight.      CalculateParameter(param, vars);
-      case "smooth":       return element_.smooth.      CalculateParameter(param, vars);
-
-      default: return super.SetParameter(time, param);
+      case "damage":       return param.CalculateParameter(element_.damage,       vars);
+      case "nearness_coe": return param.CalculateParameter(element_.nearness_coe, vars);
+      case "weight":       return param.CalculateParameter(element_.weight,       vars);
+      case "smooth":       return param.CalculateParameter(element_.smooth,       vars);
+      default:
     }
+    if (param.CalculateMatrixParameter(matrix_factory_, vars)) return;
+
+    return super.SetParameter(time, param);
   }
 
  private:
   CircleElement element_;
+
+  MatrixFactory matrix_factory_;
 }
 
 ///

@@ -56,7 +56,9 @@ struct ElementScheduledControllerFactory(ScheduledController, ElementDrawer)
       builder.AddScheduledController(
           new ScheduledController(element, varstore_, serial));
     }
-    builder.AddElementDrawer(new ElementDrawer(program_, elements[]));
+    if (elements[].length > 0) {
+      builder.AddElementDrawer(new ElementDrawer(program_, elements[]));
+    }
   }
 
  private:

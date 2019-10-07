@@ -7,7 +7,7 @@ import std.algorithm,
 import sjscript;
 
 import sjplayer.ElementInterface,
-       sjplayer.ElementProgramSet,
+       sjplayer.ProgramSet,
        sjplayer.ScheduledControllerInterface,
        sjplayer.VarStoreInterface;
 
@@ -18,7 +18,7 @@ struct Context {
   @disable this(this);
 
   ///
-  this(ParametersBlock[] params, ElementProgramSet programs) {
+  this(ParametersBlock[] params, ProgramSet programs) {
     auto varstore = new BlackHole!VarStoreInterface;
 
     import sjplayer.CircleElementScheduledController;

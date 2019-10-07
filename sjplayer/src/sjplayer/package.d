@@ -5,15 +5,15 @@ import sjscript;
 
 public {
   import sjplayer.Context,
-         sjplayer.ElementProgramSet;
+         sjplayer.ProgramSet;
 }
 
 ///
-Context CreateContextFromText(string src, ElementProgramSet programs) {
+Context CreateContextFromText(string src, ProgramSet programs) {
   return src.CreateScriptAst().CreateContextFromScriptAst(programs);
 }
 ///
 Context CreateContextFromScriptAst(
-    ParametersBlock[] params, ElementProgramSet programs) {
+    ParametersBlock[] params, ProgramSet programs) {
   return Context(params, programs);
 }

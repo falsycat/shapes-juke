@@ -1,5 +1,5 @@
 /// License: MIT
-module sjplayer.ElementProgramSet;
+module sjplayer.ProgramSet;
 
 import std.meta,
        std.typecons;
@@ -7,10 +7,10 @@ import std.meta,
 import sjplayer.CircleElement;
 
 ///
-class ElementProgramSet {
+class ProgramSet {
  public:
   ///
-  alias ElementPrograms = Tuple!(CircleElementProgram);
+  alias Programs = Tuple!(CircleElementProgram);
 
   ///
   this() {
@@ -26,11 +26,11 @@ class ElementProgramSet {
 
   ///
   T Get(T)() out (r; r) {
-    enum index = staticIndexOf!(T, ElementPrograms.Types);
+    enum index = staticIndexOf!(T, Programs.Types);
     static assert(index >= 0);
     return programs_[index];
   }
 
  private:
-  ElementPrograms programs_;
+  Programs programs_;
 }

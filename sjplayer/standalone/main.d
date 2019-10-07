@@ -22,7 +22,7 @@ int main(string[] args) {
   scope(exit) sfMusic_destroy(music);
   sfMusic_play(music);
 
-  auto programs = new ElementProgramSet;
+  auto programs = new ProgramSet;
   scope(exit) programs.destroy();
 
   auto context = script_file.readText.CreateContextFromText(programs);

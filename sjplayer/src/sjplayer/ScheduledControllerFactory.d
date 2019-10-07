@@ -11,7 +11,7 @@ import std.algorithm,
 import sjscript;
 
 import sjplayer.ElementInterface,
-       sjplayer.ElementProgramSet,
+       sjplayer.ProgramSet,
        sjplayer.ScheduledControllerInterface,
        sjplayer.VarStoreInterface,
        sjplayer.util.Period;
@@ -43,12 +43,12 @@ struct ElementScheduledControllerFactory(ScheduledController, ElementDrawer)
     Parameters!(__traits(getOverloads, ElementDrawer, "__ctor")[0])[0];
 
   static assert(staticIndexOf!(
-        ElementProgram, ElementProgramSet.ElementPrograms.Types) >= 0);
+        ElementProgram, ProgramSet.Programs.Types) >= 0);
   static assert(is(Element[] :
     Parameters!(__traits(getOverloads, ElementDrawer, "__ctor")[0])[1]));
 
   ///
-  this(ElementProgramSet programs, VarStoreInterface varstore) {
+  this(ProgramSet programs, VarStoreInterface varstore) {
     program_  = programs.Get!ElementProgram;
     varstore_ = varstore;
   }

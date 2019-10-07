@@ -4,8 +4,7 @@ module sjplayer.CircleElementScheduledController;
 import std.typecons;
 
 import sjplayer.CircleElement,
-       sjplayer.ElementScheduledController,
-       sjplayer.ScheduledControllerFactory;
+       sjplayer.ElementScheduledController;
 
 ///
 alias CircleElementScheduledController = ElementScheduledController!(

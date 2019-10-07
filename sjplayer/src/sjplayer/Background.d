@@ -58,7 +58,7 @@ class BackgroundProgram {
     out vec4 pixel_;
 
     void main() {
-      pixel_ = (outer_color - inner_color)*length(uv_)/sqrt(2) + outer_color;
+      pixel_ = (outer_color - inner_color)*length(uv_)/sqrt(2) + inner_color;
     }
   };
 

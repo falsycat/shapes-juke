@@ -15,13 +15,20 @@ class CircleElement : ElementInterface {
   ///
   static struct Instance {
     /// this should be transposed
-    align(1) mat3 matrix;
+    align(1) mat3 matrix = mat3.identity;
     ///
-    align(1) float weight;
+    align(1) float weight = 1;
     ///
-    align(1) float smooth;
+    align(1) float smooth = 0;
     ///
-    align(1) vec4 color;
+    align(1) vec4 color = vec4(0, 0, 0, 0);
+  }
+
+  override void Initialize() {
+    alive        = false;
+    damage       = 0;
+    nearness_coe = 0;
+    instance     = instance.init;
   }
 
   override DamageCalculationResult CalculateDamage(vec2 p1, vec2 p2) const {

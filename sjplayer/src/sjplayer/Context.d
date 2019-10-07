@@ -2,23 +2,23 @@
 module sjplayer.Context;
 
 import std.algorithm,
+       std.array,
        std.typecons;
 
 import sjscript;
 
-import sjplayer.ElementInterface,
+import sjplayer.ContextBuilderInterface,
+       sjplayer.ElementInterface,
        sjplayer.ProgramSet,
        sjplayer.ScheduledControllerInterface,
        sjplayer.VarStoreInterface;
 
 ///
-struct Context {
+class Context {
  public:
-  @disable this();
-  @disable this(this);
-
   ///
   this(ParametersBlock[] params, ProgramSet programs) {
+    auto builder  = new Builder;
     auto varstore = new BlackHole!VarStoreInterface;
 
     import sjplayer.CircleElementScheduledController;
@@ -29,12 +29,13 @@ struct Context {
         ),
       );
     foreach (factory; factories) {
-      auto result = factory[1].
-        Create(params.filter!(x => x.name == factory[0]));
-      elements_    ~= result.elements;
-      drawers_     ~= result.drawer;
-      controllers_ ~= result.controllers;
+      factory[1].
+        Create(params.filter!(x => x.name == factory[0]), builder);
     }
+
+    elements_    = builder.elements[];
+    drawers_     = builder.drawers[];
+    controllers_ = builder.controllers[];
   }
   ///
   ~this() {
@@ -47,7 +48,6 @@ struct Context {
   ElementInterface.DamageCalculationResult CalculateDamage() const {
     assert(false);  // TODO:
   }
-
   ///
   void DrawElements() {
     drawers_.each!(x => x.Draw());
@@ -58,6 +58,22 @@ struct Context {
   }
 
  private:
+  class Builder : ContextBuilderInterface {
+   public:
+    override void AddElement(ElementInterface element) {
+      elements ~= element;
+    }
+    override void AddElementDrawer(ElementDrawerInterface drawer) {
+      drawers ~= drawer;
+    }
+    override void AddScheduledController(ScheduledControllerInterface controller) {
+      controllers ~= controller;
+    }
+    Appender!(ElementInterface[])             elements;
+    Appender!(ElementDrawerInterface[])       drawers;
+    Appender!(ScheduledControllerInterface[]) controllers;
+  }
+
   ElementInterface[] elements_;
 
   ElementDrawerInterface[] drawers_;

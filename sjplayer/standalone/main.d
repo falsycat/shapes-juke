@@ -26,6 +26,7 @@ int main(string[] args) {
   scope(exit) programs.destroy();
 
   auto context = script_file.readText.CreateContextFromText(programs);
+  scope(exit) context.destroy();
 
   while (true) {
     sfEvent e;

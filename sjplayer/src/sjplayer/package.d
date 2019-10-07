@@ -15,5 +15,5 @@ Context CreateContextFromText(string src, ProgramSet programs) {
 ///
 Context CreateContextFromScriptAst(
     ParametersBlock[] params, ProgramSet programs) {
-  return Context(params, programs);
+  return new Context(params, programs);
 }

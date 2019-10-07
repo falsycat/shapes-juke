@@ -10,22 +10,12 @@ import std.algorithm,
 
 import sjscript;
 
-import sjplayer.ElementInterface,
+import sjplayer.ContextBuilderInterface,
+       sjplayer.ElementInterface,
        sjplayer.ProgramSet,
        sjplayer.ScheduledControllerInterface,
        sjplayer.VarStoreInterface,
        sjplayer.util.Period;
-
-///
-struct ScheduledControllerCreationResult {
-  ///
-  ElementInterface[] elements;
-  ///
-  ScheduledControllerInterface[] controllers;
-
-  ///
-  ElementDrawerInterface drawer;
-}
 
 ///
 struct ElementScheduledControllerFactory(ScheduledController, ElementDrawer)
@@ -54,22 +44,19 @@ struct ElementScheduledControllerFactory(ScheduledController, ElementDrawer)
   }
 
   ///
-  ScheduledControllerCreationResult Create(R)(R params)
+  void Create(R)(R params, ContextBuilderInterface builder)
       if (isInputRange!R && is(ElementType!R == ParametersBlock)) {
     auto parallelized = params.ParallelizeParams();
-
-    auto elements    = appender!(Element[]);
-    auto controllers = appender!(ScheduledController[]);
+    auto elements     = appender!(Element[]);
 
     foreach (ref serial; parallelized) {
       auto element = new Element;
       elements    ~= element;
-      controllers ~= new ScheduledController(element, varstore_, serial);
+      builder.AddElement(element);
+      builder.AddScheduledController(
+          new ScheduledController(element, varstore_, serial));
     }
-    return ScheduledControllerCreationResult(
-        elements[]   .map!(x => cast(ElementInterface)             x).array,
-        controllers[].map!(x => cast(ScheduledControllerInterface) x).array,
-        new ElementDrawer(program_, elements[]));
+    builder.AddElementDrawer(new ElementDrawer(program_, elements[]));
   }
 
  private:

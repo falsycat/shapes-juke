@@ -7,7 +7,8 @@ import std.algorithm,
 
 import sjscript;
 
-import sjplayer.ContextBuilderInterface,
+import sjplayer.Background,
+       sjplayer.ContextBuilderInterface,
        sjplayer.ElementInterface,
        sjplayer.ProgramSet,
        sjplayer.ScheduledControllerInterface,
@@ -21,8 +22,15 @@ class Context {
     auto builder  = new Builder;
     auto varstore = new BlackHole!VarStoreInterface;
 
-    import sjplayer.CircleElementScheduledController;
+    background_ = new Background(programs.Get!BackgroundProgram);
+
+    import sjplayer.BackgroundScheduledController,
+           sjplayer.CircleElementScheduledController;
     auto factories = tuple(
+        tuple(
+          "background",
+          BackgroundScheduledControllerFactory(varstore, background_),
+        ),
         tuple(
           "circle",
           CircleElementScheduledControllerFactory(programs, varstore),
@@ -42,11 +50,17 @@ class Context {
     controllers_.each!destroy;
     drawers_.each!destroy;
     elements_.each!destroy;
+
+    background_.destroy();
   }
 
   ///
   ElementInterface.DamageCalculationResult CalculateDamage() const {
     assert(false);  // TODO:
+  }
+  ///
+  void DrawBackground() {
+    background_.Draw();
   }
   ///
   void DrawElements() {
@@ -73,6 +87,8 @@ class Context {
     Appender!(ElementDrawerInterface[])       drawers;
     Appender!(ScheduledControllerInterface[]) controllers;
   }
+
+  Background background_;
 
   ElementInterface[] elements_;
 

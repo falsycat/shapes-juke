@@ -4,13 +4,17 @@ module sjplayer.ProgramSet;
 import std.meta,
        std.typecons;
 
-import sjplayer.CircleElement;
+import sjplayer.Background,
+       sjplayer.CircleElement;
 
 ///
 class ProgramSet {
  public:
   ///
-  alias Programs = Tuple!(CircleElementProgram);
+  alias Programs = Tuple!(
+      BackgroundProgram,
+      CircleElementProgram
+    );
 
   ///
   this() {

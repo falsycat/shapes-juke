@@ -17,8 +17,7 @@ import sjplayer.ElementInterface,
 ///
 class ElementScheduledController(
     Element, string[string] ParameterNameMap) :
-  AbstractScheduledControllerWithOperationImpl
-  if (is(Element : ElementInterface)) {
+  AbstractScheduledControllerWithOperationImpl {
  public:
   ///
   enum AliveManagementAvailable =

@@ -39,6 +39,7 @@ int main(string[] args) {
     context.OperateScheduledControllers(beat);
 
     gl.Clear(GL_COLOR_BUFFER_BIT);
+    context.DrawBackground();
     context.DrawElements();
     sfWindow_display(win);
   }

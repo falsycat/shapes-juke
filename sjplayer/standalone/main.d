@@ -37,10 +37,12 @@ int main(string[] args) {
     const beat  = msecs/60f * bpm;
 
     context.OperateScheduledControllers(beat);
+    context.UpdateActor(vec2(0, 0));
 
     gl.Clear(GL_COLOR_BUFFER_BIT);
     context.DrawBackground();
     context.DrawElements();
+    context.DrawActor();
     sfWindow_display(win);
   }
   return 0;

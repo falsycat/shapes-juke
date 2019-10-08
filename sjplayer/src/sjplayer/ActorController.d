@@ -1,13 +1,16 @@
 /// License: MIT
 module sjplayer.ActorController;
 
-import std.algorithm;
+import std.algorithm,
+       std.range.primitives;
 
 import gl4d;
 
 import sjscript;
 
-import sjplayer.Actor,
+import sjplayer.AbstractScheduledController,
+       sjplayer.Actor,
+       sjplayer.ContextBuilderInterface,
        sjplayer.ScheduledController,
        sjplayer.VarStoreInterface;
 
@@ -29,7 +32,7 @@ class ActorController : ActorScheduledController {
   }
 
   ///
-  void Manipulate(vec2 accel) {
+  void Update(vec2 accel) {
     actor_.accel += accel;
 
     actor_.accel.x = actor_.accel.x.clamp(-MaxAccel, MaxAccel);
@@ -56,3 +59,33 @@ private alias ActorScheduledController = ScheduledController!(
       "color_a": "color.a",
     ]
   );
+
+///
+struct ActorControllerFactory {
+ public:
+  ///
+  this(in VarStoreInterface varstore, Actor actor) {
+    varstore_ = varstore;
+    actor_    = actor;
+  }
+
+  ///
+  void Create(R)(R params, ContextBuilderInterface builder)
+      if (isInputRange!R && is(ElementType!R == ParametersBlock)) {
+    product_ = new ActorController(
+        actor_, varstore_, SortParametersBlock(params));
+    builder.AddScheduledController(product_);
+  }
+
+  ///
+  @property ActorController product() {
+    return product_;
+  }
+
+ private:
+  const VarStoreInterface varstore_;
+
+  Actor actor_;
+
+  ActorController product_;
+}

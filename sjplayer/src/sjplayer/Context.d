@@ -5,9 +5,13 @@ import std.algorithm,
        std.array,
        std.typecons;
 
+import gl4d;
+
 import sjscript;
 
-import sjplayer.Background,
+import sjplayer.Actor,
+       sjplayer.ActorController,
+       sjplayer.Background,
        sjplayer.ContextBuilderInterface,
        sjplayer.ElementDrawerInterface,
        sjplayer.ElementInterface,
@@ -23,11 +27,16 @@ class Context {
     auto builder  = new Builder;
     auto varstore = new BlackHole!VarStoreInterface;
 
+    actor_      = new Actor(programs.Get!ActorProgram);
     background_ = new Background(programs.Get!BackgroundProgram);
 
     import sjplayer.BackgroundScheduledController,
            sjplayer.CircleElementScheduledController;
     auto factories = tuple(
+        tuple(
+          "actor",
+          ActorControllerFactory(varstore, actor_),
+        ),
         tuple(
           "background",
           BackgroundScheduledControllerFactory(varstore, background_),
@@ -37,7 +46,7 @@ class Context {
           CircleElementScheduledControllerFactory(programs, varstore),
         ),
       );
-    foreach (factory; factories) {
+    foreach (ref factory; factories) {
       factory[1].
         Create(params.filter!(x => x.name == factory[0]), builder);
     }
@@ -45,6 +54,8 @@ class Context {
     elements_    = builder.elements[];
     drawers_     = builder.drawers[];
     controllers_ = builder.controllers[];
+
+    actor_controller_ = factories[0][1].product;
   }
   ///
   ~this() {
@@ -59,6 +70,16 @@ class Context {
   ElementInterface.DamageCalculationResult CalculateDamage() const {
     assert(false);  // TODO:
   }
+
+  ///
+  void UpdateActor(vec2 accel) {
+    actor_controller_.Update(accel);
+  }
+  ///
+  void OperateScheduledControllers(float time) {
+    controllers_.each!(x => x.Operate(time));
+  }
+
   ///
   void DrawBackground() {
     background_.Draw();
@@ -68,8 +89,8 @@ class Context {
     drawers_.each!(x => x.Draw());
   }
   ///
-  void OperateScheduledControllers(float time) {
-    controllers_.each!(x => x.Operate(time));
+  void DrawActor() {
+    actor_.Draw();
   }
 
  private:
@@ -89,7 +110,14 @@ class Context {
     Appender!(ScheduledControllerInterface[]) controllers;
   }
 
+  Actor actor_;
+  invariant(actor_);
+
+  ActorController actor_controller_;
+  invariant(actor_controller_);
+
   Background background_;
+  invariant(background_);
 
   ElementInterface[] elements_;
 

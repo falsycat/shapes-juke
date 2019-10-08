@@ -10,12 +10,12 @@ import sjscript;
 
 import sjplayer.Background,
        sjplayer.ContextBuilderInterface,
-       sjplayer.ElementScheduledController,
+       sjplayer.ScheduledController,
        sjplayer.VarStoreInterface,
        sjplayer.util.Period;
 
 ///
-alias BackgroundScheduledController = ElementScheduledController!(
+alias BackgroundScheduledController = ScheduledController!(
     Background,
     [
       "inner_r": "inner_color.r",

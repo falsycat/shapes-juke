@@ -4,10 +4,10 @@ module sjplayer.CircleElementScheduledController;
 import std.typecons;
 
 import sjplayer.CircleElement,
-       sjplayer.ElementScheduledController;
+       sjplayer.ScheduledController;
 
 ///
-alias CircleElementScheduledController = ElementScheduledController!(
+alias CircleElementScheduledController = ScheduledController!(
     CircleElement,
     [
       "damage":       "damage",

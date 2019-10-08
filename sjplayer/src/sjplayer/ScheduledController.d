@@ -1,5 +1,5 @@
 /// License: MIT
-module sjplayer.ElementScheduledController;
+module sjplayer.ScheduledController;
 
 import std.algorithm,
        std.array,
@@ -23,7 +23,7 @@ import sjplayer.ContextBuilderInterface,
        sjplayer.util.Period;
 
 ///
-class ElementScheduledController(
+class ScheduledController(
     Element, string[string] ParameterNameMap) :
   AbstractScheduledControllerWithOperationImpl {
  public:

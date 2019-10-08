@@ -2,7 +2,9 @@
 module sjplayer.AbstractScheduledController;
 
 import std.algorithm,
+       std.array,
        std.exception,
+       std.range.primitives,
        std.typecons;
 
 import sjscript;
@@ -102,4 +104,17 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
   size_t next_operation_index_;
 
   float[string] user_vars_;
+}
+
+///
+ParametersBlock[] SortParametersBlock(R)(R params)
+    if (isInputRange!R && is(ElementType!R == ParametersBlock)) {
+  auto result = params.array;
+  result.sort!"a.period.start < b.period.start";
+
+  auto before = Period(-1, 0);
+  foreach (param; result) {
+    (!param.period.IsPeriodIntersectedToPeriod(before)).enforce();
+  }
+  return result;
 }

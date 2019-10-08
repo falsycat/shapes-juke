@@ -8,7 +8,8 @@ import std.algorithm,
 
 import sjscript;
 
-import sjplayer.Background,
+import sjplayer.AbstractScheduledController,
+       sjplayer.Background,
        sjplayer.ContextBuilderInterface,
        sjplayer.ScheduledController,
        sjplayer.VarStoreInterface,
@@ -45,16 +46,8 @@ struct BackgroundScheduledControllerFactory {
   ///
   void Create(R)(R params, ContextBuilderInterface builder)
       if (isInputRange!R && is(ElementType!R == ParametersBlock)) {
-    auto params_array = params.array;
-    params_array.sort!"a.period.start < b.period.start";
-
-    auto before = Period(-1, 0);
-    foreach (param; params_array) {
-      (!param.period.IsPeriodIntersectedToPeriod(before)).enforce();
-    }
-
     auto ctrl = new BackgroundScheduledController(
-        background_, varstore_, params_array);
+        background_, varstore_, SortParametersBlock(params));
     builder.AddScheduledController(ctrl);
   }
 

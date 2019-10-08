@@ -4,7 +4,8 @@ module sjplayer.ProgramSet;
 import std.meta,
        std.typecons;
 
-import sjplayer.Background,
+import sjplayer.Actor,
+       sjplayer.Background,
        sjplayer.CircleElement;
 
 ///
@@ -12,6 +13,7 @@ class ProgramSet {
  public:
   ///
   alias Programs = Tuple!(
+      ActorProgram,
       BackgroundProgram,
       CircleElementProgram
     );

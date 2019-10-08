@@ -56,15 +56,17 @@ class ActorProgram {
 
     out vec4 pixel_;
 
-    float line(float ux, float px, float a) {
+    float line(float u, float p, float a) {
       return
-        (1 - smoothstep(0, 0.003, abs(ux - px)));
+        (1-smoothstep(0, 0.003, abs(u-p)));
     }
 
     void main() {
+      float alpha =
+        line(uv_.x, pos.x, accel.x) +
+        line(uv_.y, pos.y, accel.y);
       pixel_    = color;
-      pixel_.a *=
-        clamp(0, 1, line(uv_.y, pos.y, accel.y) + line(uv_.x, pos.x, accel.x));
+      pixel_.a *= clamp(alpha, 0, 1);
     }
   };
 

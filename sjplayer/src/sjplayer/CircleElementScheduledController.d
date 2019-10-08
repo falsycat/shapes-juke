@@ -22,6 +22,7 @@ alias CircleElementScheduledController = ElementScheduledController!(
   );
 static assert(CircleElementScheduledController.AliveManagementAvailable);
 static assert(CircleElementScheduledController.MatrixModificationAvailable);
+static assert(CircleElementScheduledController.AutoInitializationAvailable);
 
 ///
 alias CircleElementScheduledControllerFactory =

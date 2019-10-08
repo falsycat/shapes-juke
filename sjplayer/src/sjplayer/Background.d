@@ -9,13 +9,11 @@ class Background {
   ///
   this(BackgroundProgram program) {
     program_ = program;
-  }
 
-  ///
-  void Initialize() {
     inner_color = vec4(0, 0, 0, 0);
     outer_color = vec4(0, 0, 0, 0);
   }
+
   ///
   void Draw() {
     program_.Draw(inner_color, outer_color);

@@ -35,6 +35,9 @@ class ElementScheduledController(
   enum MatrixModificationAvailable =
     is(typeof((Element e) => e.matrix)) &&
     is(ReturnType!((Element e) => e.matrix) == mat3);
+  ///
+  enum AutoInitializationAvailable =
+    is(typeof((Element e) => e.Initialize()));
 
   ///
   this(
@@ -47,7 +50,9 @@ class ElementScheduledController(
 
  protected:
   override void PrepareOperation(ref in ParametersBlock params) {
-    element_.Initialize();
+    static if (AutoInitializationAvailable) {
+      element_.Initialize();
+    }
     static if (AliveManagementAvailable) {
       element_.alive = true;
     }

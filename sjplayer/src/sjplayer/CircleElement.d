@@ -7,7 +7,8 @@ import std.algorithm,
 
 import gl4d;
 
-import sjplayer.ElementInterface;
+import sjplayer.ElementDrawerInterface,
+       sjplayer.ElementInterface;
 
 ///
 class CircleElement : ElementInterface {
@@ -24,7 +25,8 @@ class CircleElement : ElementInterface {
     align(1) vec4 color = vec4(0, 0, 0, 0);
   }
 
-  override void Initialize() {
+  ///
+  void Initialize() {
     alive        = false;
     damage       = 0;
     nearness_coe = 0;

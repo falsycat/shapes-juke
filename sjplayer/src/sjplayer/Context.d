@@ -9,6 +9,7 @@ import sjscript;
 
 import sjplayer.Background,
        sjplayer.ContextBuilderInterface,
+       sjplayer.ElementDrawerInterface,
        sjplayer.ElementInterface,
        sjplayer.ProgramSet,
        sjplayer.ScheduledControllerInterface,

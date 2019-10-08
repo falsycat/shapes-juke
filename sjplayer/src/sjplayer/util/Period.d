@@ -4,7 +4,7 @@ module sjplayer.util.Period;
 import sjscript;
 
 ///
-bool IsTimeInPeriod(float time, in Period period) {
+bool IsTimeInPeriod(in Period period, float time) {
   return period.start <= time && time < period.end;
 }
 

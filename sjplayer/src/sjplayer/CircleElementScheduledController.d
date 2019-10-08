@@ -4,6 +4,7 @@ module sjplayer.CircleElementScheduledController;
 import std.typecons;
 
 import sjplayer.CircleElement,
+       sjplayer.ElementScheduledControllerFactory,
        sjplayer.ScheduledController;
 
 ///

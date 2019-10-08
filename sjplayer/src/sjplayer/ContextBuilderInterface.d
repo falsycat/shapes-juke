@@ -1,7 +1,8 @@
 /// License: MIT
 module sjplayer.ContextBuilderInterface;
 
-import sjplayer.ElementInterface,
+import sjplayer.ElementDrawerInterface,
+       sjplayer.ElementInterface,
        sjplayer.ScheduledControllerInterface;
 
 ///

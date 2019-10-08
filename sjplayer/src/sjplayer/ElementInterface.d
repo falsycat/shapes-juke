@@ -15,15 +15,5 @@ interface ElementInterface {
   }
 
   ///
-  void Initialize();
-
-  ///
   DamageCalculationResult CalculateDamage(vec2 p1, vec2 p2) const;
-}
-
-///
-interface ElementDrawerInterface {
- public:
-  ///
-  void Draw();
 }

@@ -17,18 +17,18 @@ import sjplayer.Actor,
        sjplayer.ElementInterface,
        sjplayer.ProgramSet,
        sjplayer.ScheduledControllerInterface,
-       sjplayer.VarStoreInterface;
+       sjplayer.VarStore;
 
 ///
 class Context {
  public:
   ///
   this(ParametersBlock[] params, ProgramSet programs) {
-    auto builder  = new Builder;
-    auto varstore = new BlackHole!VarStoreInterface;
-
     actor_      = new Actor(programs.Get!ActorProgram);
     background_ = new Background(programs.Get!BackgroundProgram);
+
+    auto builder  = new Builder;
+    auto varstore = new VarStore(actor_);
 
     import sjplayer.BackgroundScheduledController,
            sjplayer.CircleElementScheduledController;

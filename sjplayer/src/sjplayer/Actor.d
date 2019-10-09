@@ -12,6 +12,9 @@ class Actor {
     speed = vec2(0, 0);
     color = vec4(0, 0, 0, 0);
 
+    clip_lefttop     = vec2(0, 0);
+    clip_rightbottom = vec2(0, 0);
+
     program_ = program;
   }
 
@@ -20,9 +23,17 @@ class Actor {
     program_.Draw(pos, speed, color);
   }
 
+  ///
   vec2 pos;
+  ///
   vec2 speed;
+  ///
   vec4 color;
+
+  ///
+  vec2 clip_lefttop;
+  ///
+  vec2 clip_rightbottom;
 
  private:
   ActorProgram program_;

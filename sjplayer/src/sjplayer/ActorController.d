@@ -50,7 +50,13 @@ class ActorController : ActorScheduledController, ActorControllerInterface {
     }
 
     actor_.pos += actor_.speed;
-    // TODO: clamping the actor position
+
+    const left_edge   = -1 + actor_.clip_lefttop.x;
+    const right_edge  = 1 - actor_.clip_rightbottom.x;
+    const top_edge    = 1 - actor_.clip_lefttop.y;
+    const bottom_edge = -1 + actor_.clip_rightbottom.y;
+    actor_.pos.x = actor_.pos.x.clamp(left_edge, right_edge);
+    actor_.pos.y = actor_.pos.y.clamp(bottom_edge, top_edge);
 
     actor_.speed *= 1-SpeedAttenuation;
   }
@@ -72,6 +78,11 @@ private alias ActorScheduledController = ScheduledController!(
       "color_g": "color.g",
       "color_b": "color.b",
       "color_a": "color.a",
+
+      "clip_left":   "clip_lefttop.x",
+      "clip_top":    "clip_lefttop.y",
+      "clip_right":  "clip_rightbottom.x",
+      "clip_bottom": "clip_rightbottom.y",
     ]
   );
 

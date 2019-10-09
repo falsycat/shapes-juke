@@ -1,11 +1,22 @@
 /// License: MIT
 module sjplayer.PostEffect;
 
+import std.string;
+
 import gl4d;
 
 ///
 class PostEffect {
  public:
+  ///
+  struct Instance {
+   public:
+    ///
+    align(1) vec2 clip_lefttop = vec2(1, 1);
+    ///
+    align(1) vec2 clip_righttop = vec2(1, 1);
+  }
+
   ///
   this(PostEffectProgram program, vec2i sz) {
     size_    = sz;
@@ -48,8 +59,10 @@ class PostEffect {
   }
   ///
   void DrawFramebuffer() {
-    program_.Draw(tex_, sampler_, size_);
+    program_.Draw(tex_, sampler_, instance, size_);
   }
+
+  Instance instance;
 
  private:
   const vec2i size_;
@@ -77,7 +90,7 @@ class PostEffectProgram {
     out vec2 uv_;
 
     void main() {
-      uv_         = (vert+vec2(1, 1)) / 2;
+      uv_         = vert;
       gl_Position = vec4(vert, 0, 1);
     }
   };
@@ -86,12 +99,24 @@ class PostEffectProgram {
     layout(location = 0) uniform sampler2DRect fb;
     layout(location = 1) uniform ivec2         fb_size;
 
+    layout(std140) uniform Instance {
+      vec2  clip_lefttop;
+      vec2  clip_rightbottom;
+    } instance;
+
     in vec2  uv_;
 
     out vec4 pixel_;
 
     void main() {
-      pixel_ = texture(fb, fb_size * uv_);
+      vec2 tex_uv = (uv_ + vec2(1, 1)) / 2;
+      pixel_ = texture(fb, fb_size * tex_uv);
+
+      pixel_.a *=
+        step(-instance.clip_lefttop.x, uv_.x) *
+        (1-step(instance.clip_rightbottom.x, uv_.x)) *
+        (1-step(instance.clip_lefttop.y, uv_.y)) *
+        step(-instance.clip_rightbottom.y, uv_.x);
     }
   };
 
@@ -105,6 +130,9 @@ class PostEffectProgram {
 
     vao_   = VertexArray.Create();
     verts_ = ArrayBuffer.Create();
+    ubo_   = UniformBuffer.Create();
+
+    ubo_index_ = gl.GetUniformBlockIndex(program_.id, "Instance".toStringz);
 
     vao_.Bind();
     VertexArrayAttacher attacher;
@@ -124,16 +152,34 @@ class PostEffectProgram {
       usage = GL_STATIC_DRAW;
       Allocate(verts_);
     }
+
+    ubo_.Bind();
+    UniformBufferAllocator ub_allocator;
+    with (ub_allocator) {
+      size  = PostEffect.Instance.sizeof;
+      usage = GL_DYNAMIC_DRAW;
+      Allocate(ubo_);
+    }
   }
 
   ///
-  void Draw(ref TextureRectRef fb, ref SamplerRef sampler, vec2i size) {
+  void Draw(
+      ref TextureRectRef fb,
+      ref SamplerRef sampler,
+      ref PostEffect.Instance instance,
+      vec2i size) {
     program_.Use();
 
     fb.BindToUnit(GL_TEXTURE0);
     sampler.Bind(0);
     program_.uniform!0 = 0;
     program_.uniform!1 = size;
+
+    {
+      auto ptr = ubo_.MapToWrite!(PostEffect.Instance);
+      *ptr = instance;
+    }
+    ubo_.BindForUniformBlock(ubo_index_);
 
     vao_.Bind();
     gl.DrawArrays(GL_TRIANGLE_FAN, 0, 4);
@@ -145,4 +191,8 @@ class PostEffectProgram {
   ArrayBufferRef verts_;
 
   VertexArrayRef vao_;
+
+  UniformBufferRef ubo_;
+
+  const GLuint ubo_index_;
 }

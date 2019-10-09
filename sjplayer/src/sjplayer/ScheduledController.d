@@ -70,8 +70,13 @@ class ScheduledController(
         case map_name:
           return mixin("target_."~code);
       }
-      default: return super.GetVariable(name);
+      default:
     }
+    static if (MatrixModificationAvailable) {
+      const value = matrix_factory_.GetValueByName(name);
+      if (!value.isNull) return value.get;
+    }
+    return super.GetVariable(name);
   }
   override void SetParameter(ref in Parameter param, ref in VarStore vars) {
     switch (param.name) {

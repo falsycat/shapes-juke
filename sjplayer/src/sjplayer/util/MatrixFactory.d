@@ -1,6 +1,8 @@
 /// License: MIT
 module sjplayer.util.MatrixFactory;
 
+import std.typecons;
+
 import gl4d;
 
 ///
@@ -15,6 +17,20 @@ struct MatrixFactory {
     m.rotatez(rotation.z);
     m.translate(translation.x, translation.y, translation.z);
     return m;
+  }
+
+  ///
+  Nullable!float GetValueByName(string name) const {
+    switch (name) {
+      case "scale_x":       return Nullable!float(scale.x);
+      case "scale_y":       return Nullable!float(scale.y);
+      case "rotation_x":    return Nullable!float(rotation.x);
+      case "rotation_y":    return Nullable!float(rotation.y);
+      case "rotation_z":    return Nullable!float(rotation.z);
+      case "translation_x": return Nullable!float(translation.x);
+      case "translation_y": return Nullable!float(translation.y);
+      default: return Nullable!float.init;
+    }
   }
 
   ///

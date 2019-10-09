@@ -12,9 +12,9 @@ class PostEffect {
   struct Instance {
    public:
     ///
-    align(1) vec2 clip_lefttop = vec2(1, 1);
+    align(1) vec2 clip_lefttop = vec2(0, 0);
     ///
-    align(1) vec2 clip_rightbottom = vec2(1, 1);
+    align(1) vec2 clip_rightbottom = vec2(0, 0);
   }
 
   ///
@@ -115,10 +115,10 @@ class PostEffectProgram {
       pixel_ = texture(fb, fb_size * tex_uv);
 
       pixel_.a *=
-        step(-instance.clip_lefttop.x, uv_.x) *
-        (1-step(instance.clip_rightbottom.x, uv_.x)) *
-        (1-step(instance.clip_lefttop.y, uv_.y)) *
-        step(-instance.clip_rightbottom.y, uv_.x);
+        step(-1+instance.clip_lefttop.x, uv_.x) *
+        (1-step(1-instance.clip_rightbottom.x, uv_.x)) *
+        (1-step(1-instance.clip_lefttop.y, uv_.y)) *
+        step(-1+instance.clip_rightbottom.y, uv_.y);
     }
   };
 

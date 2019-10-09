@@ -51,6 +51,7 @@ int main(string[] args) {
       "nearness: %f (%f)".writefln(dmg.nearness, beat);
     }
 
+    gl.Clear(GL_COLOR_BUFFER_BIT);
     context.StartDrawing();
 
     context.DrawBackground();

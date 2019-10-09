@@ -9,13 +9,13 @@ import gl4d;
 struct MatrixFactory {
  public:
   ///
-  @property mat3 Create() const {
+  mat3 Create() const {
     auto m = mat3.identity;
     m.scale(scale.x, scale.y, scale.z);
     m.rotatex(rotation.x);
     m.rotatey(rotation.y);
     m.rotatez(rotation.z);
-    m.translate(translation.x, translation.y, translation.z);
+    m.translate(translation.x, translation.y, 1);
     return m;
   }
 
@@ -38,5 +38,5 @@ struct MatrixFactory {
   ///
   vec3 rotation = vec3(0, 0, 0);
   ///
-  vec3 translation = vec3(0, 0, 0);
+  vec2 translation = vec2(0, 0);
 }

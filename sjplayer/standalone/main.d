@@ -25,7 +25,8 @@ int main(string[] args) {
   auto programs = new ProgramSet;
   scope(exit) programs.destroy();
 
-  auto context = script_file.readText.CreateContextFromText(programs);
+  auto context = script_file.readText.
+    CreateContextFromText(vec2i(600, 600), programs);
   scope(exit) context.destroy();
 
   while (true) {
@@ -39,10 +40,13 @@ int main(string[] args) {
     context.OperateScheduledControllers(beat);
     context.UpdateActor(vec2(0, 0));
 
-    gl.Clear(GL_COLOR_BUFFER_BIT);
+    context.StartDrawing();
+
     context.DrawBackground();
     context.DrawElements();
     context.DrawActor();
+
+    context.EndDrawing();
     sfWindow_display(win);
   }
   return 0;
@@ -70,6 +74,5 @@ sfWindow* Initialize() {
   gl.ApplyContext();
   gl.Enable(GL_BLEND);
   gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
   return win;
 }

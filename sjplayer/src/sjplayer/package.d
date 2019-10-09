@@ -1,6 +1,8 @@
 /// License: MIT
 module sjplayer;
 
+import gl4d;
+
 import sjscript;
 
 public {
@@ -9,11 +11,11 @@ public {
 }
 
 ///
-Context CreateContextFromText(string src, ProgramSet programs) {
-  return src.CreateScriptAst().CreateContextFromScriptAst(programs);
+Context CreateContextFromText(string src, vec2i window_size, ProgramSet programs) {
+  return src.CreateScriptAst().CreateContextFromScriptAst(window_size, programs);
 }
 ///
 Context CreateContextFromScriptAst(
-    ParametersBlock[] params, ProgramSet programs) {
-  return new Context(params, programs);
+    ParametersBlock[] params, vec2i window_size, ProgramSet programs) {
+  return new Context(params, window_size, programs);
 }

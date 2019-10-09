@@ -15,6 +15,7 @@ import sjplayer.Actor,
        sjplayer.ContextBuilderInterface,
        sjplayer.ElementDrawerInterface,
        sjplayer.ElementInterface,
+       sjplayer.PostEffect,
        sjplayer.ProgramSet,
        sjplayer.ScheduledControllerInterface,
        sjplayer.VarStore;
@@ -23,9 +24,10 @@ import sjplayer.Actor,
 class Context {
  public:
   ///
-  this(ParametersBlock[] params, ProgramSet programs) {
+  this(ParametersBlock[] params, vec2i window_size, ProgramSet programs) {
     actor_      = new Actor(programs.Get!ActorProgram);
     background_ = new Background(programs.Get!BackgroundProgram);
+    posteffect_ = new PostEffect(programs.Get!PostEffectProgram, window_size);
 
     auto builder  = new Builder;
     auto varstore = new VarStore(actor_);
@@ -60,10 +62,14 @@ class Context {
   ///
   ~this() {
     controllers_.each!destroy;
+    actor_controller_.destroy();
+
     drawers_.each!destroy;
     elements_.each!destroy;
 
+    actor_.destroy();
     background_.destroy();
+    posteffect_.destroy();
   }
 
   ///
@@ -78,6 +84,16 @@ class Context {
   ///
   void OperateScheduledControllers(float time) {
     controllers_.each!(x => x.Operate(time));
+  }
+
+  ///
+  void StartDrawing() {
+    posteffect_.BindFramebuffer();
+  }
+  ///
+  void EndDrawing() {
+    posteffect_.UnbindFramebuffer();
+    posteffect_.DrawFramebuffer();
   }
 
   ///
@@ -118,6 +134,9 @@ class Context {
 
   Background background_;
   invariant(background_);
+
+  PostEffect posteffect_;
+  invariant(posteffect_);
 
   ElementInterface[] elements_;
 

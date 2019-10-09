@@ -19,7 +19,11 @@ import sjplayer.AbstractScheduledController,
 class ActorController : ActorScheduledController, ActorControllerInterface {
  public:
   ///
-  enum MaxAccel = 1e-1;
+  enum AccelAdjustment = 0.005;
+  ///
+  enum MaxSpeed = 0.03;
+  ///
+  enum SpeedAttenuation = 0.05;
 
   ///
   this(
@@ -30,17 +34,25 @@ class ActorController : ActorScheduledController, ActorControllerInterface {
     actor_      = actor;
     varstore_   = varstore;
     operations_ = operations;
+
+    accel_ = vec2(0, 0);
   }
 
   override void Accelarate(vec2 accel) {
-    actor_.accel += accel;
+    accel_ = accel * AccelAdjustment;
   }
   override void Update() {
-    actor_.accel.x = actor_.accel.x.clamp(-MaxAccel, MaxAccel);
-    actor_.accel.y = actor_.accel.y.clamp(-MaxAccel, MaxAccel);
+    actor_.speed += accel_;
 
-    actor_.pos += actor_.accel;
+    const speed_length = actor_.speed.length;
+    if (speed_length > MaxSpeed) {
+      actor_.speed = actor_.speed / speed_length * MaxSpeed;
+    }
+
+    actor_.pos += actor_.speed;
     // TODO: clamping the actor position
+
+    actor_.speed *= 1-SpeedAttenuation;
   }
 
  private:
@@ -49,6 +61,8 @@ class ActorController : ActorScheduledController, ActorControllerInterface {
   const VarStoreInterface varstore_;
 
   const ParametersBlock[] operations_;
+
+  vec2 accel_;
 }
 
 private alias ActorScheduledController = ScheduledController!(

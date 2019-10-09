@@ -9,7 +9,7 @@ class Actor {
   ///
   this(ActorProgram program) {
     pos   = vec2(0, 0);
-    accel = vec2(0, 0);
+    speed = vec2(0, 0);
     color = vec4(0, 0, 0, 0);
 
     program_ = program;
@@ -17,11 +17,11 @@ class Actor {
 
   ///
   void Draw() {
-    program_.Draw(pos, accel, color);
+    program_.Draw(pos, speed, color);
   }
 
   vec2 pos;
-  vec2 accel;
+  vec2 speed;
   vec4 color;
 
  private:
@@ -49,22 +49,22 @@ class ActorProgram {
   ///
   enum FragmentShaderSrc = ShaderHeader ~ q{
     layout(location = 0) uniform vec2 pos;
-    layout(location = 1) uniform vec2 accel;
+    layout(location = 1) uniform vec2 speed;
     layout(location = 2) uniform vec4 color;
 
     in vec2  uv_;
 
     out vec4 pixel_;
 
-    float line(float u, float p, float a) {
+    float line(float u, float p, float s) {
       return
         (1-smoothstep(0, 0.003, abs(u-p)));
     }
 
     void main() {
       float alpha =
-        line(uv_.x, pos.x, accel.x) +
-        line(uv_.y, pos.y, accel.y);
+        line(uv_.x, pos.x, speed.x) +
+        line(uv_.y, pos.y, speed.y);
       pixel_    = color;
       pixel_.a *= clamp(alpha, 0, 1);
     }
@@ -102,10 +102,10 @@ class ActorProgram {
   }
 
   ///
-  void Draw(vec2 pos, vec2 accel, vec4 color) {
+  void Draw(vec2 pos, vec2 speed, vec4 color) {
     program_.Use();
     program_.uniform!0 = pos;
-    program_.uniform!1 = accel;
+    program_.uniform!1 = speed;
     program_.uniform!2 = color;
 
     vao_.Bind();

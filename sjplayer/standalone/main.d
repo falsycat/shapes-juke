@@ -37,6 +37,8 @@ int main(string[] args) {
     const msecs = sfMusic_getPlayingOffset(music).microseconds * 1e-6f;
     const beat  = msecs/60f * bpm;
 
+    context.actor.Accelarate(GetAccelarationInput());
+
     context.OperateScheduledControllers(beat);
     context.actor.Update();
     context.posteffect.Update();
@@ -51,6 +53,23 @@ int main(string[] args) {
     sfWindow_display(win);
   }
   return 0;
+}
+
+vec2 GetAccelarationInput() {
+  auto result = vec2(0, 0);
+  if (sfKeyboard_isKeyPressed(sfKeyLeft)) {
+    result.x -= 1;
+  }
+  if (sfKeyboard_isKeyPressed(sfKeyRight)) {
+    result.x += 1;
+  }
+  if (sfKeyboard_isKeyPressed(sfKeyUp)) {
+    result.y += 1;
+  }
+  if (sfKeyboard_isKeyPressed(sfKeyDown)) {
+    result.y -= 1;
+  }
+  return result;
 }
 
 sfWindow* Initialize() {

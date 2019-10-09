@@ -6,7 +6,8 @@ import std.meta,
 
 import sjplayer.Actor,
        sjplayer.Background,
-       sjplayer.CircleElement;
+       sjplayer.CircleElement,
+       sjplayer.PostEffect;
 
 ///
 class ProgramSet {
@@ -15,7 +16,8 @@ class ProgramSet {
   alias Programs = Tuple!(
       ActorProgram,
       BackgroundProgram,
-      CircleElementProgram
+      CircleElementProgram,
+      PostEffectProgram,
     );
 
   ///

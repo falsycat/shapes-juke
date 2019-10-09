@@ -43,6 +43,14 @@ int main(string[] args) {
     context.actor.Update();
     context.posteffect.Update();
 
+    const dmg = context.CalculateDamage();
+    if (dmg.damage != 0) {
+      "damage: %f (%f)".writefln(dmg.damage, beat);
+    }
+    if (dmg.nearness != 0) {
+      "nearness: %f (%f)".writefln(dmg.nearness, beat);
+    }
+
     context.StartDrawing();
 
     context.DrawBackground();

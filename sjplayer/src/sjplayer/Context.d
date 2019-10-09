@@ -81,7 +81,14 @@ class Context {
 
   ///
   ElementInterface.DamageCalculationResult CalculateDamage() const {
-    assert(false);  // TODO:
+    auto result = ElementInterface.DamageCalculationResult(0, 0);
+    elements_.
+      map!(x => x.CalculateDamage(actor_.pos, actor_.pos - actor_.speed)).
+      each!((x) {
+          result.damage   += x.damage;
+          result.nearness += x.nearness;
+        });
+    return result;
   }
 
   ///

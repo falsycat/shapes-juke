@@ -3,6 +3,7 @@ module sjplayer.CircleElement;
 
 import std.algorithm,
        std.conv,
+       std.math,
        std.exception;
 
 import gl4d;
@@ -34,7 +35,36 @@ class CircleElement : ElementInterface {
   }
 
   override DamageCalculationResult CalculateDamage(vec2 p1, vec2 p2) const {
-    // TODO:
+    if (!alive) return DamageCalculationResult(0, 0);
+
+    const m = matrix.transposed.inverse;
+
+    const a = (m * vec3(p1, 1)).xy;
+    const b = (m * vec3(p2, 1)).xy;
+    const s = b - a;
+
+    const s_length = s.length;
+    if (s_length == 0) {
+      // TODO: nearness calculation
+      return DamageCalculationResult(a.length < 1? damage: 0, 0);
+    }
+
+    const d = cross(vec3(s, 0), vec3(a, 0)).length / s_length;
+    if (d > 1) {
+      const nearness = (1 - (d-1).min(1f)).pow(2);
+      return DamageCalculationResult(0, nearness * nearness_coe);
+    }
+
+    const a_length = a.length;
+    const b_length = b.length;
+
+    const hit =
+      a.dot(s) * b.dot(s) <= 0 ||
+      a_length < 1 ||
+      b_length < 1;
+    if (hit) return DamageCalculationResult(damage, 0);
+
+    // TODO: nearness calculation
     return DamageCalculationResult(0, 0);
   }
 

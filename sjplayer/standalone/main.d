@@ -38,7 +38,7 @@ int main(string[] args) {
     const beat  = msecs/60f * bpm;
 
     context.OperateScheduledControllers(beat);
-    context.UpdateActor(vec2(0, 0));
+    context.actor.Update();
 
     context.StartDrawing();
 

@@ -10,12 +10,13 @@ import sjscript;
 
 import sjplayer.AbstractScheduledController,
        sjplayer.Actor,
+       sjplayer.ActorControllerInterface,
        sjplayer.ContextBuilderInterface,
        sjplayer.ScheduledController,
        sjplayer.VarStoreInterface;
 
 ///
-class ActorController : ActorScheduledController {
+class ActorController : ActorScheduledController, ActorControllerInterface {
  public:
   ///
   enum MaxAccel = 1e-1;
@@ -31,10 +32,10 @@ class ActorController : ActorScheduledController {
     operations_ = operations;
   }
 
-  ///
-  void Update(vec2 accel) {
+  override void Accelarate(vec2 accel) {
     actor_.accel += accel;
-
+  }
+  override void Update() {
     actor_.accel.x = actor_.accel.x.clamp(-MaxAccel, MaxAccel);
     actor_.accel.y = actor_.accel.y.clamp(-MaxAccel, MaxAccel);
 

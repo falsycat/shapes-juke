@@ -11,6 +11,7 @@ import sjscript;
 
 import sjplayer.Actor,
        sjplayer.ActorController,
+       sjplayer.ActorControllerInterface,
        sjplayer.Background,
        sjplayer.ContextBuilderInterface,
        sjplayer.ElementDrawerInterface,
@@ -61,15 +62,15 @@ class Context {
   }
   ///
   ~this() {
-    controllers_.each!destroy;
     actor_controller_.destroy();
 
+    controllers_.each!destroy;
     drawers_.each!destroy;
     elements_.each!destroy;
 
-    actor_.destroy();
-    background_.destroy();
     posteffect_.destroy();
+    background_.destroy();
+    actor_.destroy();
   }
 
   ///
@@ -77,10 +78,6 @@ class Context {
     assert(false);  // TODO:
   }
 
-  ///
-  void UpdateActor(vec2 accel) {
-    actor_controller_.Update(accel);
-  }
   ///
   void OperateScheduledControllers(float time) {
     controllers_.each!(x => x.Operate(time));
@@ -90,12 +87,6 @@ class Context {
   void StartDrawing() {
     posteffect_.BindFramebuffer();
   }
-  ///
-  void EndDrawing() {
-    posteffect_.UnbindFramebuffer();
-    posteffect_.DrawFramebuffer();
-  }
-
   ///
   void DrawBackground() {
     background_.Draw();
@@ -107,6 +98,16 @@ class Context {
   ///
   void DrawActor() {
     actor_.Draw();
+  }
+  ///
+  void EndDrawing() {
+    posteffect_.UnbindFramebuffer();
+    posteffect_.DrawFramebuffer();
+  }
+
+  ///
+  @property inout(ActorControllerInterface) actor() inout {
+    return actor_controller_;
   }
 
  private:
@@ -126,21 +127,13 @@ class Context {
     Appender!(ScheduledControllerInterface[]) controllers;
   }
 
-  Actor actor_;
-  invariant(actor_);
-
-  ActorController actor_controller_;
-  invariant(actor_controller_);
-
+  Actor      actor_;
   Background background_;
-  invariant(background_);
-
   PostEffect posteffect_;
-  invariant(posteffect_);
 
-  ElementInterface[] elements_;
-
-  ElementDrawerInterface[] drawers_;
-
+  ElementInterface[]             elements_;
+  ElementDrawerInterface[]       drawers_;
   ScheduledControllerInterface[] controllers_;
+
+  ActorControllerInterface actor_controller_;
 }

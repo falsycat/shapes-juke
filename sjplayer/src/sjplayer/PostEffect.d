@@ -14,7 +14,7 @@ class PostEffect {
     ///
     align(1) vec2 clip_lefttop = vec2(1, 1);
     ///
-    align(1) vec2 clip_righttop = vec2(1, 1);
+    align(1) vec2 clip_rightbottom = vec2(1, 1);
   }
 
   ///
@@ -62,7 +62,9 @@ class PostEffect {
     program_.Draw(tex_, sampler_, instance, size_);
   }
 
+  ///
   Instance instance;
+  alias instance this;
 
  private:
   const vec2i size_;

@@ -39,6 +39,7 @@ int main(string[] args) {
 
     context.OperateScheduledControllers(beat);
     context.actor.Update();
+    context.posteffect.Update();
 
     context.StartDrawing();
 

@@ -79,7 +79,7 @@ struct ActorControllerFactory {
   }
 
   ///
-  @property ActorController product() {
+  @property ActorController product() out (r; r) {
     return product_;
   }
 

@@ -17,6 +17,8 @@ import sjplayer.Actor,
        sjplayer.ElementDrawerInterface,
        sjplayer.ElementInterface,
        sjplayer.PostEffect,
+       sjplayer.PostEffectController,
+       sjplayer.PostEffectControllerInterface,
        sjplayer.ProgramSet,
        sjplayer.ScheduledControllerInterface,
        sjplayer.VarStore;
@@ -41,6 +43,11 @@ class Context {
           ActorControllerFactory(varstore, actor_),
         ),
         tuple(
+          "posteffect",
+          PostEffectControllerFactory(varstore, posteffect_),
+        ),
+
+        tuple(
           "background",
           BackgroundScheduledControllerFactory(varstore, background_),
         ),
@@ -58,12 +65,11 @@ class Context {
     drawers_     = builder.drawers[];
     controllers_ = builder.controllers[];
 
-    actor_controller_ = factories[0][1].product;
+    actor_controller_      = factories[0][1].product;
+    posteffect_controller_ = factories[1][1].product;
   }
   ///
   ~this() {
-    actor_controller_.destroy();
-
     controllers_.each!destroy;
     drawers_.each!destroy;
     elements_.each!destroy;
@@ -109,6 +115,10 @@ class Context {
   @property inout(ActorControllerInterface) actor() inout {
     return actor_controller_;
   }
+  ///
+  @property inout(PostEffectControllerInterface) posteffect() inout {
+    return posteffect_controller_;
+  }
 
  private:
   class Builder : ContextBuilderInterface {
@@ -135,5 +145,6 @@ class Context {
   ElementDrawerInterface[]       drawers_;
   ScheduledControllerInterface[] controllers_;
 
-  ActorControllerInterface actor_controller_;
+  ActorControllerInterface      actor_controller_;
+  PostEffectControllerInterface posteffect_controller_;
 }

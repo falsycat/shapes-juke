@@ -36,6 +36,9 @@ class PostEffectController : PostEffectScheduledController, PostEffectController
 private alias PostEffectScheduledController = ScheduledController!(
     PostEffect,
     [
+      "raster_fineness": "raster_fineness",
+      "raster_width":    "raster_width",
+
       "clip_left":   "clip_lefttop.x",
       "clip_top":    "clip_lefttop.y",
       "clip_right":  "clip_rightbottom.x",

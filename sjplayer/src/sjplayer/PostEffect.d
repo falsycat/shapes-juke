@@ -12,6 +12,11 @@ class PostEffect {
   struct Instance {
    public:
     ///
+    align(1) float raster_fineness = 0;
+    ///
+    align(1) float raster_width = 0;
+
+    ///
     align(1) vec2 clip_lefttop = vec2(0, 0);
     ///
     align(1) vec2 clip_rightbottom = vec2(0, 0);
@@ -102,6 +107,9 @@ class PostEffectProgram {
     layout(location = 1) uniform ivec2         fb_size;
 
     layout(std140) uniform Instance {
+      float raster_fineness;
+      float raster_width;
+
       vec2  clip_lefttop;
       vec2  clip_rightbottom;
     } instance;
@@ -111,9 +119,16 @@ class PostEffectProgram {
     out vec4 pixel_;
 
     void main() {
-      vec2 tex_uv = (uv_ + vec2(1, 1)) / 2;
+      vec2 uv = uv_;
+
+      // raster
+      uv.x += sin(uv.y*instance.raster_fineness) * instance.raster_width;
+
+      // getting texel
+      vec2 tex_uv = (uv + vec2(1, 1)) / 2;
       pixel_ = texture(fb, fb_size * tex_uv);
 
+      // clipping
       pixel_.a *=
         step(-1+instance.clip_lefttop.x, uv_.x) *
         (1-step(1-instance.clip_rightbottom.x, uv_.x)) *

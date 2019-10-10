@@ -11,10 +11,9 @@ import sjscript.Token,
        sjscript.preprocess;
 
 public {
-  import sjscript.Expression,
-         sjscript.ParametersBlock,
-         sjscript.calculate,
-         sjscript.exception;
+  import sjscript.ParametersBlock,
+         sjscript.ScriptException,
+         sjscript.calculate;
 }
 
 ///

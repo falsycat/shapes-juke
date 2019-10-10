@@ -9,8 +9,8 @@ import std.algorithm,
        std.range.primitives,
        std.typecons;
 
-import sjscript.Token,
-       sjscript.exception;
+import sjscript.ScriptException,
+       sjscript.Token;
 
 ///
 unittest {
@@ -46,7 +46,7 @@ EOS";
     enum src = q"EOS
       $unknown_template
 EOS";
-    assertThrown!PreprocessException(Tokenize(src).array);
+    assertThrown!ScriptException(Tokenize(src).array);
   }
 }
 
@@ -243,5 +243,5 @@ private struct Preprocessor(R)
 
 private void enforce(T)(T val, string msg, lazy Token token,
     string file = __FILE__, size_t line = __LINE__) {
-  if (!val) throw new PreprocessException(msg, token, file, line);
+  if (!val) throw new ScriptException(msg, token.pos, file, line);
 }

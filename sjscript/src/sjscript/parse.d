@@ -8,6 +8,7 @@ import dast.parse;
 
 import sjscript.Expression,
        sjscript.ParametersBlock,
+       sjscript.ScriptException,
        sjscript.Token,
        sjscript.calculate;
 
@@ -33,7 +34,18 @@ EOS";
 ///
 ParametersBlock[] Parse(R)(R tokens)
     if (isInputRange!R && is(ElementType!R == Token)) {
-  return dast.parse.Parse!Whole(tokens, cast(RuleSet) null).blocks;
+  import dast.tokenize : TokenizeException;
+
+  alias Token = ElementType!R;
+  try {
+    return dast.parse.Parse!Whole(tokens, cast(RuleSet) null).blocks;
+
+  } catch (TokenizeException e) {
+    throw new ScriptException(e.msg, e.srcline, e.srcchar);
+
+  } catch (ParseException!Token e) {
+    throw new ScriptException(e.msg, e.token.pos);
+  }
 }
 
 private class RuleSet {

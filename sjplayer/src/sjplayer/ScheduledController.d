@@ -64,17 +64,17 @@ class ScheduledController(
     }
   }
 
-  override float GetVariable(string name) const {
+  override Nullable!float GetVariable(string name) const {
     switch (name) {
       static foreach (map_name, code; ParameterNameMap) {
         case map_name:
-          return mixin("target_."~code);
+          return Nullable!float(mixin("target_."~code));
       }
       default:
     }
     static if (MatrixModificationAvailable) {
       const value = matrix_factory_.GetValueByName(name);
-      if (!value.isNull) return value.get;
+      if (!value.isNull) return value;
     }
     return super.GetVariable(name);
   }

@@ -2,7 +2,8 @@
 module sjplayer.VarStore;
 
 import std.exception,
-       std.format;
+       std.format,
+       std.typecons;
 
 import sjplayer.Actor,
        sjplayer.VarStoreInterface;
@@ -15,12 +16,12 @@ class VarStore : VarStoreInterface {
     actor_ = actor;
   }
 
-  override float opIndex(string name) const {
+  override Nullable!float opIndex(string name) const {
     switch (name) {
-      case "actor_x": return actor_.pos.x;
-      case "actor_y": return actor_.pos.y;
+      case "actor_x": return Nullable!float(actor_.pos.x);
+      case "actor_y": return Nullable!float(actor_.pos.y);
 
-      default: throw new Exception("unknown variable %s".format(name));
+      default: return Nullable!float.init;
     }
   }
 

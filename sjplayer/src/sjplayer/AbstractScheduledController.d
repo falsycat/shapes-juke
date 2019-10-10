@@ -4,12 +4,14 @@ module sjplayer.AbstractScheduledController;
 import std.algorithm,
        std.array,
        std.exception,
+       std.format,
        std.range.primitives,
        std.typecons;
 
 import sjscript;
 
-import sjplayer.ScheduledControllerInterface,
+import sjplayer.ScriptRuntimeException,
+       sjplayer.ScheduledControllerInterface,
        sjplayer.VarStoreInterface,
        sjplayer.util.Parameter,
        sjplayer.util.Period;
@@ -34,23 +36,31 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
    public:
     float opIndex(string name) const {
       if (!time_.isNull && name == "time") return time_.get;
-      return this_.GetVariable(name);
+      const temp = this_.GetVariable(name);
+      if (!temp.isNull) return temp.get;
+
+      throw new ScriptRuntimeException(
+          "unknown variable `%s`".format(name), srcline_, srcchar_);
     }
    private:
     AbstractScheduledController this_;
     Nullable!float              time_;
+
+    size_t srcline_, srcchar_;
   }
 
   void PrepareOperation(ref in ParametersBlock params) {
     user_vars_.clear();
 
-    auto vars = VarStore(this);
+    auto vars = VarStore(
+        this, Nullable!float.init, params.pos.stline, params.pos.stchar);
     params.parameters.
       filter!(x => x.type == ParameterType.OnceAssign).
       each  !(x => SetParameter(x, vars));
   }
   void ProcessOperation(float time, ref in ParametersBlock params) {
-    auto vars = VarStore(this, time.nullable);
+    auto vars = VarStore(
+        this, time.nullable, params.pos.stline, params.pos.stchar);
     params.parameters.
       filter!(x => x.type != ParameterType.OnceAssign).
       each  !(x => SetParameter(x, vars));
@@ -58,13 +68,21 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
   void FinalizeOperation(ref in ParametersBlock params) {
   }
 
-  float GetVariable(string name) const {
-    if (name in user_vars_) return user_vars_[name];
-    return varstore_[name];
+  Nullable!float GetVariable(string name) const {
+    if (name in user_vars_) {
+      return Nullable!float(user_vars_[name]);
+    }
+    auto temp = varstore_[name];
+    if (!temp.isNull) return temp;
+    // TODO: std constants
+    return Nullable!float.init;
   }
   void SetParameter(ref in Parameter param, ref in VarStore vars) {
-    (param.name.length >= 2 && param.name[0..2] == "__").
-      enforce("user defined variables must be prefixed '__'");
+    if (param.name.length < 2 || param.name[0..2] != "__") {
+      throw new ScriptRuntimeException(
+          "user defined variables must be prefixed as '__'",
+          param.pos.stline, param.pos.stchar);
+    }
     user_vars_[param.name] = 0;
     param.CalculateParameter(user_vars_[param.name], vars);
   }
@@ -114,7 +132,11 @@ ParametersBlock[] SortParametersBlock(R)(R params)
 
   auto before = Period(-1, 0);
   foreach (param; result) {
-    (!param.period.IsPeriodIntersectedToPeriod(before)).enforce();
+    if (param.period.IsPeriodIntersectedToPeriod(before)) {
+      throw new ScriptRuntimeException(
+          "the period is duplicated",
+          param.pos.stline, param.pos.stchar);
+    }
   }
   return result;
 }

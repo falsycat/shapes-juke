@@ -1,7 +1,12 @@
 {
   "name": "shapes-juke",
 
-  "targetType": "none",
+  "targetPath": ".bin",
 
-  "subPackages": ["sjscript", "sjplayer"]
+  "dependencies": {
+    "sjplayer": {"path": "sjplayer"},
+
+    "gl4d": {"path": "thirdparty/gl4d"},
+    "derelict-sfml2": "~>4.0.0-beta.2"
+  }
 }

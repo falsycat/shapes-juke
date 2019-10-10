@@ -2,13 +2,11 @@
 module sjplayer.CircleElement;
 
 import std.algorithm,
-       std.conv,
-       std.math,
-       std.exception;
+       std.math;
 
 import gl4d;
 
-import sjplayer.ElementDrawerInterface,
+import sjplayer.ElementDrawer,
        sjplayer.ElementInterface;
 
 ///
@@ -80,69 +78,10 @@ class CircleElement : ElementInterface {
 }
 
 ///
-class CircleElementDrawer : ElementDrawerInterface {
- public:
-  ///
-  this(CircleElementProgram program, in CircleElement[] elements)
-      in (program)
-      in (elements.length > 0) {
-    program_  = program;
-    elements_ = elements;
-
-    vao_       = VertexArray.Create();
-    verts_     = ArrayBuffer.Create();
-    instances_ = ArrayBuffer.Create();
-
-    vao_.Bind();
-    program_.SetupVertexArray(vao_, verts_, instances_);
-
-    verts_.Bind();
-    ArrayBufferAllocator verts_allocator;
-    with (verts_allocator) {
-      const v = [vec2(-1, 1), vec2(1, 1), vec2(1, -1), vec2(-1, -1),];
-      data  = v.ptr;
-      size  = typeof(v[0]).sizeof * v.length;
-      usage = GL_STATIC_DRAW;
-      Allocate(verts_);
-    }
-
-    instances_.Bind();
-    ArrayBufferAllocator instance_allocator;
-    with (instance_allocator) {
-      size  = CircleElement.Instance.sizeof * elements.length;
-      usage = GL_DYNAMIC_DRAW;
-      Allocate(instances_);
-    }
-  }
-
-  override void Draw() {
-    size_t alive_count;
-
-    instances_.Bind();
-    ArrayBufferOverwriter instance_writer;
-    foreach (const element; elements_.filter!"a.alive") with (instance_writer) {
-      data   = &element.instance;
-      offset = alive_count++ * CircleElement.Instance.sizeof;
-      size   = CircleElement.Instance.sizeof;
-      Overwrite(instances_);
-    }
-
-    program_.Use();
-    vao_.Bind();
-
-    if (alive_count == 0) return;
-    gl.DrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, alive_count.to!int);
-  }
-
- private:
-  CircleElementProgram program_;
-
-  const CircleElement[] elements_;
-
-  ArrayBufferRef verts_;
-  ArrayBufferRef instances_;
-  VertexArrayRef vao_;
-}
+alias CircleElementDrawer = ElementDrawer!(
+    CircleElementProgram,
+    CircleElement,
+    [vec2(-1, 1), vec2(1, 1), vec2(1, -1), vec2(-1, -1)]);
 
 ///
 class CircleElementProgram {

@@ -55,7 +55,7 @@ class ScheduledController(
   override void ProcessOperation(float time, ref in ParametersBlock params) {
     super.ProcessOperation(time, params);
     static if (MatrixModificationAvailable) {
-      target_.matrix = matrix_factory_.Create().transposed;
+      target_.matrix = matrix_factory_.Create();
     }
   }
   override void FinalizeOperation(ref in ParametersBlock params) {

@@ -14,7 +14,7 @@ class CircleElement : ElementInterface {
  public:
   ///
   static struct Instance {
-    /// this should be transposed
+    ///
     align(1) mat3 matrix = mat3.identity;
     ///
     align(1) float weight = 1;
@@ -35,7 +35,7 @@ class CircleElement : ElementInterface {
   override DamageCalculationResult CalculateDamage(vec2 p1, vec2 p2) const {
     if (!alive) return DamageCalculationResult(0, 0);
 
-    const m = matrix.transposed.inverse;
+    const m = matrix.inverse;
 
     const a = (m * vec3(p1, 1)).xy;
     const b = (m * vec3(p2, 1)).xy;
@@ -107,7 +107,7 @@ class CircleElementProgram {
     out vec4  color_;
 
     void main() {
-      mat3 m   = mat3(m1, m2, m3);
+      mat3 m   = transpose(mat3(m1, m2, m3));
       vec2 pos = (m * vec3(vert, 1)).xy;
 
       uv_     = vert;

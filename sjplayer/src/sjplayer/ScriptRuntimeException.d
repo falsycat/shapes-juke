@@ -1,8 +1,6 @@
 /// License: MIT
 module sjplayer.ScriptRuntimeException;
 
-import sjscript;
-
 ///
 class ScriptRuntimeException : Exception {
  public:

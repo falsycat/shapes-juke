@@ -20,15 +20,22 @@ int main(string[] args) {
 
   auto music = sfMusic_createFromFile(music_file.toStringz).enforce;
   scope(exit) sfMusic_destroy(music);
-  sfMusic_play(music);
 
   auto programs = new ProgramSet;
   scope(exit) programs.destroy();
 
-  auto context = script_file.readText.
-    CreateContextFromText(vec2i(600, 600), programs);
+  Context context;
+  try {
+    context = script_file.readText.
+      CreateContextFromText(vec2i(600, 600), programs);
+  } catch (ScriptException e) {
+    "[parsing exception] %s at (%d,%d)".
+      writefln(e.msg, e.pos.stline+1, e.pos.stchar+1);
+    return 1;
+  }
   scope(exit) context.destroy();
 
+  sfMusic_play(music);
   while (true) {
     sfEvent e;
     sfWindow_pollEvent(win, &e);
@@ -39,7 +46,14 @@ int main(string[] args) {
 
     context.actor.Accelarate(GetAccelarationInput());
 
-    context.OperateScheduledControllers(beat);
+    try {
+      context.OperateScheduledControllers(beat);
+    } catch (ScriptRuntimeException e) {
+      "[runtime exception] %s at (%d,%d)".
+        writefln(e.msg, e.srcline+1, e.srcchar+1);
+      return 1;
+    }
+
     context.actor.Update();
     context.posteffect.Update();
 
@@ -48,7 +62,7 @@ int main(string[] args) {
       "damage: %f (%f)".writefln(dmg.damage, beat);
     }
     if (dmg.nearness != 0) {
-      "nearness: %f (%f)".writefln(dmg.nearness, beat);
+      "nearby: %f (%f)".writefln(dmg.nearness, beat);
     }
 
     gl.Clear(GL_COLOR_BUFFER_BIT);

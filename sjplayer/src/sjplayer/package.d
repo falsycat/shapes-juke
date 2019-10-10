@@ -6,8 +6,11 @@ import gl4d;
 import sjscript;
 
 public {
+  import sjscript : ScriptException;
+
   import sjplayer.Context,
-         sjplayer.ProgramSet;
+         sjplayer.ProgramSet,
+         sjplayer.ScriptRuntimeException;
 }
 
 ///

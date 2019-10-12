@@ -3,6 +3,8 @@
 
   "targetPath": ".bin",
 
+  "stringImportPaths": ["res"],
+
   "dependencies": {
     "sjplayer": {"path": "sjplayer"},
 

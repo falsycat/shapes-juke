@@ -17,7 +17,7 @@ class Game : AbstractGame {
 
     lobby_ = new LobbyWorld(programs_);
 
-    title_ = new TitleScene(lobby_);
+    title_ = new TitleScene(lobby_, programs_);
     title_.SetupSceneDependency(title_);  // TODO: specify proper next scene
 
     super(title_);
@@ -29,6 +29,7 @@ class Game : AbstractGame {
     lobby_.destroy();
 
     programs_.destroy();
+    fonts_.destroy();
   }
 
  private:

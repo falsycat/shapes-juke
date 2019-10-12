@@ -17,6 +17,7 @@ class AbstractScene : SceneInterface {
   }
 
   override SceneInterface TakeNextScene() {
+    scope(exit) next_ = null;
     return next_;
   }
 

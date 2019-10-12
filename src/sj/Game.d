@@ -5,6 +5,7 @@ import sj.AbstractGame,
        sj.FontSet,
        sj.LobbyWorld,
        sj.ProgramSet,
+       sj.SelectScene,
        sj.TitleScene;
 
 ///
@@ -17,8 +18,11 @@ class Game : AbstractGame {
 
     lobby_ = new LobbyWorld(programs_);
 
-    title_ = new TitleScene(lobby_, programs_);
-    title_.SetupSceneDependency(title_);  // TODO: specify proper next scene
+    title_  = new TitleScene(lobby_, programs_);
+    select_ = new SelectScene(lobby_, programs_);
+
+    title_.SetupSceneDependency(select_);
+    select_.SetupSceneDependency(title_);
 
     super(title_);
   }
@@ -40,4 +44,6 @@ class Game : AbstractGame {
   LobbyWorld lobby_;
 
   TitleScene title_;
+
+  SelectScene select_;
 }

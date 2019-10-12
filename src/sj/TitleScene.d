@@ -38,6 +38,8 @@ class TitleScene : AbstractScene {
 
   override void Update(KeyInput input) {
     lobby_.cube_matrix.rotation += vec3(PI/600, PI/600, PI/600);
+
+    if (input.down) GoNextScene(next_scene_);
   }
   override void Draw() {
     lobby_.Draw();

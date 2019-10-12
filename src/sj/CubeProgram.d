@@ -113,7 +113,7 @@ class CubeProgram {
   };
 
   ///
-  enum MaxInstanceCount = 10;
+  enum MaxInstanceCount = 256;
 
   ///
   this() {

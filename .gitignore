@@ -1,5 +1,6 @@
 .dub
 .bin
+!/.bin
 dub.selections.json
 
 *.swp

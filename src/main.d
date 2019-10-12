@@ -2,6 +2,7 @@
 import std;
 
 import derelict.sfml2.audio,
+       derelict.sfml2.graphics,
        derelict.sfml2.system,
        derelict.sfml2.window;
 
@@ -61,9 +62,10 @@ private KeyInput GetKeyInput() {
 }
 
 private auto CreateWindow(ref in Args args) {
-  DerelictSFML2System.load();
-  DerelictSFML2Window.load();
-  DerelictSFML2Audio .load();
+  DerelictSFML2Audio   .load();
+  DerelictSFML2Graphics.load();
+  DerelictSFML2System  .load();
+  DerelictSFML2Window  .load();
 
   sfContextSettings specs;
   specs.depthBits         = 24;

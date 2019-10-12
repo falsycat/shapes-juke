@@ -2,6 +2,7 @@
 module sj.Game;
 
 import sj.AbstractGame,
+       sj.FontSet,
        sj.LobbyWorld,
        sj.ProgramSet,
        sj.TitleScene;
@@ -12,6 +13,7 @@ class Game : AbstractGame {
   ///
   this() {
     programs_ = new ProgramSet;
+    fonts_    = new FontSet;
 
     lobby_ = new LobbyWorld(programs_);
 
@@ -31,6 +33,8 @@ class Game : AbstractGame {
 
  private:
   ProgramSet programs_;
+
+  FontSet fonts_;
 
   LobbyWorld lobby_;
 

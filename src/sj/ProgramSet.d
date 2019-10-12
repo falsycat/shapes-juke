@@ -6,13 +6,15 @@ import std.meta,
 
 static import sjplayer = sjplayer.ProgramSet;
 
-import sj.CubeProgram;
+import sj.CubeProgram,
+       sj.TitleTextProgram;
 
 ///
 class ProgramSet {
  public:
   alias Programs = Tuple!(
       CubeProgram,
+      TitleTextProgram,
     );
 
   ///

@@ -14,12 +14,12 @@ import sj.CubeProgram,
 class LobbyWorld {
  public:
   ///
-  enum Perspective = mat4.perspective(-0.5, 0.5, -0.5, 0.5, 0.1, 100);
+  enum Projection = mat4.perspective(1, 1, 60, 0.1, 100);
 
   ///
   this(ProgramSet programs) {
-    background_ = new Background(programs.Get!BackgroundProgram);
-    cube_       = programs.Get!CubeProgram;
+    background_   = new Background(programs.Get!BackgroundProgram);
+    cube_program_ = programs.Get!CubeProgram;
   }
 
   ///
@@ -30,9 +30,9 @@ class LobbyWorld {
 
     gl.Enable(GL_DEPTH_TEST);
     gl.DepthMask(true);
-    cube_.Draw(
-        cubes.map!(x => Perspective * view * x),
-        light_color, light_direction, ambient_color);
+    cube_program_.Draw(
+        cubes.map!"a.Create()",
+        Projection, view.Create(), light_pos, cube_material);
   }
 
   ///
@@ -41,18 +41,16 @@ class LobbyWorld {
   }
 
   ///
-  mat4[] cubes;
+  ModelMatrixFactory!4[] cubes;
   ///
-  mat4 view = mat4.look_at(vec3(0, 0, -1), vec3(0, 0, 0), vec3(0, 1, 0));
+  ViewMatrixFactory view;
   ///
-  vec3 light_color = vec3(1, 1, 1);
+  vec3 light_pos = vec3(0, 10, 0);
   ///
-  vec3 light_direction = vec3(0, 1, 0);
-  ///
-  vec3 ambient_color = vec3(0.1, 0.1, 0.1);
+  CubeProgram.Material cube_material;
 
  private:
   Background background_;
 
-  CubeProgram cube_;
+  CubeProgram cube_program_;
 }

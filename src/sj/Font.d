@@ -1,7 +1,8 @@
 /// License: MIT
 module sj.Font;
 
-import std.conv,
+import std.array,
+       std.conv,
        std.exception,
        std.format,
        std.string;
@@ -23,48 +24,44 @@ class Font {
   }
 
   ///
-  Texture2DRef CreateTexture(
-      vec2i sz, string str, vec4 color, size_t px) {
-    auto text = sfText_create().enforce;
-    scope(exit) sfText_destroy(text);
-
-    sfText_setFont(text, font_);
-    sfText_setString(text, str.toStringz);
-    sfText_setCharacterSize(text, px.to!uint);
-    sfText_setFillColor(text, sfBlack);  // TODO: change color
-
-    auto buf = sfRenderTexture_create(sz.x, sz.y, false).enforce;
-    scope(exit) sfRenderTexture_destroy(buf);
-    sfRenderTexture_drawText(buf, text, null);
-
-    auto sftex = sfRenderTexture_getTexture(buf).enforce;
-
-    auto tex = Texture2D.Create();
-    Texture2DAllocator allocator;
-    with (allocator) {
-      internalFormat = GL_RGBA8;
-      size           = sz;
-      format         = GL_RED;
-      type           = GL_UNSIGNED_BYTE;
-      Allocate(tex);
+  vec2i[] CreateTextureUvArray(dstring str, size_t px) {
+    auto glyphs = appender!(sfGlyph[]);
+    glyphs.reserve(str.length);
+    foreach (c; str) {
+      glyphs ~= sfFont_getGlyph(font_, c, px.to!uint, false, 0f);
     }
 
-    gl.CopyImageSubData(
-        sfTexture_getNativeHandle(sftex),
-        GL_TEXTURE_2D,
-        0,
-        0,
-        0,
-        0,
-        tex.id,
-        GL_TEXTURE_2D,
-        0,
-        0,
-        0,
-        0,
-        sz.x, sz.y, 1
-      );
-    return tex;
+    auto uv = appender!(vec2i[]);
+    uv.reserve(str.length * 4);
+    foreach (const ref g; glyphs[]) {
+      const rc = &g.textureRect;
+
+      const left   = rc.left;
+      const right  = (rc.left + rc.width);
+      const top    = rc.top;
+      const bottom = (rc.top + rc.height);
+
+      uv ~= [
+        vec2i(left,  top),
+        vec2i(left,  bottom),
+        vec2i(right, bottom),
+        vec2i(right, top),
+      ];
+    }
+    return uv[];
+  }
+
+  ///
+  vec2i GetTextureSize(size_t px) {
+    const sz = sfTexture_getSize(
+        sfFont_getTexture(font_, px.to!uint).enforce);
+    return vec2i(sz.x, sz.y);
+  }
+
+  ///
+  void BindTextureToUnit(GLenum unit, size_t px) {
+    gl.ActiveTexture(unit);
+    sfTexture_bind(sfFont_getTexture(font_, px.to!uint).enforce);
   }
 
  private:

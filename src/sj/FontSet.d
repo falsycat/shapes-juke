@@ -15,6 +15,9 @@ class FontSet {
 
     gothic_heavy_ = new Font(dir~"/fonts/SourceHanSansJP-Heavy.otf");
   }
+  ~this() {
+    gothic_heavy_.destroy();
+  }
 
   ///
   @property Font gothicHeavy() {

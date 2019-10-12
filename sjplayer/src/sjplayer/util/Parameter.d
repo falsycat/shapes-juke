@@ -1,9 +1,11 @@
 /// License: MIT
 module sjplayer.util.Parameter;
 
-import sjscript;
+import std.typecons;
 
-import sjplayer.util.MatrixFactory;
+import gl4d;
+
+import sjscript;
 
 ///
 void CalculateParameter(T)(
@@ -14,8 +16,8 @@ void CalculateParameter(T)(
 }
 
 ///
-bool CalculateMatrixParameter(T)(
-    in Parameter param, ref MatrixFactory m, T vars) {
+bool CalculateModelMatrixParameter(T)(
+    in Parameter param, ref ModelMatrixFactory!3 m, T vars) {
   switch (param.name) {
     case "translation_x":
       param.CalculateParameter(m.translation.x, vars);
@@ -42,5 +44,20 @@ bool CalculateMatrixParameter(T)(
       return true;
 
     default: return false;
+  }
+}
+
+///
+Nullable!float GetModelMatrixParameterValueByName(
+    ref in ModelMatrixFactory!3 m, string name) {
+  switch (name) {
+    case "scale_x":       return Nullable!float(m.scale.x);
+    case "scale_y":       return Nullable!float(m.scale.y);
+    case "rotation_x":    return Nullable!float(m.rotation.x);
+    case "rotation_y":    return Nullable!float(m.rotation.y);
+    case "rotation_z":    return Nullable!float(m.rotation.z);
+    case "translation_x": return Nullable!float(m.translation.x);
+    case "translation_y": return Nullable!float(m.translation.y);
+    default: return Nullable!float.init;
   }
 }

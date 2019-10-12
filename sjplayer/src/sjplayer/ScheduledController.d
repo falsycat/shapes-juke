@@ -11,7 +11,6 @@ import sjscript;
 import sjplayer.AbstractScheduledController,
        sjplayer.ScheduledControllerInterface,
        sjplayer.VarStoreInterface,
-       sjplayer.util.MatrixFactory,
        sjplayer.util.Parameter;
 
 ///
@@ -73,7 +72,7 @@ class ScheduledController(
       default:
     }
     static if (MatrixModificationAvailable) {
-      const value = matrix_factory_.GetValueByName(name);
+      const value = matrix_factory_.GetModelMatrixParameterValueByName(name);
       if (!value.isNull) return value;
     }
     return super.GetVariable(name);
@@ -88,7 +87,7 @@ class ScheduledController(
       default:
     }
     static if (MatrixModificationAvailable) {
-      if (param.CalculateMatrixParameter(matrix_factory_, vars)) return;
+      if (param.CalculateModelMatrixParameter(matrix_factory_, vars)) return;
     }
     super.SetParameter(param, vars);
   }
@@ -96,6 +95,6 @@ class ScheduledController(
   Target target_;
 
   static if (MatrixModificationAvailable) {
-    MatrixFactory matrix_factory_;
+    ModelMatrixFactory!3 matrix_factory_;
   }
 }

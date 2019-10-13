@@ -85,6 +85,10 @@ class Song {
   }
 
   ///
+  @property string name() const {
+    return name_;
+  }
+  ///
   @property ref const(PreviewConfig) preview() const {
     return preview_;
   }

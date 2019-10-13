@@ -38,13 +38,15 @@ class TextProgram {
   ///
   enum FragmentShaderSrc = ShaderHeader ~ q{
     layout(location = 3) uniform sampler2D tex;
+    layout(location = 4) uniform vec4      color;
 
     in vec2 uv_;
 
     out vec4 pixel_;
 
     void main() {
-      pixel_ = texture(tex, uv_);
+      pixel_    = color;
+      pixel_.a *= texture(tex, uv_).r;
     }
   };
 
@@ -87,7 +89,7 @@ class TextProgram {
   }
 
   ///
-  void Use(mat4 proj, mat4 view, mat4 model, ref Texture2DRef tex) {
+  void Use(mat4 proj, mat4 view, mat4 model, ref Texture2DRef tex, vec4 color) {
     tex.BindToUnit(GL_TEXTURE0);
     sampler_.Bind(0);
 
@@ -96,6 +98,7 @@ class TextProgram {
     program_.uniform!1 = view;
     program_.uniform!2 = model;
     program_.uniform!3 = 0;
+    program_.uniform!4 = color;
   }
 
  private:

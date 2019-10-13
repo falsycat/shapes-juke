@@ -31,7 +31,7 @@ class Game : AbstractGame {
     lobby_ = new LobbyWorld(programs_);
 
     title_  = new TitleScene(lobby_, programs_);
-    select_ = new SelectScene(lobby_, programs_, songs_);
+    select_ = new SelectScene(lobby_, programs_, fonts_, songs_);
 
     title_.SetupSceneDependency(select_);
     select_.SetupSceneDependency(title_);

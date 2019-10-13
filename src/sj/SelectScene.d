@@ -1,18 +1,22 @@
 /// License: MIT
 module sj.SelectScene;
 
-import std.math,
+import std.conv,
+       std.math,
        std.variant;
 
 import derelict.sfml2.audio;
 
 import gl4d;
 
-import sj.KeyInput,
+import sj.FontSet,
+       sj.KeyInput,
        sj.LobbyWorld,
        sj.ProgramSet,
        sj.SceneInterface,
        sj.Song,
+       sj.Text,
+       sj.TextProgram,
        sj.TitleScene,
        sj.util.Animation,
        sj.util.Easing,
@@ -21,11 +25,13 @@ import sj.KeyInput,
 ///
 class SelectScene : SceneInterface {
  public:
-
   ///
-  this(LobbyWorld lobby, ProgramSet program, Song[] songs) {
+  this(LobbyWorld lobby, ProgramSet program, FontSet fonts, Song[] songs) {
     lobby_ = lobby;
     songs_ = songs.dup;
+
+    text_  = new Text(program.Get!TextProgram);
+    fonts_ = fonts;
 
     sound_ = sfSound_create();
     soundres_.Load();
@@ -34,6 +40,8 @@ class SelectScene : SceneInterface {
     status_      = first_state_;
   }
   ~this() {
+    text_.destroy();
+
     sfSound_destroy(sound_);
     soundres_.Unload();
   }
@@ -61,6 +69,7 @@ class SelectScene : SceneInterface {
   }
   override void Draw() {
     lobby_.Draw();
+    text_.Draw(lobby_.Projection, lobby_.view.Create());
   }
 
  private:
@@ -81,6 +90,9 @@ class SelectScene : SceneInterface {
   TitleScene title_scene_;
 
   LobbyWorld lobby_;
+
+  Text    text_;
+  FontSet fonts_;
 
   Song[] songs_;
 
@@ -195,6 +207,15 @@ private class SongAppearState : AbstractSceneState {
 
     sfSound_setBuffer(owner.sound_, owner.soundres_.spotlight);
     sfSound_play(owner.sound_);
+
+    // TODO:
+    const song = owner.songs_[song_index_];
+    with (owner.text_) {
+      matrix.scale = vec3(0.2, 0.05, 0.05);
+      matrix.translation = vec3(0, -0.3, 0);
+      LoadGlyphs(vec2i(256, 64),
+          song.name.to!dstring, vec2i(32, 0), owner.fonts_.gothic);
+    }
   }
   override UpdateResult Update(KeyInput input) {
     const ratio = anime_.Update();

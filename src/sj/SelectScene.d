@@ -120,14 +120,14 @@ private class FirstSetupState : AbstractSceneState {
  public:
   this(SelectScene owner) {
     super(owner);
-    stage_appear_state_ = new StageAppearState(owner);
+    stage_appear_state_ = new SongAppearState(owner);
   }
 
   enum AnimeFrames  = 30;
-  enum BgInnerColor = vec4(0.8, 0.6, 0.6, 1);
+  enum BgInnerColor = vec4(0.4, 0.2, 0.2, 1);
   enum BgOuterColor = vec4(-0.4, -0.4, -0.4, 1);
 
-  enum CubeRotationSpeed = vec3(0, PI/10, 0);
+  enum CubeRotationSpeed = vec3(0, PI/5, 0);
   enum CubeInterval   = 0.06;
 
   void Initialize() {
@@ -154,7 +154,7 @@ private class FirstSetupState : AbstractSceneState {
   }
 
  private:
-  StageAppearState stage_appear_state_;
+  SongAppearState stage_appear_state_;
 
   Animation anime_;
 
@@ -163,7 +163,7 @@ private class FirstSetupState : AbstractSceneState {
 
   Easing!float cube_interval_ease_;
 }
-private class StageAppearState : AbstractSceneState {
+private class SongAppearState : AbstractSceneState {
  public:
   this(SelectScene owner) {
     super(owner);
@@ -177,7 +177,16 @@ private class StageAppearState : AbstractSceneState {
 
     anime_ = Animation(AnimeFrames);
 
-    cube_interval_ease_ = Easing!float(owner.lobby_.cube_interval, 0.005);
+    auto lobby = owner.lobby_;
+
+    cube_rota_speed_ease_ = Easing!vec3(
+        FirstSetupState.CubeRotationSpeed, CubeRotationSpeed);
+    cube_interval_ease_ = Easing!float(lobby.cube_interval, 0.005);
+
+    with (owner.songs_[song_index_].preview) {
+      bg_inner_ease_ = Easing!vec4(lobby.background.inner_color, bg_inner_color);
+      bg_outer_ease_ = Easing!vec4(lobby.background.outer_color, bg_outer_color);
+    }
 
     sfSound_setBuffer(owner.sound_, owner.soundres_.spotlight);
     sfSound_play(owner.sound_);
@@ -185,9 +194,11 @@ private class StageAppearState : AbstractSceneState {
   override UpdateResult Update(KeyInput input) {
     const ratio = anime_.Update();
 
-    owner.lobby_.cube_matrix.rotation += CubeRotationSpeed +
-      (FirstSetupState.CubeRotationSpeed - CubeRotationSpeed) * (1-ratio);
-    owner.lobby_.cube_interval = cube_interval_ease_.Calculate(ratio);
+    owner.lobby_.cube_matrix.rotation += cube_rota_speed_ease_.Calculate(ratio);
+    owner.lobby_.cube_interval         = cube_interval_ease_.Calculate(ratio);
+
+    owner.lobby_.background.inner_color = bg_inner_ease_.Calculate(ratio);
+    owner.lobby_.background.outer_color = bg_outer_ease_.Calculate(ratio);
     return CreateResult(this);
   }
 
@@ -196,5 +207,9 @@ private class StageAppearState : AbstractSceneState {
 
   Animation anime_;
 
+  Easing!vec3  cube_rota_speed_ease_;
   Easing!float cube_interval_ease_;
+
+  Easing!vec4 bg_inner_ease_;
+  Easing!vec4 bg_outer_ease_;
 }

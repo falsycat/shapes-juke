@@ -6,8 +6,7 @@ import std.array,
        std.exception,
        std.json,
        std.path,
-       std.string,
-       std.typecons;
+       std.string;
 
 import derelict.sfml2.audio,
        derelict.sfml2.system;
@@ -26,9 +25,9 @@ class Song {
     size_t play_offset;
 
     ///
-    Nullable!vec4 bg_inner_color;
+    vec4 bg_inner_color = vec4(0, 0, 0, 0);
     ///
-    Nullable!vec4 bg_outer_color;
+    vec4 bg_outer_color = vec4(0, 0, 0, 0);
   }
 
   ///
@@ -51,7 +50,13 @@ class Song {
     music_       = sfMusic_createFromFile(music_path.toStringz).enforce;
     script_path_ = buildPath(basepath, json["script"].str);
 
-    // TODO: update preview config
+    with (preview_) {
+      const preview_json = json["preview"];
+
+      play_offset    = preview_json["play-offset"].integer;
+      bg_inner_color = GetVectorFromJson!4(preview_json["bg-inner-color"]);
+      bg_outer_color = GetVectorFromJson!4(preview_json["bg-outer-color"]);
+    }
   }
   ~this() {
     sfMusic_destroy(music_);
@@ -82,6 +87,15 @@ class Song {
  private:
   static float GetNumericAsFloatFromJson(in JSONValue json) {
     return json.type == JSONType.float_? json.floating: json.integer;
+  }
+  static Vector!(float, dim) GetVectorFromJson(size_t dim)(in JSONValue json) {
+    (json.array.length == dim).enforce;
+
+    Vector!(float, dim) v;
+    static foreach (i; 0..dim) {
+      v.vector[i] = GetNumericAsFloatFromJson(json.array[i]);
+    }
+    return v;
   }
 
   string name_;

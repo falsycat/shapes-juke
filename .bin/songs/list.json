@@ -9,7 +9,7 @@
       "play-offset": 1000,
       "play-loop": 2000,
       "bg-inner-color": [0.8, 0.8, 0.8, 1],
-      "bg-outer-color": [0.8, 0.8, 0.8, 1]
+      "bg-outer-color": [0.1, 0.1, 0.1, 1]
     }
   }
 ]

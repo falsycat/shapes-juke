@@ -153,6 +153,7 @@ private class FirstSetupState : AbstractSceneState {
 
       cube_interval_ease_ = Easing!float(cube_interval, LoadingCubeInterval);
     }
+    owner.text_.Clear();
   }
   override UpdateResult Update(KeyInput input) {
     const ratio = anime_.Update();
@@ -208,13 +209,12 @@ private class SongAppearState : AbstractSceneState {
     sfSound_setBuffer(owner.sound_, owner.soundres_.spotlight);
     sfSound_play(owner.sound_);
 
-    // TODO:
     const song = owner.songs_[song_index_];
     with (owner.text_) {
-      matrix.scale = vec3(0.2, 0.05, 0.05);
-      matrix.translation = vec3(0, -0.3, 0);
-      LoadGlyphs(vec2i(256, 64),
-          song.name.to!dstring, vec2i(32, 0), owner.fonts_.gothic);
+      const w = LoadGlyphs(vec2i(256, 64),
+          song.name.to!dstring, vec2i(40, 0), owner.fonts_.gothic);
+      matrix.scale       = vec3(-0.002, 0.002, 0.002);
+      matrix.translation = vec3(-w/2*matrix.scale.x, -0.4, 0);
     }
   }
   override UpdateResult Update(KeyInput input) {

@@ -1,7 +1,8 @@
 /// License: MIT
 module sj.Text;
 
-import std.exception;
+import std.conv,
+       std.exception;
 
 import gl4d, ft4d;
 
@@ -17,52 +18,89 @@ class Text {
     texture_  = Texture2D.Create();
     vao_      = VertexArray.Create();
     vertices_ = ArrayBuffer.Create();
+    indices_  = ElementArrayBuffer.Create();
 
     program_.SetupVertexArray(vao_, vertices_);
-
-    vertices_.Bind();
-    ArrayBufferAllocator allocator;
-    with (allocator) {
-      const v = [
-        -1f,  1f, 0f,  1f, 0f,
-        -1f, -1f, 0f,  1f, 1f,
-         1f, -1f, 0f,  0f, 1f,
-         1f,  1f, 0f,  0f, 0f,
-      ];
-      data  = v.ptr;
-      size  = v.length * v[0].sizeof;
-      usage = GL_STATIC_DRAW;
-      Allocate(vertices_);
-    }
   }
 
   ///
-  void LoadGlyphs(vec2i texsz, dstring text, vec2i charsz, FaceRef face)
+  float LoadGlyphs(vec2i texsz, dstring text, vec2i charsz, FaceRef face)
       in (texsz.x > 0 && texsz.y > 0) {
-    auto pixels = new ubyte[texsz.x * texsz.y];
+    static assert(TextProgram.Vertex.sizeof == float.sizeof * 5);
+
+    vertices_.Bind();
+    ArrayBufferAllocator vertices_allocator;
+    with (ArrayBufferAllocator()) {
+      size  = text.length * TextProgram.Vertex.sizeof * 4;
+      usage = GL_STATIC_DRAW;
+      Allocate(vertices_);
+    }
+    auto vertices_data = vertices_.MapToWrite!float;
+    auto vertices_ptr  = vertices_data.entity;
+    auto pixels        = new ubyte[texsz.x * texsz.y];
 
     GlyphLoader gloader;
     gloader.pxWidth  = charsz.x;
     gloader.pxHeight = charsz.y;
     gloader.flags    = FT_LOAD_DEFAULT | FT_LOAD_RENDER;
 
-    int x;
+    int   bmp_width;
+    float text_width = 0;
     foreach (c; text) {
       with (gloader) {
         character = c;
         Load(face).enforce;
       }
-
       const bitmap = face.EnforceGlyphBitmap();
-      const srcsz = vec2i(bitmap.width, bitmap.rows);
-      CopyRawPixels(bitmap.buffer, srcsz, pixels.ptr, texsz, vec2i(x, 0));
+      const srcsz  = vec2i(bitmap.width, bitmap.rows);
+      CopyRawPixels(bitmap.buffer, srcsz, pixels.ptr, texsz, vec2i(bmp_width, 0));
 
-      x += srcsz.x;
+      const m         = &face.glyph.metrics;
+      const bearing_x = m.horiBearingX*1f / m.width  * srcsz.x;
+      const bearing_y = m.horiBearingY*1f / m.height * srcsz.y;
+      const advance   = m.horiAdvance *1f / m.width  * srcsz.x;
+
+      const posleft   = text_width + bearing_x;
+      const posright  = posleft + srcsz.x;
+      const postop    = bearing_y;
+      const posbottom = postop - srcsz.y;
+
+      const uvleft   = bmp_width*1f / texsz.x;
+      const uvright  = (bmp_width + srcsz.x)*1f / texsz.x;
+      const uvtop    = 0f;
+      const uvbottom = srcsz.y*1f / texsz.y;
+
+      *vertices_ptr++ = posleft;
+      *vertices_ptr++ = postop;
+      *vertices_ptr++ = 0;
+      *vertices_ptr++ = uvleft;
+      *vertices_ptr++ = uvtop;
+
+      *vertices_ptr++ = posleft;
+      *vertices_ptr++ = posbottom;
+      *vertices_ptr++ = 0;
+      *vertices_ptr++ = uvleft;
+      *vertices_ptr++ = uvbottom;
+
+      *vertices_ptr++ = posright;
+      *vertices_ptr++ = postop;
+      *vertices_ptr++ = 0;
+      *vertices_ptr++ = uvright;
+      *vertices_ptr++ = uvtop;
+
+      *vertices_ptr++ = posright;
+      *vertices_ptr++ = posbottom;
+      *vertices_ptr++ = 0;
+      *vertices_ptr++ = uvright;
+      *vertices_ptr++ = uvbottom;
+
+      bmp_width  += srcsz.x;
+      text_width += advance;
     }
 
     texture_.Bind();
-    Texture2DAllocator allocator;
-    with (allocator) {
+    Texture2DAllocator texture_allocator;
+    with (texture_allocator) {
       level          = 0;
       internalFormat = GL_RGBA8;
       data           = pixels.ptr;
@@ -71,22 +109,51 @@ class Text {
       type           = GL_UNSIGNED_BYTE;
       Allocate(texture_);
     }
-    glyph_loaded_ = true;
+
+    indices_.Bind();
+    ElementArrayBufferAllocator indices_allcator;
+    with (indices_allcator) {
+      size  = text.length * 6 * ushort.sizeof;
+      usage = GL_STATIC_DRAW;
+      Allocate(indices_);
+    }
+    auto indices_data = indices_.MapToWrite!ushort;
+    auto indices_ptr  = indices_data.entity;
+
+    ushort vertex_count;
+    foreach (i; 0..text.length) {
+      *indices_ptr++ = vertex_count;
+      *indices_ptr++ = vertex_count++;
+
+      *indices_ptr++ = vertex_count++;
+      *indices_ptr++ = vertex_count++;
+
+      *indices_ptr++ = vertex_count;
+      *indices_ptr++ = vertex_count++;
+    }
+    index_count_ = indices_ptr - indices_data.entity;
+
+    return text_width;
+  }
+
+  ///
+  void Clear() {
+    index_count_ = 0;
   }
 
   ///
   void Draw(mat4 proj, mat4 view) {
-    if (!glyph_loaded_) return;
+    if (index_count_ == 0) return;
 
     program_.Use(proj, view, matrix.Create(), texture_, color);
 
     vao_.Bind();
-    gl.DrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    indices_.Bind();
+    gl.DrawElements(GL_TRIANGLE_STRIP, index_count_.to!int, GL_UNSIGNED_SHORT, null);
   }
 
   ///
   ModelMatrixFactory!4 matrix;
-
   ///
   vec4 color = vec4(0, 0, 0, 1);
 
@@ -109,5 +176,7 @@ class Text {
 
   ArrayBufferRef vertices_;
 
-  bool glyph_loaded_ = false;
+  ElementArrayBufferRef indices_;
+
+  size_t index_count_;
 }

@@ -228,15 +228,6 @@ private class SongAppearState : AbstractSceneState {
   override UpdateResult Update(KeyInput input) {
     const ratio = anime_.Update();
 
-    if (owner.text_.frame++%10 > 7) {
-      alias RT = TitleTextRandomTranslationRange;
-      owner.text_.matrix.translation += vec3(
-          uniform(-RT, RT), uniform(-RT, RT), uniform(-RT, RT));
-      alias RS = TitleTextRandomScaleRange;
-      owner.text_.matrix.scale += vec3(
-          uniform(-RS, RS), uniform(-RS, RS), 0);
-    }
-
     with (owner.lobby_) {
       cube_matrix.rotation += cube_rota_speed_ease_.Calculate(ratio);
       cube_interval         = cube_interval_ease_.Calculate(ratio);
@@ -282,29 +273,10 @@ private class SongWaitState : AbstractSceneState {
       matrix.scale       = TitleTextScale;
       matrix.translation =
         TitleTextTranslation + vec3(-modelWidth/2*matrix.scale.x, 0, 0);
-      frame = 0;
     }
-    frame_ = 0;
   }
   override UpdateResult Update(KeyInput input) {
     owner.lobby_.cube_matrix.rotation += CubeRotationSpeed;
-
-    if (frame_%10 == 0) with (owner.text_) {
-      ++frame;
-
-      if (frame_%100 == 0) {
-        matrix.scale = TitleTextScale;
-        matrix.translation =
-          TitleTextTranslation + vec3(-modelWidth/2*matrix.scale.x, 0, 0);
-
-      } else if (frame_%20 == 0) {
-        alias RT = TitleTextRandomTranslationRange;
-        matrix.translation += vec3(uniform(-RT, RT), uniform(-RT, RT), uniform(-RT, RT));
-
-        alias RS = TitleTextRandomScaleRange;
-        matrix.scale += vec3(uniform(-RS, RS), uniform(-RS, RS), 0);
-      }
-    }
 
     if (input.up) {
       song.StopPlaying();
@@ -322,7 +294,6 @@ private class SongWaitState : AbstractSceneState {
       return CreateResult(song_appear_state_);
     }
 
-    ++frame_;
     return CreateResult(this);
   }
 
@@ -334,6 +305,4 @@ private class SongWaitState : AbstractSceneState {
   SongAppearState song_appear_state_;
 
   size_t song_index_;
-
-  int frame_;
 }

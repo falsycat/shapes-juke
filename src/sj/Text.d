@@ -45,7 +45,8 @@ class Text {
     gloader.flags    = FT_LOAD_DEFAULT | FT_LOAD_RENDER;
 
     model_width_ = 0;
-    int bmp_width;
+    int    bmp_width;
+    size_t glyph_count;
     foreach (c; text) {
       if (c == ' ') continue;
 
@@ -98,6 +99,7 @@ class Text {
 
       bmp_width    += srcsz.x;
       model_width_ += advance;
+      ++glyph_count;
     }
 
     texture_.Bind();
@@ -115,7 +117,7 @@ class Text {
     indices_.Bind();
     ElementArrayBufferAllocator indices_allcator;
     with (indices_allcator) {
-      size  = text.length * 6 * ushort.sizeof;
+      size  = glyph_count * 6 * ushort.sizeof;
       usage = GL_STATIC_DRAW;
       Allocate(indices_);
     }
@@ -123,7 +125,7 @@ class Text {
     auto indices_ptr  = indices_data.entity;
 
     ushort vertex_count;
-    foreach (i; 0..text.length) {
+    foreach (i; 0..glyph_count) {
       *indices_ptr++ = vertex_count;
       *indices_ptr++ = vertex_count++;
 
@@ -147,8 +149,7 @@ class Text {
   void Draw(mat4 proj, mat4 view) {
     if (index_count_ == 0) return;
 
-    program_.Use(proj, view,
-        matrix.Create(), texture_, color, frame, model_width_);
+    program_.Use(proj, view, matrix.Create(), texture_, color);
 
     vao_.Bind();
     indices_.Bind();
@@ -164,8 +165,6 @@ class Text {
   ModelMatrixFactory!4 matrix;
   ///
   vec4 color = vec4(0, 0, 0, 1);
-  ///
-  int frame;
 
  private:
   static void CopyRawPixels(in ubyte* src, vec2i srcsz, ubyte* dst, vec2i dstsz, vec2i offset) {

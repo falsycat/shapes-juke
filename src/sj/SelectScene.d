@@ -3,6 +3,7 @@ module sj.SelectScene;
 
 import std.conv,
        std.math,
+       std.random,
        std.variant;
 
 import derelict.sfml2.audio;
@@ -113,6 +114,13 @@ private abstract class AbstractSceneState {
   enum LoadingCubeRotationSpeed = vec3(0, PI/5, PI/10);
   enum LoadingCubeInterval      = 0.06;
 
+  enum TitleTextSize        = 40;
+  enum TitleTextScale       = vec3(-0.002, 0.002, 0.002);
+  enum TitleTextTranslation = vec3(0, -0.4, 0);
+
+  enum TitleTextRandomTranslationRange = 0.02;
+  enum TitleTextRandomScaleRange       = 0.0003;
+
   this(SelectScene owner) {
     owner_ = owner;
   }
@@ -212,13 +220,22 @@ private class SongAppearState : AbstractSceneState {
     const song = owner.songs_[song_index_];
     with (owner.text_) {
       const w = LoadGlyphs(vec2i(256, 64),
-          song.name.to!dstring, vec2i(40, 0), owner.fonts_.gothic);
-      matrix.scale       = vec3(-0.002, 0.002, 0.002);
-      matrix.translation = vec3(-w/2*matrix.scale.x, -0.4, 0);
+          song.name.to!dstring, vec2i(TitleTextSize, 0), owner.fonts_.gothic);
+      matrix.scale       = TitleTextScale;
+      matrix.translation = TitleTextTranslation + vec3(-w/2*matrix.scale.x, 0, 0);
     }
   }
   override UpdateResult Update(KeyInput input) {
     const ratio = anime_.Update();
+
+    if (owner.text_.frame++%10 > 7) {
+      alias RT = TitleTextRandomTranslationRange;
+      owner.text_.matrix.translation += vec3(
+          uniform(-RT, RT), uniform(-RT, RT), uniform(-RT, RT));
+      alias RS = TitleTextRandomScaleRange;
+      owner.text_.matrix.scale += vec3(
+          uniform(-RS, RS), uniform(-RS, RS), 0);
+    }
 
     with (owner.lobby_) {
       cube_matrix.rotation += cube_rota_speed_ease_.Calculate(ratio);
@@ -260,9 +277,34 @@ private class SongWaitState : AbstractSceneState {
 
     auto song = owner.songs_[song_index_];
     song.PlayForPreview();
+
+    with (owner.text_) {
+      matrix.scale       = TitleTextScale;
+      matrix.translation =
+        TitleTextTranslation + vec3(-modelWidth/2*matrix.scale.x, 0, 0);
+      frame = 0;
+    }
+    frame_ = 0;
   }
   override UpdateResult Update(KeyInput input) {
     owner.lobby_.cube_matrix.rotation += CubeRotationSpeed;
+
+    if (frame_%10 == 0) with (owner.text_) {
+      ++frame;
+
+      if (frame_%100 == 0) {
+        matrix.scale = TitleTextScale;
+        matrix.translation =
+          TitleTextTranslation + vec3(-modelWidth/2*matrix.scale.x, 0, 0);
+
+      } else if (frame_%20 == 0) {
+        alias RT = TitleTextRandomTranslationRange;
+        matrix.translation += vec3(uniform(-RT, RT), uniform(-RT, RT), uniform(-RT, RT));
+
+        alias RS = TitleTextRandomScaleRange;
+        matrix.scale += vec3(uniform(-RS, RS), uniform(-RS, RS), 0);
+      }
+    }
 
     if (input.right) {
       song.StopPlaying();
@@ -274,6 +316,8 @@ private class SongWaitState : AbstractSceneState {
       owner.title_scene_.Initialize();
       return CreateResult(owner.title_scene_);
     }
+
+    ++frame_;
     return CreateResult(this);
   }
 
@@ -285,4 +329,6 @@ private class SongWaitState : AbstractSceneState {
   SongAppearState song_appear_state_;
 
   size_t song_index_;
+
+  int frame_;
 }

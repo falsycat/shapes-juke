@@ -44,8 +44,8 @@ class Text {
     gloader.pxHeight = charsz.y;
     gloader.flags    = FT_LOAD_DEFAULT | FT_LOAD_RENDER;
 
-    int   bmp_width;
-    float text_width = 0;
+    model_width_ = 0;
+    int bmp_width;
     foreach (c; text) {
       with (gloader) {
         character = c;
@@ -60,7 +60,7 @@ class Text {
       const bearing_y = m.horiBearingY*1f / m.height * srcsz.y;
       const advance   = m.horiAdvance *1f / m.width  * srcsz.x;
 
-      const posleft   = text_width + bearing_x;
+      const posleft   = model_width_ + bearing_x;
       const posright  = posleft + srcsz.x;
       const postop    = bearing_y;
       const posbottom = postop - srcsz.y;
@@ -94,8 +94,8 @@ class Text {
       *vertices_ptr++ = uvright;
       *vertices_ptr++ = uvbottom;
 
-      bmp_width  += srcsz.x;
-      text_width += advance;
+      bmp_width    += srcsz.x;
+      model_width_ += advance;
     }
 
     texture_.Bind();
@@ -133,7 +133,7 @@ class Text {
     }
     index_count_ = indices_ptr - indices_data.entity;
 
-    return text_width;
+    return model_width_;
   }
 
   ///
@@ -145,7 +145,8 @@ class Text {
   void Draw(mat4 proj, mat4 view) {
     if (index_count_ == 0) return;
 
-    program_.Use(proj, view, matrix.Create(), texture_, color);
+    program_.Use(proj, view,
+        matrix.Create(), texture_, color, frame, model_width_);
 
     vao_.Bind();
     indices_.Bind();
@@ -153,9 +154,16 @@ class Text {
   }
 
   ///
+  @property float modelWidth() const {
+    return model_width_;
+  }
+
+  ///
   ModelMatrixFactory!4 matrix;
   ///
   vec4 color = vec4(0, 0, 0, 1);
+  ///
+  int frame;
 
  private:
   static void CopyRawPixels(in ubyte* src, vec2i srcsz, ubyte* dst, vec2i dstsz, vec2i offset) {
@@ -179,4 +187,6 @@ class Text {
   ElementArrayBufferRef indices_;
 
   size_t index_count_;
+
+  float model_width_;
 }

@@ -1,7 +1,8 @@
 /// License: MIT
 module sj.TitleScene;
 
-import std.math;
+import std.conv,
+       std.math;
 
 import gl4d;
 
@@ -10,7 +11,9 @@ import sj.KeyInput,
        sj.ProgramSet,
        sj.SelectScene,
        sj.SceneInterface,
-       sj.TitleTextProgram;
+       sj.TitleTextProgram,
+       sj.util.Animation,
+       sj.util.Easing;
 
 ///
 class TitleScene : SceneInterface {
@@ -24,9 +27,34 @@ class TitleScene : SceneInterface {
   }();
 
   ///
+  enum AnimationFrame = 30;
+  ///
+  enum BgInnerColor = vec4(0.9, 0.9, 0.9, 1);
+  ///
+  enum BgOuterColor = vec4(-0.1, -0.1, -0.1, 1);
+  ///
+  enum CubeInterval = 0.005;
+
+  ///
   this(LobbyWorld lobby, ProgramSet program) {
     lobby_ = lobby;
     title_ = program.Get!TitleTextProgram;
+
+    lobby_.view.pos    = vec3(0, -0.15, -1);
+    lobby_.view.target = vec3(0, -0.15, 0);
+    lobby_.view.up     = vec3(0, 1, 0);
+
+    lobby_.background.inner_color = BgInnerColor;
+    lobby_.background.outer_color = BgOuterColor;
+
+    lobby_.light_pos                    = vec3(0, 9, -1);
+    lobby_.cube_material.diffuse_color  = vec3(0.1, 0.1, 0.1);
+    lobby_.cube_material.light_color    = vec3(1, 0.8, 0.8);
+    lobby_.cube_material.light_power    = vec3(100, 100, 100);
+    lobby_.cube_material.ambient_color  = vec3(0.2, 0.2, 0.2);
+    lobby_.cube_material.specular_color = vec3(0.5, 0.2, 0.2);
+
+    lobby_.cube_interval = CubeInterval;
   }
 
   ///
@@ -36,24 +64,22 @@ class TitleScene : SceneInterface {
 
   ///
   void Initialize() {
-    lobby_.view.pos    = vec3(0, -0.15, -1);
-    lobby_.view.target = vec3(0, -0.15, 0);
-    lobby_.view.up     = vec3(0, 1, 0);
+    anime_ = Animation(AnimationFrame);
 
-    lobby_.background.inner_color = vec4(0.9, 0.9, 0.9, 1);
-    lobby_.background.outer_color = vec4(-0.1, -0.1, -0.1, 1);
+    bg_inner_ease_ = Easing!vec4(lobby_.background.inner_color, BgInnerColor);
+    bg_outer_ease_ = Easing!vec4(lobby_.background.outer_color, BgOuterColor);
 
-    lobby_.light_pos                    = vec3(0, 9, -1);
-    lobby_.cube_material.diffuse_color  = vec3(0.1, 0.1, 0.1);
-    lobby_.cube_material.light_color    = vec3(1, 0.8, 0.8);
-    lobby_.cube_material.light_power    = vec3(100, 100, 100);
-    lobby_.cube_material.ambient_color  = vec3(0.2, 0.2, 0.2);
-    lobby_.cube_material.specular_color = vec3(0.5, 0.2, 0.2);
-
-    frame_ = 0;
+    cube_interval_ease_ = Easing!float(lobby_.cube_interval, CubeInterval);
   }
   override SceneInterface Update(KeyInput input) {
+    const ratio = anime_.Update();
+
     lobby_.cube_matrix.rotation += vec3(PI/600, PI/600, PI/600);
+
+    lobby_.background.inner_color = bg_inner_ease_.Calculate(ratio);
+    lobby_.background.outer_color = bg_outer_ease_.Calculate(ratio);
+
+    lobby_.cube_interval = cube_interval_ease_.Calculate(ratio);
 
     if (input.down) {
       select_scene_.Initialize();
@@ -63,7 +89,8 @@ class TitleScene : SceneInterface {
   }
   override void Draw() {
     lobby_.Draw();
-    title_.Draw(lobby_.Projection, lobby_.view.Create(), TitleMatrix, frame_++);
+    title_.Draw(lobby_.Projection, lobby_.view.Create(), TitleMatrix,
+        (anime_.frame%int.max).to!int);
   }
 
  private:
@@ -73,5 +100,9 @@ class TitleScene : SceneInterface {
 
   TitleTextProgram title_;
 
-  int frame_;
+  Animation anime_;
+
+  Easing!vec4 bg_inner_ease_;
+  Easing!vec4 bg_outer_ease_;
+  Easing!float cube_interval_ease_;
 }

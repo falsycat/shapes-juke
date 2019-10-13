@@ -12,6 +12,7 @@ import sj.KeyInput,
        sj.LobbyWorld,
        sj.ProgramSet,
        sj.SceneInterface,
+       sj.Song,
        sj.TitleScene,
        sj.util.Animation,
        sj.util.Easing,
@@ -22,8 +23,9 @@ class SelectScene : SceneInterface {
  public:
 
   ///
-  this(LobbyWorld lobby, ProgramSet program) {
+  this(LobbyWorld lobby, ProgramSet program, Song[] songs) {
     lobby_ = lobby;
+    songs_ = songs.dup;
 
     sound_ = sfSound_create();
     soundres_.Load();
@@ -80,12 +82,12 @@ class SelectScene : SceneInterface {
 
   LobbyWorld lobby_;
 
-  sfSound* sound_;
+  Song[] songs_;
 
+  sfSound*       sound_;
   SoundResources soundres_;
 
-  FirstSetupState first_state_;
-
+  FirstSetupState    first_state_;
   AbstractSceneState status_;
 }
 
@@ -145,7 +147,7 @@ private class FirstSetupState : AbstractSceneState {
     owner.lobby_.background.outer_color = bg_outer_ease_.Calculate(ratio);
 
     if (anime_.isFinished) {
-      stage_appear_state_.Initialize();
+      stage_appear_state_.Initialize(0);
       return CreateResult(stage_appear_state_);
     }
     return CreateResult(this);
@@ -170,8 +172,11 @@ private class StageAppearState : AbstractSceneState {
   enum AnimeFrames       = 30;
   enum CubeRotationSpeed = vec3(0, PI/500, 0);
 
-  void Initialize() {  // TODO: pass a stage data
+  void Initialize(size_t song_index) {
+    song_index_ = song_index;
+
     anime_ = Animation(AnimeFrames);
+
     cube_interval_ease_ = Easing!float(owner.lobby_.cube_interval, 0.005);
 
     sfSound_setBuffer(owner.sound_, owner.soundres_.spotlight);
@@ -187,6 +192,8 @@ private class StageAppearState : AbstractSceneState {
   }
 
  private:
+  size_t song_index_;
+
   Animation anime_;
 
   Easing!float cube_interval_ease_;

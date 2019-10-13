@@ -1,0 +1,15 @@
+[
+  {
+    "name": "test-60bpm",
+    "bpm": 60,
+    "music":  "test-60bpm.ogg",
+    "script": "test-60bpm.sj",
+
+    "preview": {
+      "play-offset": 1000,
+      "play-loop": 2000,
+      "bg-inner-color": [0.8, 0.8, 0.8, 1],
+      "bg-outer-color": [0.8, 0.8, 0.8, 1]
+    }
+  }
+]

@@ -3,15 +3,15 @@ module sj.SelectScene;
 
 import derelict.sfml2.audio;
 
-import sj.AbstractScene,
-       sj.KeyInput,
+import sj.KeyInput,
        sj.LobbyWorld,
        sj.ProgramSet,
        sj.SceneInterface,
+       sj.TitleScene,
        sj.util.audio;
 
 ///
-class SelectScene : AbstractScene {
+class SelectScene : SceneInterface {
  public:
 
   ///
@@ -27,12 +27,19 @@ class SelectScene : AbstractScene {
   }
 
   ///
-  void SetupSceneDependency(SceneInterface title_scene) {
+  void SetupSceneDependency(TitleScene title_scene) {
     title_scene_ = title_scene;
   }
 
-  override void Update(KeyInput input) {
-    if (input.up) GoNextScene(title_scene_);
+  ///
+  void Initialize() {
+  }
+  override SceneInterface Update(KeyInput input) {
+    if (input.up) {
+      title_scene_.Initialize();
+      return title_scene_;
+    }
+    return this;
   }
   override void Draw() {
     lobby_.Draw();
@@ -53,7 +60,7 @@ class SelectScene : AbstractScene {
     }
   }
 
-  SceneInterface title_scene_;
+  TitleScene title_scene_;
 
   LobbyWorld lobby_;
 

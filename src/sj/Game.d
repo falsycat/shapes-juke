@@ -24,6 +24,7 @@ class Game : AbstractGame {
     title_.SetupSceneDependency(select_);
     select_.SetupSceneDependency(title_);
 
+    title_.Initialize();
     super(title_);
   }
 

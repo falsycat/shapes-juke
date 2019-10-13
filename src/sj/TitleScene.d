@@ -5,15 +5,15 @@ import std.math;
 
 import gl4d;
 
-import sj.AbstractScene,
-       sj.KeyInput,
+import sj.KeyInput,
        sj.LobbyWorld,
        sj.ProgramSet,
+       sj.SelectScene,
        sj.SceneInterface,
        sj.TitleTextProgram;
 
 ///
-class TitleScene : AbstractScene {
+class TitleScene : SceneInterface {
  public:
   ///
   enum TitleMatrix = {
@@ -26,20 +26,40 @@ class TitleScene : AbstractScene {
   ///
   this(LobbyWorld lobby, ProgramSet program) {
     lobby_ = lobby;
-    SetupLobby(lobby);
-
     title_ = program.Get!TitleTextProgram;
   }
 
   ///
-  void SetupSceneDependency(SceneInterface next_scene) {
-    next_scene_ = next_scene;
+  void SetupSceneDependency(SelectScene select) {
+    select_scene_ = select;
   }
 
-  override void Update(KeyInput input) {
+  ///
+  void Initialize() {
+    lobby_.view.pos    = vec3(0, -0.15, -1);
+    lobby_.view.target = vec3(0, -0.15, 0);
+    lobby_.view.up     = vec3(0, 1, 0);
+
+    lobby_.background.inner_color = vec4(0.9, 0.9, 0.9, 1);
+    lobby_.background.outer_color = vec4(-0.1, -0.1, -0.1, 1);
+
+    lobby_.light_pos                    = vec3(0, 9, -1);
+    lobby_.cube_material.diffuse_color  = vec3(0.1, 0.1, 0.1);
+    lobby_.cube_material.light_color    = vec3(1, 0.8, 0.8);
+    lobby_.cube_material.light_power    = vec3(100, 100, 100);
+    lobby_.cube_material.ambient_color  = vec3(0.2, 0.2, 0.2);
+    lobby_.cube_material.specular_color = vec3(0.5, 0.2, 0.2);
+
+    frame_ = 0;
+  }
+  override SceneInterface Update(KeyInput input) {
     lobby_.cube_matrix.rotation += vec3(PI/600, PI/600, PI/600);
 
-    if (input.down) GoNextScene(next_scene_);
+    if (input.down) {
+      select_scene_.Initialize();
+      return select_scene_;
+    }
+    return this;
   }
   override void Draw() {
     lobby_.Draw();
@@ -47,23 +67,7 @@ class TitleScene : AbstractScene {
   }
 
  private:
-  static void SetupLobby(LobbyWorld lobby) {
-    lobby.view.pos    = vec3(0, -0.15, -1);
-    lobby.view.target = vec3(0, -0.15, 0);
-    lobby.view.up     = vec3(0, 1, 0);
-
-    lobby.background.inner_color = vec4(0.9, 0.9, 0.9, 1);
-    lobby.background.outer_color = vec4(-0.1, -0.1, -0.1, 1);
-
-    lobby.light_pos                    = vec3(0, 9, -1);
-    lobby.cube_material.diffuse_color  = vec3(0.1, 0.1, 0.1);
-    lobby.cube_material.light_color    = vec3(1, 0.8, 0.8);
-    lobby.cube_material.light_power    = vec3(100, 100, 100);
-    lobby.cube_material.ambient_color  = vec3(0.2, 0.2, 0.2);
-    lobby.cube_material.specular_color = vec3(0.5, 0.2, 0.2);
-  }
-
-  SceneInterface next_scene_;
+  SelectScene select_scene_;
 
   LobbyWorld lobby_;
 

@@ -7,27 +7,23 @@ import sj.AbstractScene,
        sj.KeyInput,
        sj.LobbyWorld,
        sj.ProgramSet,
-       sj.SceneInterface;
+       sj.SceneInterface,
+       sj.util.audio;
 
 ///
 class SelectScene : AbstractScene {
  public:
-  ///
-  enum SpotlightSound = cast(ubyte[]) import("sounds/spotlight.wav");
 
   ///
   this(LobbyWorld lobby, ProgramSet program) {
     lobby_ = lobby;
 
-    const buf = SpotlightSound;
-    spotlight_buffer_ = sfSoundBuffer_createFromMemory(buf.ptr, buf.length);
-    sound_            = sfSound_create();
-
-    first_ = true;
+    sound_ = sfSound_create();
+    soundres_.Load();
   }
   ~this() {
     sfSound_destroy(sound_);
-    sfSoundBuffer_destroy(spotlight_buffer_);
+    soundres_.Unload();
   }
 
   ///
@@ -36,12 +32,6 @@ class SelectScene : AbstractScene {
   }
 
   override void Update(KeyInput input) {
-    if (first_) {
-      sfSound_setBuffer(sound_, spotlight_buffer_);
-      sfSound_play(sound_);
-    }
-    first_ = false;
-
     if (input.up) GoNextScene(title_scene_);
   }
   override void Draw() {
@@ -49,13 +39,25 @@ class SelectScene : AbstractScene {
   }
 
  private:
+  static struct SoundResources {
+   public:
+    enum Spotlight = cast(ubyte[]) import("sounds/spotlight.wav");
+
+    sfSoundBuffer* spotlight;
+
+    void Load() {
+      spotlight = CreateSoundBufferFromBuffer(Spotlight);
+    }
+    void Unload() {
+      sfSoundBuffer_destroy(spotlight);
+    }
+  }
+
   SceneInterface title_scene_;
 
   LobbyWorld lobby_;
 
-  sfSoundBuffer* spotlight_buffer_;
-
   sfSound* sound_;
 
-  bool first_;
+  SoundResources soundres_;
 }

@@ -1,6 +1,7 @@
-.dub
-.bin
-!/.bin
+.dub/
 dub.selections.json
+
+**/.bin/*
+!/.bin/*
 
 *.swp

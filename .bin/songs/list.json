@@ -6,8 +6,7 @@
     "script": "test-60bpm.sj",
 
     "preview": {
-      "play-offset": 1000,
-      "play-loop": 2000,
+      "play-offset": 0,
       "bg-inner-color": [0.8, 0.8, 0.8, 1],
       "bg-outer-color": [0.1, 0.1, 0.1, 1]
     }

@@ -75,6 +75,11 @@ class Song {
   }
 
   ///
+  void StopPlaying() {
+    sfMusic_stop(music_);
+  }
+
+  ///
   sjplayer.Context CreatePlayerContext() const {
     assert(false);  // TODO:
   }

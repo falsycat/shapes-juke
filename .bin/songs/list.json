@@ -10,5 +10,17 @@
       "bg-inner-color": [0.8, 0.8, 0.8, 1],
       "bg-outer-color": [0.1, 0.1, 0.1, 1]
     }
+  },
+  {
+    "name": "Cranky - V.L.S.I.",
+    "bpm": 60,
+    "music":  "Cranky-VLSI_short.ogg",
+    "script": "Cranky-VLSI_short.sj",
+
+    "preview": {
+      "play-offset": 38000,
+      "bg-inner-color": [0.6, 0.6, 0.7, 1],
+      "bg-outer-color": [0.1, 0.1, 0.1, 1]
+    }
   }
 ]

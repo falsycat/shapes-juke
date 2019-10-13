@@ -219,7 +219,7 @@ private class SongAppearState : AbstractSceneState {
 
     const song = owner.songs_[song_index_];
     with (owner.text_) {
-      const w = LoadGlyphs(vec2i(256, 64),
+      const w = LoadGlyphs(vec2i(1024, 64),
           song.name.to!dstring, vec2i(TitleTextSize, 0), owner.fonts_.gothic);
       matrix.scale       = TitleTextScale;
       matrix.translation = TitleTextTranslation + vec3(-w/2*matrix.scale.x, 0, 0);
@@ -306,15 +306,20 @@ private class SongWaitState : AbstractSceneState {
       }
     }
 
-    if (input.right) {
-      song.StopPlaying();
-      song_appear_state_.Initialize(++song_index_%owner.songs_.length);
-      return CreateResult(song_appear_state_);
-    }
     if (input.up) {
       song.StopPlaying();
       owner.title_scene_.Initialize();
       return CreateResult(owner.title_scene_);
+    }
+    if (input.left && song_index_ != 0) {
+      song.StopPlaying();
+      song_appear_state_.Initialize(song_index_-1);
+      return CreateResult(song_appear_state_);
+    }
+    if (input.right && song_index_+1 < owner.songs_.length) {
+      song.StopPlaying();
+      song_appear_state_.Initialize(song_index_+1);
+      return CreateResult(song_appear_state_);
     }
 
     ++frame_;

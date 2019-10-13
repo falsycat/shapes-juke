@@ -62,12 +62,14 @@ class TextProgram {
       float vx = vert_.x / model_width;
       vec2  uv = uv_;
 
+      uv.y = choose(3, frame%4, uv.y,
+          choose(0, vx, 0.25, clamp(uv.y, 0, 0.4), uv.y));
       uv.y = choose(15, frame%18, uv.y,
-          choose(0.1, vx, 0.2, clamp(uv.y, 0, 0.6), uv.y));
+          choose(0.1, vx, 0.2, clamp(uv.y, 0.6, 1), uv.y));
       uv.y = choose(8, frame%14, uv.y,
           choose(0.1, vx, 0.6, clamp(uv.y, 0, 0.8), uv.y));
       uv.y = choose(21, frame%29, uv.y,
-          choose(0.2, vx, 0.3, clamp(uv.y, 0.1, 1), uv.y));
+          choose(0.2, vx, 0.3, clamp(uv.y, 0.3, 1), uv.y));
       uv.y = choose(20, frame%23, uv.y,
           choose(0.4, vx, 0.6, clamp(uv.y, 0.4, 1), uv.y));
       uv.y = choose(5, frame%6, uv.y,

@@ -47,6 +47,8 @@ class Text {
     model_width_ = 0;
     int bmp_width;
     foreach (c; text) {
+      if (c == ' ') continue;
+
       with (gloader) {
         character = c;
         Load(face).enforce;

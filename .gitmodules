@@ -4,3 +4,6 @@
 [submodule "thirdparty/gl4d"]
 	path = thirdparty/gl4d
 	url = https://gogs.enigmatical.work/kajironagi/gl4d.git
+[submodule "thirdparty/ft4d"]
+	path = thirdparty/ft4d
+	url = https://gogs.enigmatical.work/KajiroNagi/ft4d.git

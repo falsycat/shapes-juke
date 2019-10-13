@@ -6,7 +6,7 @@ import derelict.sfml2.audio,
        derelict.sfml2.system,
        derelict.sfml2.window;
 
-import gl4d;
+import gl4d, ft4d;
 
 import sj.Args,
        sj.Game,
@@ -62,6 +62,8 @@ private KeyInput GetKeyInput() {
 }
 
 private auto CreateWindow(ref in Args args) {
+  ft.Initialize();
+
   DerelictSFML2Audio   .load();
   DerelictSFML2Graphics.load();
   DerelictSFML2System  .load();
@@ -93,6 +95,7 @@ private auto CreateWindow(ref in Args args) {
    public:
     ~this() {
       sfWindow_destroy(window_);
+      ft.Dispose();
     }
     void Flush() {
       sfWindow_display(window_);

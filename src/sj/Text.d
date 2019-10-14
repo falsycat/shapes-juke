@@ -96,7 +96,7 @@ class Text {
       *vertices_ptr++ = uvright;
       *vertices_ptr++ = uvbottom;
 
-      bmp_width    += srcsz.x;
+      bmp_width    += srcsz.x + 1;
       model_width_ += advance;
       ++glyph_count;
     }

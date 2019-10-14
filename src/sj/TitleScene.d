@@ -39,22 +39,6 @@ class TitleScene : SceneInterface {
   this(LobbyWorld lobby, ProgramSet program) {
     lobby_ = lobby;
     title_ = program.Get!TitleTextProgram;
-
-    lobby_.view.pos    = vec3(0, -0.15, -1);
-    lobby_.view.target = vec3(0, -0.15, 0);
-    lobby_.view.up     = vec3(0, 1, 0);
-
-    lobby_.background.inner_color = BgInnerColor;
-    lobby_.background.outer_color = BgOuterColor;
-
-    lobby_.light_pos                    = vec3(0, 9, -1);
-    lobby_.cube_material.diffuse_color  = vec3(0.1, 0.1, 0.1);
-    lobby_.cube_material.light_color    = vec3(1, 0.8, 0.8);
-    lobby_.cube_material.light_power    = vec3(100, 100, 100);
-    lobby_.cube_material.ambient_color  = vec3(0.2, 0.2, 0.2);
-    lobby_.cube_material.specular_color = vec3(0.5, 0.2, 0.2);
-
-    lobby_.cube_interval = CubeInterval;
   }
 
   ///

@@ -1,9 +1,9 @@
-actor [0..100] {
+actor [0..1] {
   color_a := 1;
 
   clip_left := 0.1;
 }
-background [0..100] {
+background [0..1] {
   inner_r = 0.8;
   inner_g = 0.8;
   inner_b = 0.8;
@@ -14,7 +14,7 @@ background [0..100] {
   outer_b = 0;
   outer_a = 1;
 }
-posteffect [0..100] {
+posteffect [0..1] {
   clip_left  := 0.1;
   clip_right := 0.1;
 }

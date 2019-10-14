@@ -7,6 +7,7 @@ static import sjplayer;
 
 import sj.KeyInput,
        sj.Music,
+       sj.ResultScene,
        sj.SceneInterface;
 
 ///
@@ -20,7 +21,8 @@ class PlayScene : SceneInterface {
   }
 
   ///
-  void SetupSceneDependency() {  // TODO: add result scene
+  void SetupSceneDependency(ResultScene result) {
+    result_scene_ = result;
   }
 
   ///
@@ -31,7 +33,15 @@ class PlayScene : SceneInterface {
     music_.PlayForGame();
   }
   override SceneInterface Update(KeyInput input) {
-    context_.OperateScheduledControllers(music_.beat);
+    const beat = music_.beat;
+
+    if (beat >= context_.length) {
+      music_.StopPlaying();
+      result_scene_.Initialize(music_, 0);  // TODO: pass a proper score
+      return result_scene_;
+    }
+
+    context_.OperateScheduledControllers(beat);
 
     // TODO: actor accelaration
 
@@ -52,6 +62,8 @@ class PlayScene : SceneInterface {
   }
 
  private:
+  ResultScene result_scene_;
+
   Music            music_;
   sjplayer.Context context_;
 }

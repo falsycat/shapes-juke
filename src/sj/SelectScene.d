@@ -28,11 +28,11 @@ import sj.FontSet,
 class SelectScene : SceneInterface {
  public:
   ///
-  enum DescTextScale = vec3(-0.002, 0.002, 0.002);
+  enum DescTextScale = vec3(-0.1, 0.1, 0.1);
   ///
   enum DescTextTranslation = vec3(0, -0.3, 0);
   ///
-  enum DescTextColor = vec4(0.02, 0.02, 0.02, 1);
+  enum DescTextColor = vec4(0.2, 0.2, 0.2, 1);
 
   ///
   this(LobbyWorld lobby, ProgramSet program, FontSet fonts, Music[] music_list) {
@@ -140,7 +140,7 @@ private abstract class AbstractSceneState {
   enum LoadingCubeInterval      = 0.06;
 
   enum TitleTextSize        = 40;
-  enum TitleTextScale       = vec3(-0.002, 0.002, 0.002);
+  enum TitleTextScale       = vec3(-0.1, 0.1, 0.1);
   enum TitleTextTranslation = vec3(0, -0.4, 0);
 
   enum TitleTextRandomTranslationRange = 0.02;
@@ -293,12 +293,6 @@ private class MusicWaitState : AbstractSceneState {
   void Initialize(size_t music_index) {
     music_index_ = music_index;
     music.PlayForPreview();
-
-    with (owner.title_text_) {
-      matrix.scale       = TitleTextScale;
-      matrix.translation =
-        TitleTextTranslation + vec3(-modelWidth/2*matrix.scale.x, 0, 0);
-    }
   }
   override UpdateResult Update(KeyInput input) {
     owner.lobby_.cube_matrix.rotation += CubeRotationSpeed;

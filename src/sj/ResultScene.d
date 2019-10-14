@@ -41,17 +41,17 @@ class ResultScene : SceneInterface {
   enum CubeInterval = 0.005;
 
   ///
-  enum DescTextScale = vec3(-0.002, 0.002, 0.002);
+  enum DescTextScale = vec3(-0.1, 0.1, 0.1);
   ///
   enum DescTextTranslation = vec3(0, -0.3, 0);
   ///
   enum DescTextColor = vec4(0.2, 0.2, 0.2, 1);
   ///
-  enum RankTextScale = vec3(-0.002, 0.002, 0.002);
+  enum RankTextScale = vec3(-0.1, 0.1, 0.1);
   ///
   enum RankTextTranslation = vec3(0, -0.5, 0);
   ///
-  enum ScoreTextScale = vec3(-0.002, 0.002, 0.002);
+  enum ScoreTextScale = vec3(-0.1, 0.1, 0.1);
   ///
   enum ScoreTextTranslation = vec3(0, -0.55, 0);
 

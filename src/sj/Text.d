@@ -47,30 +47,36 @@ class Text {
     int    bmp_width;
     size_t glyph_count;
     foreach (c; text) {
-      if (c == ' ') continue;
-
       with (gloader) {
         character = c;
         Load(face).enforce;
       }
+
+      const m = &face.glyph.metrics;
+      const mwidth  = m.width       *1f / face.max_advance_width;
+      const mheight = m.height      *1f / face.max_advance_width;
+      const advance = m.horiAdvance *1f / face.max_advance_width;
+      const bear_x  = m.horiBearingX*1f / face.max_advance_width;
+      const bear_y  = m.horiBearingY*1f / face.max_advance_width;
+
+      if (mwidth == 0 || mheight == 0) {
+        model_width_ += advance;
+        continue;
+      }
+
       const bitmap = face.EnforceGlyphBitmap();
       const srcsz  = vec2i(bitmap.width, bitmap.rows);
       CopyRawPixels(bitmap.buffer, srcsz, pixels.ptr, texsz, vec2i(bmp_width, 0));
-
-      const m         = &face.glyph.metrics;
-      const bearing_x = m.horiBearingX*1f / m.width  * srcsz.x;
-      const bearing_y = m.horiBearingY*1f / m.height * srcsz.y;
-      const advance   = m.horiAdvance *1f / m.width  * srcsz.x;
-
-      const posleft   = model_width_ + bearing_x;
-      const posright  = posleft + srcsz.x;
-      const postop    = bearing_y;
-      const posbottom = postop - srcsz.y;
 
       const uvleft   = bmp_width*1f / texsz.x;
       const uvright  = (bmp_width + srcsz.x)*1f / texsz.x;
       const uvtop    = 0f;
       const uvbottom = srcsz.y*1f / texsz.y;
+
+      const posleft   = model_width_ + bear_x;
+      const posright  = posleft + mwidth;
+      const postop    = bear_y;
+      const posbottom = postop - mheight;
 
       *vertices_ptr++ = posleft;
       *vertices_ptr++ = postop;

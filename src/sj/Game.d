@@ -8,6 +8,7 @@ import std.algorithm,
 
 import sj.AbstractGame,
        sj.FontSet,
+       sj.LoadingScene,
        sj.LobbyWorld,
        sj.Music,
        sj.ProgramSet,
@@ -25,6 +26,8 @@ class Game : AbstractGame {
     const music_list = buildPath(music_dir, "list.json").readText;
     music_list_ = Music.CreateFromJson(music_list.parseJSON, music_dir);
 
+    // To prevent working GC, all objects should be created at here.
+
     fonts_    = new FontSet;
     programs_ = new ProgramSet;
 
@@ -32,9 +35,11 @@ class Game : AbstractGame {
 
     title_  = new TitleScene(lobby_, programs_);
     select_ = new SelectScene(lobby_, programs_, fonts_, music_list_);
+    load_   = new LoadingScene(lobby_, programs_, fonts_);
 
-    title_.SetupSceneDependency(select_);
-    select_.SetupSceneDependency(title_);
+    title_ .SetupSceneDependency(select_);
+    select_.SetupSceneDependency(title_, load_);
+    load_  .SetupSceneDependency();  // TODO: pass play scene
 
     title_.Initialize();
     super(title_);
@@ -43,6 +48,7 @@ class Game : AbstractGame {
   ~this() {
     title_.destroy();
     select_.destroy();
+    load_.destroy();
 
     lobby_.destroy();
 
@@ -60,6 +66,7 @@ class Game : AbstractGame {
 
   LobbyWorld lobby_;
 
-  TitleScene  title_;
-  SelectScene select_;
+  TitleScene   title_;
+  SelectScene  select_;
+  LoadingScene load_;
 }

@@ -12,6 +12,7 @@ import gl4d;
 
 import sj.FontSet,
        sj.KeyInput,
+       sj.LoadingScene,
        sj.LobbyWorld,
        sj.Music,
        sj.ProgramSet,
@@ -48,8 +49,9 @@ class SelectScene : SceneInterface {
   }
 
   ///
-  void SetupSceneDependency(TitleScene title_scene) {
+  void SetupSceneDependency(TitleScene title_scene, LoadingScene load_scene) {
     title_scene_ = title_scene;
+    load_scene_  = load_scene;
   }
 
   ///
@@ -88,7 +90,8 @@ class SelectScene : SceneInterface {
     }
   }
 
-  TitleScene title_scene_;
+  TitleScene   title_scene_;
+  LoadingScene load_scene_;
 
   LobbyWorld lobby_;
 
@@ -267,8 +270,6 @@ private class MusicWaitState : AbstractSceneState {
 
   void Initialize(size_t music_index) {
     music_index_ = music_index;
-
-    auto music = owner.music_list_[music_index_];
     music.PlayForPreview();
 
     with (owner.text_) {
@@ -285,6 +286,12 @@ private class MusicWaitState : AbstractSceneState {
       owner.title_scene_.Initialize();
       return CreateResult(owner.title_scene_);
     }
+    if (input.down) {
+      music.StopPlaying();
+      owner.load_scene_.Initialize(music);
+      return CreateResult(owner.load_scene_);
+    }
+
     if (input.left && music_index_ != 0) {
       music.StopPlaying();
       music_appear_state_.Initialize(music_index_-1);

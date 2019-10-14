@@ -28,21 +28,39 @@ import sj.FontSet,
 class SelectScene : SceneInterface {
  public:
   ///
+  enum DescTextScale = vec3(-0.002, 0.002, 0.002);
+  ///
+  enum DescTextTranslation = vec3(0, -0.3, 0);
+  ///
+  enum DescTextColor = vec4(0.02, 0.02, 0.02, 1);
+
+  ///
   this(LobbyWorld lobby, ProgramSet program, FontSet fonts, Music[] music_list) {
     lobby_      = lobby;
     music_list_ = music_list.dup;
 
-    text_  = new Text(program.Get!TextProgram);
     fonts_ = fonts;
+    description_text_ = new Text(program.Get!TextProgram);
+    title_text_       = new Text(program.Get!TextProgram);
 
     sound_ = sfSound_create();
     soundres_.Load();
 
     first_state_ = new FirstSetupState(this);
     status_      = first_state_;
+
+    with (description_text_) {
+      const w = LoadGlyphs(
+          vec2i(256, 32), "MUSIC SELECT", vec2i(16, 0), fonts_.gothic);
+      matrix.scale       = DescTextScale;
+      matrix.translation =
+        DescTextTranslation + vec3(-w/2*matrix.scale.x, 0, 0);
+      color = DescTextColor;
+    }
   }
   ~this() {
-    text_.destroy();
+    description_text_.destroy();
+    title_text_.destroy();
 
     sfSound_destroy(sound_);
     soundres_.Unload();
@@ -72,7 +90,10 @@ class SelectScene : SceneInterface {
   }
   override void Draw() {
     lobby_.Draw();
-    text_.Draw(lobby_.Projection, lobby_.view.Create());
+
+    const view = lobby_.view.Create();
+    description_text_.Draw(lobby_.Projection, view);
+    title_text_      .Draw(lobby_.Projection, view);
   }
 
  private:
@@ -95,7 +116,8 @@ class SelectScene : SceneInterface {
 
   LobbyWorld lobby_;
 
-  Text    text_;
+  Text    description_text_;
+  Text    title_text_;
   FontSet fonts_;
 
   Music[] music_list_;
@@ -164,7 +186,7 @@ private class FirstSetupState : AbstractSceneState {
 
       cube_interval_ease_ = Easing!float(cube_interval, LoadingCubeInterval);
     }
-    owner.text_.Clear();
+    owner.title_text_.Clear();
   }
   override UpdateResult Update(KeyInput input) {
     const ratio = anime_.Update();
@@ -223,7 +245,7 @@ private class MusicAppearState : AbstractSceneState {
     sfSound_play(owner.sound_);
 
     const music = owner.music_list_[music_index_];
-    with (owner.text_) {
+    with (owner.title_text_) {
       const w = LoadGlyphs(vec2i(1024, 64),
           music.name.to!dstring, vec2i(TitleTextSize, 0), owner.fonts_.gothic);
       matrix.scale       = TitleTextScale;
@@ -272,7 +294,7 @@ private class MusicWaitState : AbstractSceneState {
     music_index_ = music_index;
     music.PlayForPreview();
 
-    with (owner.text_) {
+    with (owner.title_text_) {
       matrix.scale       = TitleTextScale;
       matrix.translation =
         TitleTextTranslation + vec3(-modelWidth/2*matrix.scale.x, 0, 0);

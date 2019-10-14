@@ -79,7 +79,7 @@ class SelectScene : SceneInterface {
   }
   override SceneInterface Update(KeyInput input) {
     SceneInterface     next_scene = this;
-    AbstractSceneState next_state;
+    AbstractSceneState next_state = status_;
 
     status_.Update(input).visit!(
         (SceneInterface     scene) { next_scene = scene; },

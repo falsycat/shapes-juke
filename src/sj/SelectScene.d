@@ -90,10 +90,7 @@ class SelectScene : SceneInterface {
   }
   override void Draw() {
     lobby_.Draw();
-
-    const view = lobby_.view.Create();
-    description_text_.Draw(lobby_.Projection, view);
-    title_text_      .Draw(lobby_.Projection, view);
+    status_.Draw();
   }
 
  private:
@@ -151,6 +148,9 @@ private abstract class AbstractSceneState {
   }
 
   abstract UpdateResult Update(KeyInput input);
+
+  void Draw() {
+  }
 
   @property SelectScene owner() {
     return owner_;
@@ -269,6 +269,11 @@ private class MusicAppearState : AbstractSceneState {
     }
     return CreateResult(this);
   }
+  override void Draw() {
+    const view = owner.lobby_.view.Create();
+    owner.description_text_.Draw(owner.lobby_.Projection, view);
+    owner.title_text_      .Draw(owner.lobby_.Projection, view);
+  }
 
  private:
   MusicWaitState music_wait_state_;
@@ -320,6 +325,11 @@ private class MusicWaitState : AbstractSceneState {
     }
 
     return CreateResult(this);
+  }
+  override void Draw() {
+    const view = owner.lobby_.view.Create();
+    owner.description_text_.Draw(owner.lobby_.Projection, view);
+    owner.title_text_      .Draw(owner.lobby_.Projection, view);
   }
 
  private:

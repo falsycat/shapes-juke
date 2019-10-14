@@ -12,6 +12,7 @@ import sj.AbstractGame,
        sj.LoadingScene,
        sj.LobbyWorld,
        sj.Music,
+       sj.PlayScene,
        sj.ProgramSet,
        sj.SelectScene,
        sj.TitleScene;
@@ -37,10 +38,12 @@ class Game : AbstractGame {
     title_  = new TitleScene(lobby_, programs_);
     select_ = new SelectScene(lobby_, programs_, fonts_, music_list_);
     load_   = new LoadingScene(args, lobby_, programs_, fonts_);
+    play_   = new PlayScene();
 
     title_ .SetupSceneDependency(select_);
     select_.SetupSceneDependency(title_, load_);
-    load_  .SetupSceneDependency();  // TODO: pass play scene
+    load_  .SetupSceneDependency(play_);
+    play_  .SetupSceneDependency();  // TODO: pass result scene
 
     title_.Initialize();
     super(title_);
@@ -50,6 +53,7 @@ class Game : AbstractGame {
     title_.destroy();
     select_.destroy();
     load_.destroy();
+    play_.destroy();
 
     lobby_.destroy();
 
@@ -70,4 +74,5 @@ class Game : AbstractGame {
   TitleScene   title_;
   SelectScene  select_;
   LoadingScene load_;
+  PlayScene    play_;
 }

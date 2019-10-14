@@ -95,6 +95,11 @@ class Music {
   @property ref const(PreviewConfig) preview() const {
     return preview_;
   }
+  ///
+  @property float beat() const {
+    const msecs = sfMusic_getPlayingOffset(music_).microseconds * 1e-6f;
+    return msecs / 60f * bpm_;
+  }
 
  private:
   static float GetNumericAsFloatFromJson(in JSONValue json) {

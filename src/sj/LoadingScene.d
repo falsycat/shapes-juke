@@ -8,6 +8,7 @@ import sj.Args,
        sj.KeyInput,
        sj.LobbyWorld,
        sj.Music,
+       sj.PlayScene,
        sj.ProgramSet,
        sj.SceneInterface;
 
@@ -29,7 +30,8 @@ class LoadingScene : SceneInterface {
   }
 
   ///
-  void SetupSceneDependency() {  // TODO: add play scene
+  void SetupSceneDependency(PlayScene play) {  // TODO: add play scene
+    play_scene_ = play;
   }
 
   ///
@@ -41,9 +43,10 @@ class LoadingScene : SceneInterface {
   override SceneInterface Update(KeyInput input) {
     if (first_drawn_) {
       // TODO: parallelize contex creation
-      // auto context = music_.CreatePlayerContext(
-      //     vec2i(args_.window_size, args_.window_size), programs_.player);
-      // TODO: pass the context to play scene
+      auto context = music_.CreatePlayerContext(
+          vec2i(args_.window_size, args_.window_size), programs_.player);
+      play_scene_.Initialize(music_, context);
+      return play_scene_;
     }
     return this;
   }
@@ -55,11 +58,13 @@ class LoadingScene : SceneInterface {
  private:
   const Args args_;
 
-  LobbyWorld lobby_;
+  PlayScene play_scene_;
 
   ProgramSet programs_;
 
   FontSet fonts_;
+
+  LobbyWorld lobby_;
 
   Music music_;
 

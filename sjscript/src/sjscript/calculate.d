@@ -7,6 +7,7 @@ import std.algorithm,
        std.format,
        std.math,
        std.traits,
+       std.typecons,
        std.variant;
 
 import sjscript.Expression,
@@ -22,12 +23,17 @@ static assert(IsVarStore!(float[string]));
 struct StandardVarStore {
  public:
   static float opIndex(string name) {
+    const v = GetByName(name);
+    enforce(!v.isNull);
+    return v.get;
+  }
+  static Nullable!float GetByName(string name) {
     switch (name) {
-      case "PI":   return PI;
-      case "PI_2": return PI_2;
-      case "PI_4": return PI_4;
-      case "E":    return E;
-      default: throw new Exception("undefined variable %s".format(name));
+      case "PI":   return Nullable!float(PI);
+      case "PI_2": return Nullable!float(PI_2);
+      case "PI_4": return Nullable!float(PI_4);
+      case "E":    return Nullable!float(E);
+      default: return Nullable!float.init;
     }
   }
   static assert(IsVarStore!StandardVarStore);

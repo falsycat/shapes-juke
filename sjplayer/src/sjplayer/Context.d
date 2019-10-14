@@ -21,7 +21,8 @@ import sjplayer.Actor,
        sjplayer.PostEffectControllerInterface,
        sjplayer.ProgramSet,
        sjplayer.ScheduledControllerInterface,
-       sjplayer.VarStore;
+       sjplayer.VarStore,
+       sjplayer.VarStoreScheduledController;
 
 ///
 class Context {
@@ -54,6 +55,10 @@ class Context {
         tuple(
           "circle",
           CircleElementScheduledControllerFactory(programs, varstore),
+        ),
+        tuple(
+          "variable",
+          VarStoreScheduledControllerFactory(varstore),
         ),
       );
     foreach (ref factory; factories) {

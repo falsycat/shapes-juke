@@ -21,10 +21,19 @@ class VarStore : VarStoreInterface {
       case "actor_x": return Nullable!float(actor_.pos.x);
       case "actor_y": return Nullable!float(actor_.pos.y);
 
-      default: return Nullable!float.init;
+      default:
     }
+    return name in user_vars_?
+      Nullable!float(user_vars_[name]): Nullable!float.init;
+  }
+
+  ///
+  void opIndexAssign(float value, string name) {
+    user_vars_[name] = value;
   }
 
  private:
   const Actor actor_;
+
+  float[string] user_vars_;
 }

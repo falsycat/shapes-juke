@@ -18,14 +18,17 @@ posteffect [0..1] {
   clip_left  := 0.1;
   clip_right := 0.1;
 }
+variable [0..3.5] {
+  hoge = 1-time;
+}
 
-$repeat i 1 {
+$repeat i 2 {
   $repeat j 20 {
-    circle [$i..$i+2] {
+    circle [$i+1..$i+3] {
       color_r := 0.8;
       color_g := 0.1;
       color_b := 0.1;
-      color_a := 1;
+      color_a  = hoge;
 
       damage       := 0.1;
       nearness_coe := 0.01;

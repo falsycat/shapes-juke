@@ -74,8 +74,7 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
     }
     auto temp = varstore_[name];
     if (!temp.isNull) return temp;
-    // TODO: std constants
-    return Nullable!float.init;
+    return StandardVarStore.GetByName(name);
   }
   void SetParameter(ref in Parameter param, ref in VarStore vars) {
     if (param.name.length < 2 || param.name[0..2] != "__") {

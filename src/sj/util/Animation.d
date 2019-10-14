@@ -12,11 +12,16 @@ struct Animation {
   }
   ///
   float Update() {
-    return (frame_++ * 1f / frame_count_).clamp(0f, 1f);
+    scope(exit) ++frame_;
+    return ratio;
   }
   ///
   @property bool isFinished() const {
     return frame_ >= frame_count_;
+  }
+  ///
+  @property float ratio() const {
+    return (frame_*1f / frame_count_).clamp(0f, 1f);
   }
   ///
   @property size_t frame() const {

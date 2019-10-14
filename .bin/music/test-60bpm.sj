@@ -19,7 +19,7 @@ posteffect [0..1] {
   clip_right := 0.1;
 }
 
-$repeat i 10 {
+$repeat i 1 {
   $repeat j 20 {
     circle [$i..$i+2] {
       color_r := 0.8;

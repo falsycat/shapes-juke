@@ -39,6 +39,8 @@ class PlayScene : SceneInterface {
     music_   = music;
     context_ = context;
 
+    score_ = BaseScore;
+
     music_.PlayForGame();
   }
   override SceneInterface Update(KeyInput input) {

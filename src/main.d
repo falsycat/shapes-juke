@@ -19,7 +19,7 @@ int main(string[] unparsed_args) {
   if (!ParseArgs(unparsed_args, args)) return 1;
 
   auto win  = CreateWindow(args);
-  auto game = new Game;
+  auto game = new Game(args);
   scope(exit) game.destroy();
 
   while (true) {

@@ -21,13 +21,13 @@ class ProgramSet {
 
   ///
   this() {
-    for_player_ = new sjplayer.ProgramSet;
+    player_ = new sjplayer.ProgramSet;
     foreach (ref p; programs_) {
       p = new typeof(p);
     }
   }
   ~this() {
-    for_player_.destroy();
+    player_.destroy();
     foreach (p; programs_) {
       p.destroy();
     }
@@ -39,12 +39,17 @@ class ProgramSet {
     static if (index >= 0) {
       return programs_[index];
     } else {
-      return for_player_.Get!T;
+      return player_.Get!T;
     }
   }
 
+  ///
+  @property sjplayer.ProgramSet player() {
+    return player_;
+  }
+
  private:
-  sjplayer.ProgramSet for_player_;
+  sjplayer.ProgramSet player_;
 
   Programs programs_;
 }

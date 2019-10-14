@@ -4,6 +4,7 @@ module sj.Music;
 import std.array,
        std.conv,
        std.exception,
+       std.file,
        std.json,
        std.path,
        std.string;
@@ -80,8 +81,10 @@ class Music {
   }
 
   ///
-  sjplayer.Context CreatePlayerContext() const {
-    assert(false);  // TODO:
+  sjplayer.Context CreatePlayerContext(
+      vec2i winsz, sjplayer.ProgramSet programs) const {
+    return sjplayer.CreateContextFromText(
+        script_path_.readText, winsz, programs);
   }
 
   ///

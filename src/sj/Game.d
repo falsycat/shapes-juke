@@ -7,6 +7,7 @@ import std.algorithm,
        std.path;
 
 import sj.AbstractGame,
+       sj.Args,
        sj.FontSet,
        sj.LoadingScene,
        sj.LobbyWorld,
@@ -19,7 +20,7 @@ import sj.AbstractGame,
 class Game : AbstractGame {
  public:
   ///
-  this() {
+  this(in ref Args args) {
     const path = thisExePath.dirName;
 
     const music_dir  = buildPath(path, "music");
@@ -35,7 +36,7 @@ class Game : AbstractGame {
 
     title_  = new TitleScene(lobby_, programs_);
     select_ = new SelectScene(lobby_, programs_, fonts_, music_list_);
-    load_   = new LoadingScene(lobby_, programs_, fonts_);
+    load_   = new LoadingScene(args, lobby_, programs_, fonts_);
 
     title_ .SetupSceneDependency(select_);
     select_.SetupSceneDependency(title_, load_);

@@ -120,6 +120,10 @@ private class RuleSet {
   static Expression ParseExpressionFromFirstTerm(Term term) {
     return Expression([term]);
   }
+  static Expression ParseExpressionFromFirstNegativeTerm(
+      @(TokenType.Sub) Token, Term term) {
+    return Expression([term * -1f]);
+  }
   static Expression ParseExpressionFromFollowingAddedTerm(
       Expression expr, @(TokenType.Add) Token, Term term) {
     return expr + term;

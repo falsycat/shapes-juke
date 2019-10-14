@@ -9,9 +9,9 @@ import std.algorithm,
 import sj.AbstractGame,
        sj.FontSet,
        sj.LobbyWorld,
+       sj.Music,
        sj.ProgramSet,
        sj.SelectScene,
-       sj.Song,
        sj.TitleScene;
 
 ///
@@ -21,9 +21,9 @@ class Game : AbstractGame {
   this() {
     const path = thisExePath.dirName;
 
-    const songs_dir  = buildPath(path, "songs");
-    const songs_list = buildPath(songs_dir, "list.json").readText;
-    songs_ = Song.CreateFromJson(songs_list.parseJSON, songs_dir);
+    const music_dir  = buildPath(path, "music");
+    const music_list = buildPath(music_dir, "list.json").readText;
+    music_list_ = Music.CreateFromJson(music_list.parseJSON, music_dir);
 
     fonts_    = new FontSet;
     programs_ = new ProgramSet;
@@ -31,7 +31,7 @@ class Game : AbstractGame {
     lobby_ = new LobbyWorld(programs_);
 
     title_  = new TitleScene(lobby_, programs_);
-    select_ = new SelectScene(lobby_, programs_, fonts_, songs_);
+    select_ = new SelectScene(lobby_, programs_, fonts_, music_list_);
 
     title_.SetupSceneDependency(select_);
     select_.SetupSceneDependency(title_);
@@ -49,11 +49,11 @@ class Game : AbstractGame {
     fonts_.destroy();
     programs_.destroy();
 
-    songs_.each!destroy();
+    music_list_.each!destroy();
   }
 
  private:
-  Song[] songs_;
+  Music[] music_list_;
 
   FontSet    fonts_;
   ProgramSet programs_;

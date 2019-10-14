@@ -1,5 +1,5 @@
 /// License: MIT
-module sj.Song;
+module sj.Music;
 
 import std.array,
        std.conv,
@@ -16,7 +16,7 @@ import gl4d;
 static import sjplayer;
 
 ///
-class Song {
+class Music {
  public:
   ///
   static struct PreviewConfig {
@@ -31,12 +31,12 @@ class Song {
   }
 
   ///
-  static Song[] CreateFromJson(in JSONValue json, string basepath) {
-    auto result = appender!(Song[]);
+  static Music[] CreateFromJson(in JSONValue json, string basepath) {
+    auto result = appender!(Music[]);
     result.reserve(json.array.length);
 
     foreach (item; json.array) {
-      result ~= new Song(item, basepath);
+      result ~= new Music(item, basepath);
     }
     return result[];
   }

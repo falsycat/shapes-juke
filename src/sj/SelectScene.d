@@ -13,9 +13,9 @@ import gl4d;
 import sj.FontSet,
        sj.KeyInput,
        sj.LobbyWorld,
+       sj.Music,
        sj.ProgramSet,
        sj.SceneInterface,
-       sj.Song,
        sj.Text,
        sj.TextProgram,
        sj.TitleScene,
@@ -27,9 +27,9 @@ import sj.FontSet,
 class SelectScene : SceneInterface {
  public:
   ///
-  this(LobbyWorld lobby, ProgramSet program, FontSet fonts, Song[] songs) {
-    lobby_ = lobby;
-    songs_ = songs.dup;
+  this(LobbyWorld lobby, ProgramSet program, FontSet fonts, Music[] music_list) {
+    lobby_      = lobby;
+    music_list_ = music_list.dup;
 
     text_  = new Text(program.Get!TextProgram);
     fonts_ = fonts;
@@ -95,7 +95,7 @@ class SelectScene : SceneInterface {
   Text    text_;
   FontSet fonts_;
 
-  Song[] songs_;
+  Music[] music_list_;
 
   sfSound*       sound_;
   SoundResources soundres_;
@@ -146,7 +146,7 @@ private class FirstSetupState : AbstractSceneState {
  public:
   this(SelectScene owner) {
     super(owner);
-    stage_appear_state_ = new SongAppearState(owner);
+    music_appear_state_ = new MusicAppearState(owner);
   }
 
   enum AnimeFrames  = 30;
@@ -175,14 +175,14 @@ private class FirstSetupState : AbstractSceneState {
     }
 
     if (anime_.isFinished) {
-      stage_appear_state_.Initialize(0);
-      return CreateResult(stage_appear_state_);
+      music_appear_state_.Initialize(0);
+      return CreateResult(music_appear_state_);
     }
     return CreateResult(this);
   }
 
  private:
-  SongAppearState stage_appear_state_;
+  MusicAppearState music_appear_state_;
 
   Animation anime_;
 
@@ -191,17 +191,17 @@ private class FirstSetupState : AbstractSceneState {
 
   Easing!float cube_interval_ease_;
 }
-private class SongAppearState : AbstractSceneState {
+private class MusicAppearState : AbstractSceneState {
  public:
   this(SelectScene owner) {
     super(owner);
-    song_wait_state_ = new SongWaitState(owner, this);
+    music_wait_state_ = new MusicWaitState(owner, this);
   }
 
   enum AnimeFrames = 30;
 
-  void Initialize(size_t song_index) {
-    song_index_ = song_index;
+  void Initialize(size_t music_index) {
+    music_index_ = music_index;
 
     anime_ = Animation(AnimeFrames);
 
@@ -210,7 +210,7 @@ private class SongAppearState : AbstractSceneState {
           LoadingCubeRotationSpeed, CubeRotationSpeed);
       cube_interval_ease_ = Easing!float(LoadingCubeInterval, 0.005);
 
-      with (owner.songs_[song_index_].preview) {
+      with (owner.music_list_[music_index_].preview) {
         bg_inner_ease_ = Easing!vec4(background.inner_color, bg_inner_color);
         bg_outer_ease_ = Easing!vec4(background.outer_color, bg_outer_color);
       }
@@ -219,10 +219,10 @@ private class SongAppearState : AbstractSceneState {
     sfSound_setBuffer(owner.sound_, owner.soundres_.spotlight);
     sfSound_play(owner.sound_);
 
-    const song = owner.songs_[song_index_];
+    const music = owner.music_list_[music_index_];
     with (owner.text_) {
       const w = LoadGlyphs(vec2i(1024, 64),
-          song.name.to!dstring, vec2i(TitleTextSize, 0), owner.fonts_.gothic);
+          music.name.to!dstring, vec2i(TitleTextSize, 0), owner.fonts_.gothic);
       matrix.scale       = TitleTextScale;
       matrix.translation = TitleTextTranslation + vec3(-w/2*matrix.scale.x, 0, 0);
     }
@@ -239,16 +239,16 @@ private class SongAppearState : AbstractSceneState {
     }
 
     if (anime_.isFinished) {
-      song_wait_state_.Initialize(song_index_);
-      return CreateResult(song_wait_state_);
+      music_wait_state_.Initialize(music_index_);
+      return CreateResult(music_wait_state_);
     }
     return CreateResult(this);
   }
 
  private:
-  SongWaitState song_wait_state_;
+  MusicWaitState music_wait_state_;
 
-  size_t song_index_;
+  size_t music_index_;
 
   Animation anime_;
 
@@ -258,18 +258,18 @@ private class SongAppearState : AbstractSceneState {
   Easing!vec4 bg_inner_ease_;
   Easing!vec4 bg_outer_ease_;
 }
-private class SongWaitState : AbstractSceneState {
+private class MusicWaitState : AbstractSceneState {
  public:
-  this(SelectScene owner, SongAppearState song_appear_state) {
+  this(SelectScene owner, MusicAppearState music_appear_state) {
     super(owner);
-    song_appear_state_ = song_appear_state;
+    music_appear_state_ = music_appear_state;
   }
 
-  void Initialize(size_t song_index) {
-    song_index_ = song_index;
+  void Initialize(size_t music_index) {
+    music_index_ = music_index;
 
-    auto song = owner.songs_[song_index_];
-    song.PlayForPreview();
+    auto music = owner.music_list_[music_index_];
+    music.PlayForPreview();
 
     with (owner.text_) {
       matrix.scale       = TitleTextScale;
@@ -281,30 +281,30 @@ private class SongWaitState : AbstractSceneState {
     owner.lobby_.cube_matrix.rotation += CubeRotationSpeed;
 
     if (input.up) {
-      song.StopPlaying();
+      music.StopPlaying();
       owner.title_scene_.Initialize();
       return CreateResult(owner.title_scene_);
     }
-    if (input.left && song_index_ != 0) {
-      song.StopPlaying();
-      song_appear_state_.Initialize(song_index_-1);
-      return CreateResult(song_appear_state_);
+    if (input.left && music_index_ != 0) {
+      music.StopPlaying();
+      music_appear_state_.Initialize(music_index_-1);
+      return CreateResult(music_appear_state_);
     }
-    if (input.right && song_index_+1 < owner.songs_.length) {
-      song.StopPlaying();
-      song_appear_state_.Initialize(song_index_+1);
-      return CreateResult(song_appear_state_);
+    if (input.right && music_index_+1 < owner.music_list_.length) {
+      music.StopPlaying();
+      music_appear_state_.Initialize(music_index_+1);
+      return CreateResult(music_appear_state_);
     }
 
     return CreateResult(this);
   }
 
  private:
-  @property Song song() {
-    return owner.songs_[song_index_];
+  @property Music music() {
+    return owner.music_list_[music_index_];
   }
 
-  SongAppearState song_appear_state_;
+  MusicAppearState music_appear_state_;
 
-  size_t song_index_;
+  size_t music_index_;
 }

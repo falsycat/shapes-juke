@@ -6,6 +6,8 @@ import std.conv,
        std.math,
        std.random;
 
+import derelict.sfml2.audio;
+
 import gl4d;
 
 import sj.FontSet,
@@ -18,13 +20,14 @@ import sj.FontSet,
        sj.TextProgram,
        sj.TitleScene,
        sj.util.Animation,
-       sj.util.Easing;
+       sj.util.Easing,
+       sj.util.audio;
 
 ///
 class ResultScene : SceneInterface {
  public:
   ///
-  enum AnimationFrame = 60;
+  enum AnimationFrame = 120;
 
   ///
   enum CubeLoadingRotationSpeed = vec3(PI/100, PI/10, PI/100);
@@ -59,10 +62,16 @@ class ResultScene : SceneInterface {
   enum RankCalculationRatio = 10000;
 
   ///
+  enum ShortbridgeSoundBuffer = cast(ubyte[]) import("sounds/shortbridge.wav");
+
+  ///
   this(LobbyWorld lobby, ProgramSet programs, FontSet fonts) {
     lobby_    = lobby;
     programs_ = programs;
     fonts_    = fonts;
+
+    sound_             = sfSound_create();
+    sound_shortbridge_ = CreateSoundBufferFromBuffer(ShortbridgeSoundBuffer);
 
     description_text_ = new Text(programs.Get!TextProgram);
     score_text_       = new Text(programs.Get!TextProgram);
@@ -70,7 +79,7 @@ class ResultScene : SceneInterface {
 
     with (description_text_) {
       const w = LoadGlyphs(vec2i(256, 32),
-          "YOUR RANK", vec2i(16, 0), fonts_.gothic);
+          "RESULT", vec2i(16, 0), fonts_.gothic);
       matrix.scale       = DescTextScale;
       matrix.translation =
         DescTextTranslation + vec3(-w/2*matrix.scale.x, 0, 0);
@@ -81,6 +90,9 @@ class ResultScene : SceneInterface {
     description_text_.destroy();
     score_text_.destroy();
     rank_text_.destroy();
+
+    sfSound_destroy(sound_);
+    sfSoundBuffer_destroy(sound_shortbridge_);
   }
 
   ///
@@ -118,6 +130,9 @@ class ResultScene : SceneInterface {
       matrix.translation =
         RankTextTranslation + vec3(-w/2 * matrix.scale.x, 0, 0);
     }
+
+    sfSound_setBuffer(sound_, sound_shortbridge_);
+    sfSound_play(sound_);
   }
   override SceneInterface Update(KeyInput input) {
     const ratio = anime_.Update();
@@ -142,8 +157,10 @@ class ResultScene : SceneInterface {
 
     const view = lobby_.view.Create();
     description_text_.Draw(lobby_.Projection, view);
-    rank_text_       .Draw(lobby_.Projection, view);
-    score_text_      .Draw(lobby_.Projection, view);
+    if (ratio > 0.9) {
+      rank_text_       .Draw(lobby_.Projection, view);
+      score_text_      .Draw(lobby_.Projection, view);
+    }
   }
 
  private:
@@ -164,6 +181,9 @@ class ResultScene : SceneInterface {
   FontSet fonts_;
 
   Music music_;
+
+  sfSound*       sound_;
+  sfSoundBuffer* sound_shortbridge_;
 
   Text description_text_;
   Text score_text_;

@@ -46,7 +46,7 @@ class Game : AbstractGame {
     select_.SetupSceneDependency(title_, load_);
     load_  .SetupSceneDependency(play_);
     play_  .SetupSceneDependency(result_);
-    result_.SetupSceneDependency();
+    result_.SetupSceneDependency(title_);
 
     title_.Initialize();
     super(title_);

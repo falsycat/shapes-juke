@@ -1,6 +1,8 @@
 /// License: MIT
 module sj.PlayScene;
 
+import std.conv;
+
 import gl4d;
 
 static import sjplayer;
@@ -13,6 +15,13 @@ import sj.KeyInput,
 ///
 class PlayScene : SceneInterface {
  public:
+  ///
+  enum BaseScore = 100000;
+  ///
+  enum DamageScoreRatio = 10;
+  ///
+  enum NearnessScoreRatio = 10;
+
   ///
   this() {
   }
@@ -37,18 +46,28 @@ class PlayScene : SceneInterface {
 
     if (beat >= context_.length) {
       music_.StopPlaying();
-      result_scene_.Initialize(music_, 0);  // TODO: pass a proper score
+      result_scene_.Initialize(music_, score_);
       return result_scene_;
     }
 
     context_.OperateScheduledControllers(beat);
 
-    // TODO: actor accelaration
+    context_.actor.Accelarate(GetAccelarationFromKeyInput(input));
 
     context_.actor.Update();
     context_.posteffect.Update();
 
-    // TODO: damage calculation
+    const dmg      = context_.CalculateDamage();
+    const damage   = (DamageScoreRatio   * dmg.damage).to!int;
+    const nearness = (NearnessScoreRatio * dmg.nearness).to!int;
+
+    if (damage != 0) {
+      score_ -= damage;
+      context_.posteffect.CauseDamagedEffect();
+    }
+    if (nearness != 0) {
+      score_ += nearness;
+    }
     return this;
   }
   override void Draw() {
@@ -62,8 +81,19 @@ class PlayScene : SceneInterface {
   }
 
  private:
+  static vec2 GetAccelarationFromKeyInput(KeyInput key) {
+    auto result = vec2(0, 0);
+    if (key.left)  result.x -= 1;
+    if (key.right) result.x += 1;
+    if (key.up)    result.y += 1;
+    if (key.down)  result.y -= 1;
+    return result;
+  }
+
   ResultScene result_scene_;
 
   Music            music_;
   sjplayer.Context context_;
+
+  int score_;
 }

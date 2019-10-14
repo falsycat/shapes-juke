@@ -133,7 +133,10 @@ private abstract class AbstractSceneState {
   enum CubeRotationSpeed = vec3(0, PI/500, 0);
   enum CubeInterval      = 0.005;
 
-  enum LoadingCubeRotationSpeed = vec3(0, PI/5, PI/10);
+  enum PlayingCubeRotationSpeed = vec3(PI/10, PI/70, PI/100);
+  enum PlayingCubeInterval      = 0.04;
+
+  enum LoadingCubeRotationSpeed = vec3(0, PI/10, PI/10);
   enum LoadingCubeInterval      = 0.06;
 
   enum TitleTextSize        = 40;
@@ -293,6 +296,7 @@ private class MusicWaitState : AbstractSceneState {
   this(SelectScene owner, MusicAppearState music_appear_state) {
     super(owner);
     music_appear_state_ = music_appear_state;
+    music_play_state_   = new MusicPlayState(owner, this);
   }
 
   void Initialize(size_t music_index) {
@@ -307,12 +311,11 @@ private class MusicWaitState : AbstractSceneState {
       owner.title_scene_.Initialize();
       return CreateResult(owner.title_scene_);
     }
-    if (input.down) {
-      music.StopPlaying();
-      owner.load_scene_.Initialize(music);
-      return CreateResult(owner.load_scene_);
-    }
 
+    if (input.down) {
+      music_play_state_.Initialize(music);
+      return CreateResult(music_play_state_);
+    }
     if (input.left && music_index_ != 0) {
       music.StopPlaying();
       music_appear_state_.Initialize(music_index_-1);
@@ -338,6 +341,122 @@ private class MusicWaitState : AbstractSceneState {
   }
 
   MusicAppearState music_appear_state_;
+  MusicPlayState   music_play_state_;
 
   size_t music_index_;
+}
+///
+private class MusicPlayState : AbstractSceneState {
+ public:
+  enum AnimeFrames = 120;
+
+  this(SelectScene owner, MusicWaitState music_wait_state) {
+    super(owner);
+    music_cancel_play_state_ =
+      new MusicCancelPlayState(owner, music_wait_state);
+  }
+
+  void Initialize(Music music) {
+    music_ = music;
+    anime_ = Animation(AnimeFrames);
+
+    cube_rota_speed_ease_ =
+      Easing!vec3(CubeRotationSpeed, PlayingCubeRotationSpeed);
+    cube_interval_ease_ =
+      Easing!float(CubeInterval, PlayingCubeInterval);
+
+    bg_inner_ease_ =
+      Easing!vec4(owner.lobby_.background.inner_color,
+          owner.lobby_.background.inner_color*2);
+  }
+  override UpdateResult Update(KeyInput input) {
+    const ratio = anime_.Update();
+
+    const cube_rota_speed = cube_rota_speed_ease_.Calculate(ratio);
+    const cube_interval_  = cube_interval_ease_  .Calculate(ratio);
+    with (owner.lobby_) {
+      cube_matrix.rotation += cube_rota_speed;
+      cube_interval         = cube_interval_;
+
+      background.inner_color = bg_inner_ease_.Calculate(ratio);
+    }
+
+    if (!input.down) {
+      music_cancel_play_state_.Initialize(
+          music_, cube_rota_speed, cube_interval_);
+      return CreateResult(music_cancel_play_state_);
+    }
+    if (anime_.isFinished) {
+      music_.StopPlaying();
+
+      owner.load_scene_.Initialize(music_);
+      return CreateResult(owner.load_scene_);
+    }
+    return CreateResult(this);
+  }
+  override void Draw() {
+    const view = owner.lobby_.view.Create();
+    owner.description_text_.Draw(owner.lobby_.Projection, view);
+    owner.title_text_      .Draw(owner.lobby_.Projection, view);
+  }
+
+ private:
+  MusicCancelPlayState music_cancel_play_state_;
+
+  Music music_;
+
+  Animation anime_;
+
+  Easing!vec3  cube_rota_speed_ease_;
+  Easing!float cube_interval_ease_;
+  Easing!vec4  bg_inner_ease_;
+}
+///
+private class MusicCancelPlayState : AbstractSceneState {
+ public:
+  enum AnimeFrames = 30;
+
+  this(SelectScene owner, MusicWaitState music_wait_state) {
+    super(owner);
+    music_wait_state_ = music_wait_state;
+  }
+
+  void Initialize(Music music, vec3 cube_rota_speed, float cube_interval) {
+    anime_ = Animation(AnimeFrames);
+
+    cube_rota_speed_ease_ =
+      Easing!vec3(cube_rota_speed, CubeRotationSpeed);
+    cube_interval_ease_ =
+      Easing!float(cube_interval, CubeInterval);
+
+    bg_inner_ease_ = Easing!vec4(
+        owner.lobby_.background.inner_color, music.preview.bg_inner_color);
+  }
+  override UpdateResult Update(KeyInput input) {
+    const ratio = anime_.Update();
+
+    with (owner.lobby_) {
+      cube_matrix.rotation   += cube_rota_speed_ease_.Calculate(ratio);
+      cube_interval           = cube_interval_ease_  .Calculate(ratio);
+      background.inner_color  = bg_inner_ease_       .Calculate(ratio);
+    }
+    if (anime_.isFinished) {
+      return CreateResult(music_wait_state_);
+    }
+    return CreateResult(this);
+  }
+  override void Draw() {
+    const view = owner.lobby_.view.Create();
+    owner.description_text_.Draw(owner.lobby_.Projection, view);
+    owner.title_text_      .Draw(owner.lobby_.Projection, view);
+  }
+
+ private:
+  MusicWaitState music_wait_state_;
+
+  Animation anime_;
+
+  Easing!vec3  cube_rota_speed_ease_;
+  Easing!float cube_interval_ease_;
+  Easing!vec4  bg_inner_ease_;
 }

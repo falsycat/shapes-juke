@@ -61,6 +61,11 @@ class Context {
         Create(params.filter!(x => x.name == factory[0]), builder);
     }
 
+    length_ = 0;
+    foreach (ref param; params) {
+      length_ = length_.max(param.period.end);
+    }
+
     elements_    = builder.elements[];
     drawers_     = builder.drawers[];
     controllers_ = builder.controllers[];
@@ -126,6 +131,10 @@ class Context {
   @property inout(PostEffectControllerInterface) posteffect() inout {
     return posteffect_controller_;
   }
+  ///
+  @property float length() const {
+    return length_;
+  }
 
  private:
   class Builder : ContextBuilderInterface {
@@ -154,4 +163,6 @@ class Context {
 
   ActorControllerInterface      actor_controller_;
   PostEffectControllerInterface posteffect_controller_;
+
+  float length_;
 }

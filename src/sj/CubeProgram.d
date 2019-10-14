@@ -127,8 +127,7 @@ class CubeProgram {
     material_index_ = gl.GetUniformBlockIndex(program_.id, "Material".toStringz);
 
     material_.Bind();
-    UniformBufferAllocator material_allocator;
-    with (material_allocator) {
+    with (UniformBufferAllocator()) {
       data  = null;
       size  = Material.sizeof;
       usage = GL_DYNAMIC_DRAW;
@@ -140,8 +139,7 @@ class CubeProgram {
     instances_ = ArrayBuffer.Create();
 
     vao_.Bind();
-    VertexArrayAttacher attacher;
-    with (attacher) {
+    with (VertexArrayAttacher()) {
       index     = 0;
       type      = GL_FLOAT;
       offset    = vec3.sizeof * 0;
@@ -175,8 +173,7 @@ class CubeProgram {
     }
 
     verts_.Bind();
-    ArrayBufferAllocator verts_allocator;
-    with (verts_allocator) {
+    with (ArrayBufferAllocator()) {
       enum v = [
         // left
         vec3(-1, 1, -1), vec3(-1,  1,  1), vec3(-1, -1, 1),
@@ -224,8 +221,7 @@ class CubeProgram {
     }
 
     instances_.Bind();
-    ArrayBufferAllocator instances_allocator;
-    with (instances_allocator) {
+    with (ArrayBufferAllocator()) {
       data  = null;
       size  = MaxInstanceCount * mat4.sizeof;
       usage = GL_DYNAMIC_DRAW;

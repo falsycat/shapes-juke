@@ -166,11 +166,13 @@ private class FirstSetupState : AbstractSceneState {
   override UpdateResult Update(KeyInput input) {
     const ratio = anime_.Update();
 
-    owner.lobby_.cube_matrix.rotation += LoadingCubeRotationSpeed * (ratio+0.2);
-    owner.lobby_.cube_interval = cube_interval_ease_.Calculate(ratio);
+    with (owner.lobby_) {
+      cube_matrix.rotation += LoadingCubeRotationSpeed * (ratio+0.2);
+      cube_interval = cube_interval_ease_.Calculate(ratio);
 
-    owner.lobby_.background.inner_color = bg_inner_ease_.Calculate(ratio);
-    owner.lobby_.background.outer_color = bg_outer_ease_.Calculate(ratio);
+      background.inner_color = bg_inner_ease_.Calculate(ratio);
+      background.outer_color = bg_outer_ease_.Calculate(ratio);
+    }
 
     if (anime_.isFinished) {
       stage_appear_state_.Initialize(0);

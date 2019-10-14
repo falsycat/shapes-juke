@@ -30,8 +30,7 @@ class PostEffect {
     tex_     = TextureRect.Create();
     sampler_ = Sampler.Create();
 
-    TextureRectAllocator allocator;
-    with (allocator) {
+    with (TextureRectAllocator()) {
       internalFormat = GL_RGB;
       size           = sz;
       format         = GL_RED;
@@ -40,8 +39,7 @@ class PostEffect {
       Allocate(tex_);
     }
 
-    SamplerConfigurer configurer;
-    with (configurer) {
+    with (SamplerConfigurer()) {
       filterMin = GL_NEAREST;
       filterMag = GL_NEAREST;
       Configure(sampler_);
@@ -152,8 +150,7 @@ class PostEffectProgram {
     ubo_index_ = gl.GetUniformBlockIndex(program_.id, "Instance".toStringz);
 
     vao_.Bind();
-    VertexArrayAttacher attacher;
-    with (attacher) {
+    with (VertexArrayAttacher()) {
       index     = 0;
       type      = GL_FLOAT;
       dimension = 2;
@@ -161,8 +158,7 @@ class PostEffectProgram {
     }
 
     verts_.Bind();
-    ArrayBufferAllocator verts_allocator;
-    with (verts_allocator) {
+    with (ArrayBufferAllocator()) {
       const v = [vec2(-1, 1), vec2(1, 1), vec2(1, -1), vec2(-1, -1),];
       data  = v.ptr;
       size  = typeof(v[0]).sizeof * v.length;
@@ -171,8 +167,7 @@ class PostEffectProgram {
     }
 
     ubo_.Bind();
-    UniformBufferAllocator ub_allocator;
-    with (ub_allocator) {
+    with (UniformBufferAllocator()) {
       size  = PostEffect.Instance.sizeof;
       usage = GL_DYNAMIC_DRAW;
       Allocate(ubo_);

@@ -99,8 +99,7 @@ class TitleTextProgram {
     tex_     = CreateTextureFromBuffer(ImgBuf);
     sampler_ = Sampler.Create();
 
-    SamplerConfigurer configurer;
-    with (configurer) {
+    with (SamplerConfigurer()) {
       filterMin = GL_LINEAR;
       filterMag = GL_LINEAR;
       Configure(sampler_);
@@ -110,8 +109,7 @@ class TitleTextProgram {
     vertices_ = ArrayBuffer.Create();
 
     vao_.Bind();
-    VertexArrayAttacher attacher;
-    with (attacher) {
+    with (VertexArrayAttacher()) {
       index     = 0;
       type      = GL_FLOAT;
       offset    = 0;
@@ -128,8 +126,7 @@ class TitleTextProgram {
     }
 
     vertices_.Bind();
-    ArrayBufferAllocator allocator;
-    with (allocator) {
+    with (ArrayBufferAllocator()) {
       const v = [
         -1f,  1f, 0f,  1f, 0f,
         -1f, -1f, 0f,  1f, 1f,

@@ -72,8 +72,7 @@ class BackgroundProgram {
     verts_ = ArrayBuffer.Create();
 
     vao_.Bind();
-    VertexArrayAttacher attacher;
-    with (attacher) {
+    with (VertexArrayAttacher()) {
       index     = 0;
       type      = GL_FLOAT;
       dimension = 2;
@@ -81,8 +80,7 @@ class BackgroundProgram {
     }
 
     verts_.Bind();
-    ArrayBufferAllocator verts_allocator;
-    with (verts_allocator) {
+    with (ArrayBufferAllocator()) {
       const v = [vec2(-1, 1), vec2(1, 1), vec2(1, -1), vec2(-1, -1),];
       data  = v.ptr;
       size  = typeof(v[0]).sizeof * v.length;

@@ -23,8 +23,7 @@ Texture2DRef CreateTextureFromImage(sfImage* img) {
   sz.y.isPowerOf2.enforce();
 
   auto tex = Texture2D.Create();
-  Texture2DAllocator allocator;
-  with (allocator) {
+  with (Texture2DAllocator()) {
     level          = 0;
     internalFormat = GL_RGBA8;
     data           = sfImage_getPixelsPtr(img);

@@ -29,7 +29,6 @@ class Text {
     static assert(TextProgram.Vertex.sizeof == float.sizeof * 5);
 
     vertices_.Bind();
-    ArrayBufferAllocator vertices_allocator;
     with (ArrayBufferAllocator()) {
       size  = text.length * TextProgram.Vertex.sizeof * 4;
       usage = GL_STATIC_DRAW;
@@ -103,8 +102,7 @@ class Text {
     }
 
     texture_.Bind();
-    Texture2DAllocator texture_allocator;
-    with (texture_allocator) {
+    with (Texture2DAllocator()) {
       level          = 0;
       internalFormat = GL_RGBA8;
       data           = pixels.ptr;
@@ -115,8 +113,7 @@ class Text {
     }
 
     indices_.Bind();
-    ElementArrayBufferAllocator indices_allcator;
-    with (indices_allcator) {
+    with (ElementArrayBufferAllocator()) {
       size  = glyph_count * 6 * ushort.sizeof;
       usage = GL_STATIC_DRAW;
       Allocate(indices_);

@@ -30,8 +30,7 @@ class ElementDrawer(Program, Element, vec2[] vertices) :
     program_.SetupVertexArray(vao_, verts_, instances_);
 
     verts_.Bind();
-    ArrayBufferAllocator verts_allocator;
-    with (verts_allocator) {
+    with (ArrayBufferAllocator()) {
       const v = vertices;  // place to memory
 
       data  = v.ptr;
@@ -41,8 +40,7 @@ class ElementDrawer(Program, Element, vec2[] vertices) :
     }
 
     instances_.Bind();
-    ArrayBufferAllocator instance_allocator;
-    with (instance_allocator) {
+    with (ArrayBufferAllocator()) {
       size  = Instance.sizeof * elements.length;
       usage = GL_DYNAMIC_DRAW;
       Allocate(instances_);

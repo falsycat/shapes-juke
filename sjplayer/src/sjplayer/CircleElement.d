@@ -152,8 +152,7 @@ class CircleElementProgram {
   ///
   void SetupVertexArray(ref VertexArrayRef vao,
       ref ArrayBufferRef verts, ref ArrayBufferRef instances) {
-    VertexArrayAttacher attacher;
-    with (attacher) {
+    with (VertexArrayAttacher()) {
       // verts
       type      = GL_FLOAT;
       dimension = 2;

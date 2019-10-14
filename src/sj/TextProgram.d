@@ -59,8 +59,7 @@ class TextProgram {
     program_.Validate();
 
     sampler_ = Sampler.Create();
-    SamplerConfigurer configurer;
-    with (configurer) {
+    with (SamplerConfigurer()) {
       filterMin = GL_LINEAR;
       filterMag = GL_LINEAR;
       Configure(sampler_);
@@ -70,8 +69,7 @@ class TextProgram {
   ///
   void SetupVertexArray(ref VertexArrayRef vao, ref ArrayBufferRef vertices) {
     vao.Bind();
-    VertexArrayAttacher attacher;
-    with (attacher) {
+    with (VertexArrayAttacher()) {
       index     = 0;
       type      = GL_FLOAT;
       offset    = 0;

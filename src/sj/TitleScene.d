@@ -65,7 +65,7 @@ class TitleScene : SceneInterface {
 
     lobby_.cube_interval = cube_interval_ease_.Calculate(ratio);
 
-    if (input.down) {
+    if (anime_.isFinished && input.down) {
       select_scene_.Initialize();
       return select_scene_;
     }

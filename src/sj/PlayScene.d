@@ -42,15 +42,16 @@ class PlayScene : SceneInterface {
     music_.PlayForGame();
   }
   override SceneInterface Update(KeyInput input) {
-    const beat = music_.beat;
+    beat_ = music_.beat;
 
-    if (beat >= context_.length) {
+    if (beat_ >= context_.length) {
       music_.StopPlaying();
+
       result_scene_.Initialize(music_, score_);
       return result_scene_;
     }
 
-    context_.OperateScheduledControllers(beat);
+    context_.OperateScheduledControllers(beat_);
 
     context_.actor.Accelarate(GetAccelarationFromKeyInput(input));
 
@@ -78,6 +79,10 @@ class PlayScene : SceneInterface {
     context_.DrawActor();
 
     context_.EndDrawing();
+
+    if (beat_ >= context_.length) {
+      context_.destroy();
+    }
   }
 
  private:
@@ -95,5 +100,6 @@ class PlayScene : SceneInterface {
   Music            music_;
   sjplayer.Context context_;
 
-  int score_;
+  float beat_;
+  int   score_;
 }

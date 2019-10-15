@@ -9,13 +9,14 @@ import gl4d;
 
 import sjplayer.AbstractShapeElement,
        sjplayer.ElementDrawerInterface,
+       sjplayer.ScriptRuntimeException,
        sjplayer.ShapeElementProgram;
 
 ///
 class ShapeElementDrawer(Program, vec2[] vertices) : ElementDrawerInterface {
  public:
   ///
-  enum MaxInstanceCount = 512;
+  enum DefaultInstanceCount = 128;
 
   ///
   this(Program program, in AbstractShapeElement[] shapes)
@@ -42,22 +43,18 @@ class ShapeElementDrawer(Program, vec2[] vertices) : ElementDrawerInterface {
     }
 
     instances_.Bind();
-    with (ArrayBufferAllocator()) {
-      size  = ShapeElementProgramInstance.sizeof * MaxInstanceCount;
-      usage = GL_DYNAMIC_DRAW;
-      Allocate(instances_);
-    }
+    AllocateInstanceBufferIfNeeded(DefaultInstanceCount);
   }
 
   override void Draw() {
-    size_t alive_count;
-
+    const alive_count = shapes_.filter!"a.alive".count!"true";
     instances_.Bind();
+    AllocateInstanceBufferIfNeeded(alive_count);
     {
-      auto ptr = instances_.MapToWrite!ShapeElementProgramInstance();
+      auto data = instances_.MapToWrite!ShapeElementProgramInstance();
+      auto ptr  = data.entity;
       foreach (const shape; shapes_.filter!"a.alive") {
-        enforce(alive_count <= MaxInstanceCount);
-        ptr[alive_count++] = shape.instance;
+        *ptr++ = shape.instance;
       }
     }
 
@@ -70,6 +67,17 @@ class ShapeElementDrawer(Program, vec2[] vertices) : ElementDrawerInterface {
   }
 
  private:
+  void AllocateInstanceBufferIfNeeded(size_t count) {
+    if (instances_count_ >= count) return;
+
+    with (ArrayBufferAllocator()) {
+      size  = ShapeElementProgramInstance.sizeof * count;
+      usage = GL_DYNAMIC_DRAW;
+      Allocate(instances_);
+    }
+    instances_count_ = count;
+  }
+
   Program program_;
 
   const AbstractShapeElement[] shapes_;
@@ -77,4 +85,6 @@ class ShapeElementDrawer(Program, vec2[] vertices) : ElementDrawerInterface {
   ArrayBufferRef verts_;
   ArrayBufferRef instances_;
   VertexArrayRef vao_;
+
+  size_t instances_count_;
 }

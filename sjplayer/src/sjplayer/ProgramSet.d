@@ -8,7 +8,8 @@ import sjplayer.Actor,
        sjplayer.Background,
        sjplayer.CircleElement,
        sjplayer.PostEffect,
-       sjplayer.SquareElement;
+       sjplayer.SquareElement,
+       sjplayer.TriangleElement;
 
 ///
 class ProgramSet {
@@ -20,6 +21,7 @@ class ProgramSet {
       CircleElementProgram,
       PostEffectProgram,
       SquareElementProgram,
+      TriangleElementProgram,
     );
 
   ///

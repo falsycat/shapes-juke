@@ -38,7 +38,8 @@ class Context {
 
     import sjplayer.BackgroundScheduledController,
            sjplayer.CircleElement,
-           sjplayer.SquareElement;
+           sjplayer.SquareElement,
+           sjplayer.TriangleElement;
     auto factories = tuple(
         tuple(
           "actor",
@@ -60,6 +61,10 @@ class Context {
         tuple(
           "square",
           SquareElementScheduledControllerFactory(programs, varstore),
+        ),
+        tuple(
+          "triangle",
+          TriangleElementScheduledControllerFactory(programs, varstore),
         ),
         tuple(
           "variable",

@@ -33,10 +33,6 @@ unittest {
 
 ///
 float CalculateDistance2LineSegment(vec2 a1, vec2 b1, vec2 a2, vec2 b2) {
-  float cross2(vec2 v1, vec2 v2) {
-    return v1.x * v2.y - v1.y * v2.x;
-  }
-
   if (a1 == b1) return CalculateDistanceOriginAndLineSegment(a2 - a1, b2 - a1);
   if (a2 == b2) return CalculateDistanceOriginAndLineSegment(a1 - a2, b1 - a2);
 
@@ -76,4 +72,9 @@ unittest {
         vec2(-1, 0), vec2(1, 0), vec2(1, 1), vec2(1, -1)).approxEqual(0f));
   assert(CalculateDistance2LineSegment(
         vec2(-1, 0), vec2(1, 0), vec2(2, 1), vec2(2, -1)).approxEqual(1f));
+}
+
+///
+float cross2(vec2 v1, vec2 v2) {
+  return v1.x * v2.y - v1.y * v2.x;
 }

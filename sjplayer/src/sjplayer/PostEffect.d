@@ -12,7 +12,7 @@ class PostEffect {
   struct Instance {
    public:
     ///
-    align(1) float raster_fineness = 0;
+    align(1) float raster_fineness = 600;
     ///
     align(1) float raster_width = 0;
 

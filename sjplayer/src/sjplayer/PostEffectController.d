@@ -16,6 +16,11 @@ import sjplayer.AbstractScheduledController,
 class PostEffectController : PostEffectScheduledController, PostEffectControllerInterface {
  public:
   ///
+  enum DamagedEffectLength = 30;
+  ///
+  enum DamagedEffectRasterWidth = 0.1;
+
+  ///
   this(
       PostEffect posteffect,
       in VarStoreInterface varstore,
@@ -25,12 +30,20 @@ class PostEffectController : PostEffectScheduledController, PostEffectController
   }
 
   override void CauseDamagedEffect() {
+    damaged_effect_frame_ = DamagedEffectLength;
   }
   override void Update() {
+    if (damaged_effect_frame_ > 0) damaged_effect_frame_--;
+
+    posteffect_.raster_width =
+      damaged_effect_frame_*1f / DamagedEffectLength *
+      DamagedEffectRasterWidth;
   }
 
  private:
   PostEffect posteffect_;
+
+  int damaged_effect_frame_;
 }
 
 private alias PostEffectScheduledController = ScheduledController!(

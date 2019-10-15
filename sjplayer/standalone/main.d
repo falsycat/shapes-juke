@@ -60,6 +60,7 @@ int main(string[] args) {
     const dmg = context.CalculateDamage();
     if (dmg.damage != 0) {
       "damage: %f (%f)".writefln(dmg.damage, beat);
+      context.posteffect.CauseDamagedEffect();
     }
     if (dmg.nearness != 0) {
       "nearby: %f (%f)".writefln(dmg.nearness, beat);

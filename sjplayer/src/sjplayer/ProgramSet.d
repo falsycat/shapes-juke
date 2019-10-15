@@ -7,7 +7,8 @@ import std.meta,
 import sjplayer.Actor,
        sjplayer.Background,
        sjplayer.CircleElement,
-       sjplayer.PostEffect;
+       sjplayer.PostEffect,
+       sjplayer.SquareElement;
 
 ///
 class ProgramSet {
@@ -18,6 +19,7 @@ class ProgramSet {
       BackgroundProgram,
       CircleElementProgram,
       PostEffectProgram,
+      SquareElementProgram,
     );
 
   ///

@@ -1,26 +1,28 @@
 /// License: MIT
-module sjplayer.ElementDrawer;
+module sjplayer.ShapeElementDrawer;
 
 import std.algorithm,
-       std.conv;
+       std.conv,
+       std.exception;
 
 import gl4d;
 
-import sjplayer.ElementDrawerInterface;
+import sjplayer.AbstractShapeElement,
+       sjplayer.ElementDrawerInterface,
+       sjplayer.ShapeElementProgram;
 
 ///
-class ElementDrawer(Program, Element, vec2[] vertices) :
-  ElementDrawerInterface {
+class ShapeElementDrawer(Program, vec2[] vertices) : ElementDrawerInterface {
  public:
   ///
-  alias Instance = typeof(Element.instance);
+  enum MaxInstanceCount = 512;
 
   ///
-  this(Program program, in Element[] elements)
+  this(Program program, in AbstractShapeElement[] shapes)
       in (program)
-      in (elements.length > 0) {
-    program_  = program;
-    elements_ = elements;
+      in (shapes.length > 0) {
+    program_ = program;
+    shapes_  = shapes;
 
     vao_       = VertexArray.Create();
     verts_     = ArrayBuffer.Create();
@@ -41,7 +43,7 @@ class ElementDrawer(Program, Element, vec2[] vertices) :
 
     instances_.Bind();
     with (ArrayBufferAllocator()) {
-      size  = Instance.sizeof * elements.length;
+      size  = ShapeElementProgramInstance.sizeof * MaxInstanceCount;
       usage = GL_DYNAMIC_DRAW;
       Allocate(instances_);
     }
@@ -52,9 +54,10 @@ class ElementDrawer(Program, Element, vec2[] vertices) :
 
     instances_.Bind();
     {
-      auto ptr = instances_.MapToWrite!Instance();
-      foreach (const element; elements_.filter!"a.alive") {
-        ptr[alive_count++] = element.instance;
+      auto ptr = instances_.MapToWrite!ShapeElementProgramInstance();
+      foreach (const shape; shapes_.filter!"a.alive") {
+        enforce(alive_count <= MaxInstanceCount);
+        ptr[alive_count++] = shape.instance;
       }
     }
 
@@ -69,7 +72,7 @@ class ElementDrawer(Program, Element, vec2[] vertices) :
  private:
   Program program_;
 
-  const Element[] elements_;
+  const AbstractShapeElement[] shapes_;
 
   ArrayBufferRef verts_;
   ArrayBufferRef instances_;

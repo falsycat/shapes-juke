@@ -9,18 +9,6 @@ import gl4d;
 class ShapeElementProgram(string ShaderSrc) {
  public:
   ///
-  static struct Instance {
-    ///
-    align(1) mat3 matrix = mat3.identity;
-    ///
-    align(1) float weight = 1;
-    ///
-    align(1) float smooth = 0.001;
-    ///
-    align(1) vec4 color = vec4(0, 0, 0, 0);
-  }
-
-  ///
   enum ShaderHeader = "#version 330 core
 #extension GL_ARB_explicit_uniform_location : enable";
 
@@ -91,7 +79,7 @@ class ShapeElementProgram(string ShaderSrc) {
 
       type    = GL_FLOAT;
       divisor = 1;
-      stride  = Instance.sizeof;
+      stride  = ShapeElementProgramInstance.sizeof;
       offset  = 0;
 
       // matrix
@@ -133,4 +121,17 @@ class ShapeElementProgram(string ShaderSrc) {
 
  private:
   ProgramRef program_;
+}
+
+///
+struct ShapeElementProgramInstance {
+ public:
+  ///
+  align(1) mat3 matrix = mat3.identity;
+  ///
+  align(1) float weight = 1;
+  ///
+  align(1) float smooth = 0.001;
+  ///
+  align(1) vec4 color = vec4(0, 0, 0, 0);
 }

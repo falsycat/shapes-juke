@@ -1,15 +1,13 @@
 /// License: MIT
 module sjplayer.ScheduledController;
 
-import std.traits,
-       std.typecons;
+import std.typecons;
 
 import gl4d;
 
 import sjscript;
 
 import sjplayer.AbstractScheduledController,
-       sjplayer.ScheduledControllerInterface,
        sjplayer.VarStoreInterface,
        sjplayer.util.Parameter;
 
@@ -17,18 +15,6 @@ import sjplayer.AbstractScheduledController,
 class ScheduledController(
     Target, string[string] ParameterNameMap) : AbstractScheduledController {
  public:
-  ///
-  enum AliveManagementAvailable =
-    is(typeof((Target x) => x.alive)) &&
-    is(ReturnType!((Target x) => x.alive) == bool);
-  ///
-  enum MatrixModificationAvailable =
-    is(typeof((Target x) => x.matrix)) &&
-    is(ReturnType!((Target x) => x.matrix) == mat3);
-  ///
-  enum AutoInitializationAvailable =
-    is(typeof((Target x) => x.Initialize()));
-
   ///
   this(
       Target target,
@@ -39,30 +25,6 @@ class ScheduledController(
   }
 
  protected:
-  override void PrepareOperation(ref in ParametersBlock params) {
-    static if (AutoInitializationAvailable) {
-      target_.Initialize();
-    }
-    static if (AliveManagementAvailable) {
-      target_.alive = true;
-    }
-    static if (MatrixModificationAvailable) {
-      matrix_factory_ = matrix_factory_.init;
-    }
-    super.PrepareOperation(params);
-  }
-  override void ProcessOperation(float time, ref in ParametersBlock params) {
-    super.ProcessOperation(time, params);
-    static if (MatrixModificationAvailable) {
-      target_.matrix = matrix_factory_.Create();
-    }
-  }
-  override void FinalizeOperation(ref in ParametersBlock params) {
-    static if (AliveManagementAvailable) {
-      target_.alive = false;
-    }
-  }
-
   override Nullable!float GetVariable(string name) const {
     switch (name) {
       static foreach (map_name, code; ParameterNameMap) {
@@ -70,10 +32,6 @@ class ScheduledController(
           return Nullable!float(mixin("target_."~code));
       }
       default:
-    }
-    static if (MatrixModificationAvailable) {
-      const value = matrix_factory_.GetModelMatrixParameterValueByName(name);
-      if (!value.isNull) return value;
     }
     return super.GetVariable(name);
   }
@@ -86,15 +44,8 @@ class ScheduledController(
       }
       default:
     }
-    static if (MatrixModificationAvailable) {
-      if (param.CalculateModelMatrixParameter(matrix_factory_, vars)) return;
-    }
     super.SetParameter(param, vars);
   }
 
   Target target_;
-
-  static if (MatrixModificationAvailable) {
-    ModelMatrixFactory!3 matrix_factory_;
-  }
 }

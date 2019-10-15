@@ -21,7 +21,6 @@ import sjplayer.Actor,
        sjplayer.PostEffectControllerInterface,
        sjplayer.ProgramSet,
        sjplayer.ScheduledControllerInterface,
-       sjplayer.SquareElementScheduledController,
        sjplayer.VarStore,
        sjplayer.VarStoreScheduledController;
 
@@ -38,7 +37,8 @@ class Context {
     auto varstore = new VarStore(actor_);
 
     import sjplayer.BackgroundScheduledController,
-           sjplayer.CircleElementScheduledController;
+           sjplayer.CircleElement,
+           sjplayer.SquareElement;
     auto factories = tuple(
         tuple(
           "actor",

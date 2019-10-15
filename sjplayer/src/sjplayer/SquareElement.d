@@ -6,34 +6,16 @@ import std.algorithm,
 
 import gl4d;
 
-import sjplayer.ElementDrawer,
+import sjplayer.AbstractShapeElement,
        sjplayer.ElementInterface,
+       sjplayer.ShapeElementDrawer,
+       sjplayer.ShapeElementScheduledController,
        sjplayer.ShapeElementProgram,
        sjplayer.util.linalg;
 
 ///
-class SquareElement : ElementInterface {
+class SquareElement : AbstractShapeElement {
  public:
-  ///
-  static struct Instance {
-    ///
-    align(1) mat3 matrix = mat3.identity;
-    ///
-    align(1) float weight = 1;
-    ///
-    align(1) float smooth = 0.001;
-    ///
-    align(1) vec4 color = vec4(0, 0, 0, 0);
-  }
-
-  ///
-  void Initialize() {
-    alive        = false;
-    damage       = 0;
-    nearness_coe = 0;
-    instance     = instance.init;
-  }
-
   override DamageCalculationResult CalculateDamage(vec2 p1, vec2 p2) const {
     if (!alive) return DamageCalculationResult(0, 0);
 
@@ -63,22 +45,11 @@ class SquareElement : ElementInterface {
     }
     return DamageCalculationResult(0, 1-(min_distance-1).clamp(0f, 1f));
   }
-
-  ///
-  bool alive;
-  ///
-  float damage;
-  ///
-  float nearness_coe;
-  ///
-  Instance instance;
-  alias instance this;
 }
 
 ///
-alias SquareElementDrawer = ElementDrawer!(
+alias SquareElementDrawer = ShapeElementDrawer!(
     SquareElementProgram,
-    SquareElement,
     [vec2(-1, 1), vec2(1, 1), vec2(1, -1), vec2(-1, -1)]);
 
 ///
@@ -89,3 +60,9 @@ alias SquareElementProgram = ShapeElementProgram!(q{
         smoothstep(w-s, w, abs(uv_.x)) +
         smoothstep(w-s, w, abs(uv_.y)), 0, 1);
   });
+
+///
+alias SquareElementScheduledControllerFactory =
+  ShapeElementScheduledControllerFactory!(
+      SquareElement,
+      SquareElementDrawer);

@@ -6,22 +6,16 @@ import std.algorithm,
 
 import gl4d;
 
-import sjplayer.ElementDrawer,
+import sjplayer.AbstractShapeElement,
        sjplayer.ElementInterface,
+       sjplayer.ShapeElementDrawer,
        sjplayer.ShapeElementProgram,
+       sjplayer.ShapeElementScheduledController,
        sjplayer.util.linalg;
 
 ///
-class CircleElement : ElementInterface {
+class CircleElement : AbstractShapeElement {
  public:
-  ///
-  void Initialize() {
-    alive        = false;
-    damage       = 0;
-    nearness_coe = 0;
-    instance     = instance.init;
-  }
-
   override DamageCalculationResult CalculateDamage(vec2 p1, vec2 p2) const {
     if (!alive) return DamageCalculationResult(0, 0);
 
@@ -35,22 +29,11 @@ class CircleElement : ElementInterface {
     }
     return DamageCalculationResult(0, 1 - (d-1).clamp(0, 1));
   }
-
-  ///
-  bool alive;
-  ///
-  float damage;
-  ///
-  float nearness_coe;
-  ///
-  CircleElementProgram.Instance instance;
-  alias instance this;
 }
 
 ///
-alias CircleElementDrawer = ElementDrawer!(
+alias CircleElementDrawer = ShapeElementDrawer!(
     CircleElementProgram,
-    CircleElement,
     [vec2(-1, 1), vec2(1, 1), vec2(1, -1), vec2(-1, -1)]);
 
 ///
@@ -61,3 +44,9 @@ alias CircleElementProgram = ShapeElementProgram!(q{
       smoothstep(w-smooth_, w, r) *
       (1 - smoothstep(1-smooth_, 1, r));
   });
+
+///
+alias CircleElementScheduledControllerFactory =
+  ShapeElementScheduledControllerFactory!(
+      CircleElement,
+      CircleElementDrawer);

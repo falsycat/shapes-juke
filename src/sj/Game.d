@@ -45,7 +45,7 @@ class Game : AbstractGame {
 
     lobby_ = new LobbyWorld(programs_);
 
-    title_  = new TitleScene(lobby_, programs_);
+    title_  = new TitleScene(posteffect_, lobby_, programs_);
     select_ = new SelectScene(lobby_, programs_, fonts_, music_list_);
     load_   = new LoadingScene(lobby_, posteffect_, programs_, fonts_);
     play_   = new PlayScene(posteffect_);

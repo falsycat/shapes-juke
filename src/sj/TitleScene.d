@@ -6,6 +6,8 @@ import std.conv,
 
 import gl4d;
 
+static import sjplayer;
+
 import sj.KeyInput,
        sj.LobbyWorld,
        sj.ProgramSet,
@@ -34,11 +36,14 @@ class TitleScene : SceneInterface {
   enum BgOuterColor = vec4(-0.1, -0.1, -0.1, 1);
   ///
   enum CubeInterval = 0.005;
+  ///
+  enum Contrast = vec4(1.2, 1.2, 1.2, 1);
 
   ///
-  this(LobbyWorld lobby, ProgramSet program) {
-    lobby_ = lobby;
-    title_ = program.Get!TitleTextProgram;
+  this(sjplayer.PostEffect posteffect, LobbyWorld lobby, ProgramSet program) {
+    posteffect_ = posteffect;
+    lobby_      = lobby;
+    title_      = program.Get!TitleTextProgram;
   }
 
   ///
@@ -54,6 +59,8 @@ class TitleScene : SceneInterface {
     bg_outer_ease_ = Easing!vec4(lobby_.background.outer_color, BgOuterColor);
 
     cube_interval_ease_ = Easing!float(lobby_.cube_interval, CubeInterval);
+
+    contrast_ease_ = Easing!vec4(posteffect_.contrast, Contrast);
   }
   override SceneInterface Update(KeyInput input) {
     const ratio = anime_.Update();
@@ -64,6 +71,8 @@ class TitleScene : SceneInterface {
     lobby_.background.outer_color = bg_outer_ease_.Calculate(ratio);
 
     lobby_.cube_interval = cube_interval_ease_.Calculate(ratio);
+
+    posteffect_.contrast = contrast_ease_.Calculate(ratio);
 
     if (anime_.isFinished && input.down) {
       select_scene_.Initialize();
@@ -80,6 +89,8 @@ class TitleScene : SceneInterface {
  private:
   SelectScene select_scene_;
 
+  sjplayer.PostEffect posteffect_;
+
   LobbyWorld lobby_;
 
   TitleTextProgram title_;
@@ -89,4 +100,6 @@ class TitleScene : SceneInterface {
   Easing!vec4 bg_inner_ease_;
   Easing!vec4 bg_outer_ease_;
   Easing!float cube_interval_ease_;
+
+  Easing!vec4 contrast_ease_;
 }

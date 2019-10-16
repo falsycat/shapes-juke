@@ -51,7 +51,8 @@ class Game : AbstractGame {
 
     if (args.debug_music_index >= 0) {
       enforce(args.debug_music_index < music_list.length);
-      load_.Initialize(music_list_[args.debug_music_index]);
+      load_.Initialize(
+          music_list_[args.debug_music_index], args.debug_music_offset_beat);
       super(load_);
 
     } else {

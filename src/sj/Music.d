@@ -66,7 +66,7 @@ class Music {
   ///
   void PlayForGame(float offset_beat) {
     sfMusic_setPlayingOffset(music_,
-        sfMilliseconds((offset_beat*bpm_ / 60f / 1e-6f).to!int));
+        sfMilliseconds((offset_beat / bpm_ * 60f * 1000f).to!int));
     sfMusic_play(music_);
   }
   ///

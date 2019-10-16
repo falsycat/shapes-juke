@@ -389,7 +389,7 @@ private class MusicPlayState : AbstractSceneState {
     if (anime_.isFinished) {
       music_.StopPlaying();
 
-      owner.load_scene_.Initialize(music_);
+      owner.load_scene_.Initialize(music_, 0);
       return CreateResult(owner.load_scene_);
     }
     return CreateResult(this);

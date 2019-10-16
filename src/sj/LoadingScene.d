@@ -35,7 +35,7 @@ class LoadingScene : SceneInterface {
   }
 
   ///
-  void Initialize(Music music, float offset_beat = 0) {
+  void Initialize(Music music, float offset_beat) {
     music_       = music;
     offset_beat_ = offset_beat;
 

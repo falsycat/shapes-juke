@@ -35,7 +35,7 @@ class PlayScene : SceneInterface {
   }
 
   ///
-  void Initialize(Music music, sjplayer.Context context, float offset_beat = 0) {
+  void Initialize(Music music, sjplayer.Context context, float offset_beat) {
     music_   = music;
     context_ = context;
 

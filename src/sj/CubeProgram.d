@@ -14,23 +14,18 @@ class CubeProgram {
   static struct Material {
    public:
     ///
-    vec3 diffuse_color = vec3(1, 1, 1);
-    private float padding0_;
+    align(16) vec3 diffuse_color = vec3(1, 1, 1);
 
     ///
-    vec3 specular_color = vec3(1, 1, 1);
-    private float padding1_;
+    align(16) vec3 specular_color = vec3(1, 1, 1);
 
     ///
-    vec3 light_color = vec3(1, 1, 1);
-    private float padding2_;
+    align(16) vec3 light_color = vec3(1, 1, 1);
     ///
-    vec3 light_power = vec3(20, 20, 20);
-    private float padding3_;
+    align(16) vec3 light_power = vec3(20, 20, 20);
 
     ///
-    vec3 ambient_color = vec3(0.3, 0.3, 0.3);
-    private float padding4_;
+    align(16) vec3 ambient_color = vec3(0.3, 0.3, 0.3);
   }
 
   ///

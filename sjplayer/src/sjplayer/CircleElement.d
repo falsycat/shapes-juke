@@ -27,7 +27,8 @@ class CircleElement : AbstractShapeElement {
     if (d <= 1) {
       return DamageCalculationResult(damage, 0);
     }
-    return DamageCalculationResult(0, 1 - (d-1).clamp(0, 1));
+    const nearness = 1 - (d-1).clamp(0, 1);
+    return DamageCalculationResult(0, nearness * nearness_coe);
   }
 }
 

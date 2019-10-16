@@ -43,7 +43,8 @@ class SquareElement : AbstractShapeElement {
     if (min_distance == 0) {
       return DamageCalculationResult(damage, 0);
     }
-    return DamageCalculationResult(0, 1-(min_distance-1).clamp(0f, 1f));
+    const nearness = 1 - (min_distance-1).clamp(0f, 1f);
+    return DamageCalculationResult(0, nearness * nearness_coe);
   }
 }
 

@@ -133,10 +133,10 @@ private abstract class AbstractSceneState {
   enum CubeRotationSpeed = vec3(0, PI/500, 0);
   enum CubeInterval      = 0.005;
 
-  enum PlayingCubeRotationSpeed = vec3(PI/10, PI/70, PI/100);
+  enum PlayingCubeRotationSpeed = vec3(PI/100, PI/10, PI/100);
   enum PlayingCubeInterval      = 0.04;
 
-  enum LoadingCubeRotationSpeed = vec3(0, PI/10, PI/10);
+  enum LoadingCubeRotationSpeed = vec3(PI/100, PI/10, PI/100);
   enum LoadingCubeInterval      = 0.06;
 
   enum TitleTextSize        = 40;
@@ -348,7 +348,7 @@ private class MusicWaitState : AbstractSceneState {
 ///
 private class MusicPlayState : AbstractSceneState {
  public:
-  enum AnimeFrames = 120;
+  enum AnimeFrames = 60;
 
   this(SelectScene owner, MusicWaitState music_wait_state) {
     super(owner);

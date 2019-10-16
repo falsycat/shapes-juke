@@ -23,6 +23,9 @@ class PostEffect {
 
     ///
     align(16) vec4 contrast = vec4(1, 1, 1, 1);
+
+    ///
+    align(16) vec4 blur = vec4(0.3, 0.3, 0.3, 0);
   }
 
   ///
@@ -130,6 +133,8 @@ class PostEffectProgram {
       vec2  clip_rightbottom;
 
       vec4 contrast;
+
+      vec4 blur;
     } instance;
 
     in vec2  uv_;
@@ -151,6 +156,35 @@ class PostEffectProgram {
       pixel_.g = pow(pixel_.g, instance.contrast.g);
       pixel_.b = pow(pixel_.b, instance.contrast.b);
       pixel_.a = pow(pixel_.a, instance.contrast.a);
+
+      // blur
+      vec4 blur_div = instance.blur / 32;
+      pixel_ = pixel_ * (1-instance.blur) +
+        texture(fb, fb_size * tex_uv + vec2(-2,  2)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2(-2,  1)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2(-2,  0)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2(-2, -1)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2(-2, -2)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2(-1, -2)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2( 0, -2)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2( 1, -2)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2( 2, -2)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2( 2, -1)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2( 2,  0)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2( 2,  1)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2( 2,  2)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2( 1,  2)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2( 0,  2)) * blur_div +
+        texture(fb, fb_size * tex_uv + vec2(-1,  2)) * blur_div +
+
+        texture(fb, fb_size * tex_uv + vec2(-1,  1)) * blur_div*2 +
+        texture(fb, fb_size * tex_uv + vec2(-1,  0)) * blur_div*2 +
+        texture(fb, fb_size * tex_uv + vec2(-1, -1)) * blur_div*2 +
+        texture(fb, fb_size * tex_uv + vec2( 0, -1)) * blur_div*2 +
+        texture(fb, fb_size * tex_uv + vec2( 1, -1)) * blur_div*2 +
+        texture(fb, fb_size * tex_uv + vec2( 1,  0)) * blur_div*2 +
+        texture(fb, fb_size * tex_uv + vec2( 1,  1)) * blur_div*2 +
+        texture(fb, fb_size * tex_uv + vec2( 0,  1)) * blur_div*2;
 
       // clipping
       pixel_.a *=

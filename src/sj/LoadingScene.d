@@ -35,17 +35,18 @@ class LoadingScene : SceneInterface {
   }
 
   ///
-  void Initialize(Music music) {
-    music_ = music;
+  void Initialize(Music music, float offset_beat = 0) {
+    music_       = music;
+    offset_beat_ = offset_beat;
 
     first_drawn_ = false;
   }
   override SceneInterface Update(KeyInput input) {
     if (first_drawn_) {
-      // TODO: parallelize contex creation
+      // TODO: parallelize context creation
       auto context = music_.CreatePlayerContext(
           vec2i(args_.window_size, args_.window_size), programs_.player);
-      play_scene_.Initialize(music_, context);
+      play_scene_.Initialize(music_, context, offset_beat_);
       return play_scene_;
     }
     return this;
@@ -67,6 +68,7 @@ class LoadingScene : SceneInterface {
   LobbyWorld lobby_;
 
   Music music_;
+  float offset_beat_;
 
   bool first_drawn_;
 }

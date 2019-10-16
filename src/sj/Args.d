@@ -9,4 +9,6 @@ struct Args {
 
   ///
   int debug_music_index = -1;
+  ///
+  float debug_music_offset_beat = 0;
 }

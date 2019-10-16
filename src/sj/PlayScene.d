@@ -35,13 +35,13 @@ class PlayScene : SceneInterface {
   }
 
   ///
-  void Initialize(Music music, sjplayer.Context context) {
+  void Initialize(Music music, sjplayer.Context context, float offset_beat = 0) {
     music_   = music;
     context_ = context;
 
     score_ = BaseScore;
 
-    music_.PlayForGame();
+    music_.PlayForGame(offset_beat);
   }
   override SceneInterface Update(KeyInput input) {
     beat_ = music_.beat;

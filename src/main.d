@@ -36,11 +36,16 @@ int main(string[] unparsed_args) {
 
 private bool ParseArgs(string[] unparsed_args, out Args args) {
   auto helpinfo = unparsed_args.getopt(
-      "debug-music-index", &args.debug_music_index,
-      "window-size",       &args.window_size
+      "debug-music-offset-beat", &args.debug_music_offset_beat,
+      "debug-music-index",       &args.debug_music_index,
+      "window-size",             &args.window_size
     );
 
   auto valid = true;
+  if (args.debug_music_offset_beat < 0) {
+    "invalid music offset (it should be 0 or more)".writeln;
+    valid = false;
+  }
   if (args.window_size <= 100) {
     "invalid window size (it should be 100 or more)".writeln;
     valid = false;

@@ -48,7 +48,7 @@ class Game : AbstractGame {
     title_  = new TitleScene(lobby_, programs_);
     select_ = new SelectScene(lobby_, programs_, fonts_, music_list_);
     load_   = new LoadingScene(lobby_, posteffect_, programs_, fonts_);
-    play_   = new PlayScene;
+    play_   = new PlayScene(posteffect_);
     result_ = new ResultScene(lobby_, programs_, fonts_);
 
     title_ .SetupSceneDependency(select_);

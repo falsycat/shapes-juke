@@ -61,6 +61,11 @@ class PostEffect {
   }
 
   ///
+  void Initialize() {
+    instance = instance.init;
+  }
+
+  ///
   void BindFramebuffer() {
     fb_.Bind();
   }

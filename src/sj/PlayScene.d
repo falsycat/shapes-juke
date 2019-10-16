@@ -23,7 +23,8 @@ class PlayScene : SceneInterface {
   enum NearnessScoreRatio = 10;
 
   ///
-  this() {
+  this(sjplayer.PostEffect posteffect) {
+    posteffect_ = posteffect;
   }
   ~this() {
     context_.destroy();
@@ -42,12 +43,14 @@ class PlayScene : SceneInterface {
     score_ = BaseScore;
 
     music_.PlayForGame(offset_beat);
+    posteffect_.Initialize();
   }
   override SceneInterface Update(KeyInput input) {
     beat_ = music_.beat;
 
     if (beat_ >= context_.length) {
       music_.StopPlaying();
+      posteffect_.Initialize();
 
       result_scene_.Initialize(music_, score_);
       return result_scene_;
@@ -92,6 +95,8 @@ class PlayScene : SceneInterface {
     if (key.down)  result.y -= 1;
     return result;
   }
+
+  sjplayer.PostEffect posteffect_;
 
   ResultScene result_scene_;
 

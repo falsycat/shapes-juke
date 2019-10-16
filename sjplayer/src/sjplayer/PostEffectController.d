@@ -56,6 +56,16 @@ private alias PostEffectScheduledController = ScheduledController!(
       "clip_top":    "clip_lefttop.y",
       "clip_right":  "clip_rightbottom.x",
       "clip_bottom": "clip_rightbottom.y",
+
+      "contrast_r": "contrast.r",
+      "contrast_g": "contrast.g",
+      "contrast_b": "contrast.b",
+      "contrast_a": "contrast.a",
+
+      "blur_r": "blur.r",
+      "blur_g": "blur.g",
+      "blur_b": "blur.b",
+      "blur_a": "blur.a",
     ]
   );
 

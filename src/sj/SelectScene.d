@@ -133,7 +133,7 @@ private abstract class AbstractSceneState {
   enum CubeRotationSpeed = vec3(0, PI/500, 0);
   enum CubeInterval      = 0.005;
 
-  enum PlayingCubeRotationSpeed = vec3(PI/100, PI/10, PI/100);
+  enum PlayingCubeRotationSpeed = vec3(PI/200, PI/20, PI/200);
   enum PlayingCubeInterval      = 0.04;
 
   enum LoadingCubeRotationSpeed = vec3(PI/100, PI/10, PI/100);
@@ -364,10 +364,6 @@ private class MusicPlayState : AbstractSceneState {
       Easing!vec3(CubeRotationSpeed, PlayingCubeRotationSpeed);
     cube_interval_ease_ =
       Easing!float(CubeInterval, PlayingCubeInterval);
-
-    bg_inner_ease_ =
-      Easing!vec4(owner.lobby_.background.inner_color,
-          owner.lobby_.background.inner_color*2);
   }
   override UpdateResult Update(KeyInput input) {
     const ratio = anime_.Update();
@@ -377,8 +373,6 @@ private class MusicPlayState : AbstractSceneState {
     with (owner.lobby_) {
       cube_matrix.rotation += cube_rota_speed;
       cube_interval         = cube_interval_;
-
-      background.inner_color = bg_inner_ease_.Calculate(ratio);
     }
 
     if (!input.down) {
@@ -409,7 +403,6 @@ private class MusicPlayState : AbstractSceneState {
 
   Easing!vec3  cube_rota_speed_ease_;
   Easing!float cube_interval_ease_;
-  Easing!vec4  bg_inner_ease_;
 }
 ///
 private class MusicCancelPlayState : AbstractSceneState {
@@ -428,17 +421,13 @@ private class MusicCancelPlayState : AbstractSceneState {
       Easing!vec3(cube_rota_speed, CubeRotationSpeed);
     cube_interval_ease_ =
       Easing!float(cube_interval, CubeInterval);
-
-    bg_inner_ease_ = Easing!vec4(
-        owner.lobby_.background.inner_color, music.preview.bg_inner_color);
   }
   override UpdateResult Update(KeyInput input) {
     const ratio = anime_.Update();
 
     with (owner.lobby_) {
-      cube_matrix.rotation   += cube_rota_speed_ease_.Calculate(ratio);
-      cube_interval           = cube_interval_ease_  .Calculate(ratio);
-      background.inner_color  = bg_inner_ease_       .Calculate(ratio);
+      cube_matrix.rotation += cube_rota_speed_ease_.Calculate(ratio);
+      cube_interval         = cube_interval_ease_  .Calculate(ratio);
     }
     if (anime_.isFinished) {
       return CreateResult(music_wait_state_);
@@ -458,5 +447,4 @@ private class MusicCancelPlayState : AbstractSceneState {
 
   Easing!vec3  cube_rota_speed_ease_;
   Easing!float cube_interval_ease_;
-  Easing!vec4  bg_inner_ease_;
 }

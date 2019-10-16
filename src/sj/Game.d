@@ -2,6 +2,7 @@
 module sj.Game;
 
 import std.algorithm,
+       std.exception,
        std.file,
        std.json,
        std.path;
@@ -48,8 +49,15 @@ class Game : AbstractGame {
     play_  .SetupSceneDependency(result_);
     result_.SetupSceneDependency(title_);
 
-    title_.Initialize();
-    super(title_);
+    if (args.debug_music_index >= 0) {
+      enforce(args.debug_music_index < music_list.length);
+      load_.Initialize(music_list_[args.debug_music_index]);
+      super(load_);
+
+    } else {
+      title_.Initialize();
+      super(title_);
+    }
   }
 
   ~this() {

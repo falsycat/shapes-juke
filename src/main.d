@@ -36,7 +36,8 @@ int main(string[] unparsed_args) {
 
 private bool ParseArgs(string[] unparsed_args, out Args args) {
   auto helpinfo = unparsed_args.getopt(
-      "window-size", &args.window_size
+      "debug-music-index", &args.debug_music_index,
+      "window-size",       &args.window_size
     );
 
   auto valid = true;

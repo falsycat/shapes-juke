@@ -94,8 +94,6 @@ private auto CreateWindow(ref in Args args) {
   sfWindow_setActive(win, true).enforce;
 
   gl.ApplyContext();
-  gl.Enable(GL_BLEND);
-  gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   static struct Window {
    public:

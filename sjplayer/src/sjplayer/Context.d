@@ -28,10 +28,9 @@ import sjplayer.Actor,
 class Context {
  public:
   ///
-  this(ParametersBlock[] params, vec2i window_size, ProgramSet programs) {
+  this(ParametersBlock[] params, PostEffect posteffect, ProgramSet programs) {
     actor_      = new Actor(programs.Get!ActorProgram);
     background_ = new Background(programs.Get!BackgroundProgram);
-    posteffect_ = new PostEffect(programs.Get!PostEffectProgram, window_size);
 
     auto builder  = new Builder;
     auto varstore = new VarStore(actor_);
@@ -47,7 +46,7 @@ class Context {
         ),
         tuple(
           "posteffect",
-          PostEffectControllerFactory(varstore, posteffect_),
+          PostEffectControllerFactory(varstore, posteffect),
         ),
 
         tuple(
@@ -94,7 +93,6 @@ class Context {
     drawers_.each!destroy;
     elements_.each!destroy;
 
-    posteffect_.destroy();
     background_.destroy();
     actor_.destroy();
   }
@@ -117,10 +115,6 @@ class Context {
   }
 
   ///
-  void StartDrawing() {
-    posteffect_.BindFramebuffer();
-  }
-  ///
   void DrawBackground() {
     background_.Draw();
   }
@@ -131,11 +125,6 @@ class Context {
   ///
   void DrawActor() {
     actor_.Draw();
-  }
-  ///
-  void EndDrawing() {
-    posteffect_.UnbindFramebuffer();
-    posteffect_.DrawFramebuffer();
   }
 
   ///
@@ -170,7 +159,6 @@ class Context {
 
   Actor      actor_;
   Background background_;
-  PostEffect posteffect_;
 
   ElementInterface[]             elements_;
   ElementDrawerInterface[]       drawers_;

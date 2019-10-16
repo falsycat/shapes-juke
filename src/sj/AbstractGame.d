@@ -21,7 +21,6 @@ class AbstractGame {
   }
   ///
   void Draw() {
-    gl.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene_.Draw();
   }
 

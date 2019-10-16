@@ -7,6 +7,10 @@ import std.algorithm,
        std.json,
        std.path;
 
+import gl4d;
+
+static import sjplayer;
+
 import sj.AbstractGame,
        sj.Args,
        sj.FontSet,
@@ -35,11 +39,15 @@ class Game : AbstractGame {
     fonts_    = new FontSet;
     programs_ = new ProgramSet;
 
+    posteffect_ = new sjplayer.PostEffect(
+        programs_.Get!(sjplayer.PostEffectProgram),
+        vec2i(args.window_size, args.window_size));
+
     lobby_ = new LobbyWorld(programs_);
 
     title_  = new TitleScene(lobby_, programs_);
     select_ = new SelectScene(lobby_, programs_, fonts_, music_list_);
-    load_   = new LoadingScene(args, lobby_, programs_, fonts_);
+    load_   = new LoadingScene(lobby_, posteffect_, programs_, fonts_);
     play_   = new PlayScene;
     result_ = new ResultScene(lobby_, programs_, fonts_);
 
@@ -59,6 +67,11 @@ class Game : AbstractGame {
       title_.Initialize();
       super(title_);
     }
+
+    // setup OpenGL
+    gl.Enable(GL_BLEND);
+    gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    gl.Disable(GL_DEPTH_TEST);
   }
 
   ~this() {
@@ -69,11 +82,24 @@ class Game : AbstractGame {
     result_.destroy();
 
     lobby_.destroy();
+    posteffect_.destroy();
 
     fonts_.destroy();
     programs_.destroy();
 
     music_list_.each!destroy();
+  }
+
+  override void Draw() {
+    gl.Clear(GL_COLOR_BUFFER_BIT);
+
+    posteffect_.BindFramebuffer();
+    gl.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    super.Draw();
+    posteffect_.UnbindFramebuffer();
+
+    posteffect_.DrawFramebuffer();
   }
 
  private:
@@ -82,7 +108,8 @@ class Game : AbstractGame {
   FontSet    fonts_;
   ProgramSet programs_;
 
-  LobbyWorld lobby_;
+  sjplayer.PostEffect posteffect_;
+  LobbyWorld          lobby_;
 
   TitleScene   title_;
   SelectScene  select_;

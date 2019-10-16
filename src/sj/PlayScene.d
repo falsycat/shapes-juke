@@ -74,13 +74,9 @@ class PlayScene : SceneInterface {
     return this;
   }
   override void Draw() {
-    context_.StartDrawing();
-
     context_.DrawBackground();
     context_.DrawElements();
     context_.DrawActor();
-
-    context_.EndDrawing();
 
     if (beat_ >= context_.length) {
       context_.destroy();

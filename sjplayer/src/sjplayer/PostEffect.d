@@ -28,6 +28,7 @@ class PostEffect {
     program_ = program;
     fb_      = Framebuffer.Create();
     tex_     = TextureRect.Create();
+    depth_   = Renderbuffer.Create();
     sampler_ = Sampler.Create();
 
     with (TextureRectAllocator()) {
@@ -38,7 +39,11 @@ class PostEffect {
       data           = null;
       Allocate(tex_);
     }
-
+    with (RenderbufferAllocator()) {
+      format = GL_DEPTH_COMPONENT;
+      size   = sz;
+      Allocate(depth_);
+    }
     with (SamplerConfigurer()) {
       filterMin = GL_NEAREST;
       filterMag = GL_NEAREST;
@@ -48,6 +53,9 @@ class PostEffect {
     fb_.Bind();
     fb_.attachment!(GL_COLOR_ATTACHMENT0, 0, GL_TEXTURE_RECTANGLE) = tex_;
     fb_.attachmentOrder = [GL_COLOR_ATTACHMENT0];
+
+    fb_.attachment!GL_DEPTH_ATTACHMENT = depth_;
+
     fb_.Validate();
     fb_.Unbind();
   }
@@ -77,6 +85,8 @@ class PostEffect {
   FramebufferRef fb_;
 
   TextureRectRef tex_;
+
+  RenderbufferRef depth_;
 
   SamplerRef sampler_;
 }

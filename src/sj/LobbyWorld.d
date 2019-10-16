@@ -37,15 +37,13 @@ class LobbyWorld {
 
   ///
   void Draw() {
-    gl.Disable(GL_DEPTH_TEST);
-    gl.DepthMask(false);
     background_.Draw();
 
     gl.Enable(GL_DEPTH_TEST);
-    gl.DepthMask(true);
     cube_program_.Draw(
         CreateCubes(cube_matrix.Create(), cube_interval)[],
         Projection, view.Create(), light_pos, cube_material);
+    gl.Disable(GL_DEPTH_TEST);
   }
 
   ///

@@ -9,16 +9,17 @@ public {
   import sjscript : ScriptException;
 
   import sjplayer.Context,
+         sjplayer.PostEffect,
          sjplayer.ProgramSet,
          sjplayer.ScriptRuntimeException;
 }
 
 ///
-Context CreateContextFromText(string src, vec2i window_size, ProgramSet programs) {
-  return src.CreateScriptAst().CreateContextFromScriptAst(window_size, programs);
+Context CreateContextFromText(string src, PostEffect posteffect, ProgramSet programs) {
+  return src.CreateScriptAst().CreateContextFromScriptAst(posteffect, programs);
 }
 ///
 Context CreateContextFromScriptAst(
-    ParametersBlock[] params, vec2i window_size, ProgramSet programs) {
-  return new Context(params, window_size, programs);
+    ParametersBlock[] params, PostEffect posteffect, ProgramSet programs) {
+  return new Context(params, posteffect, programs);
 }

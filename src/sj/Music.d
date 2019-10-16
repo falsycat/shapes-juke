@@ -83,9 +83,9 @@ class Music {
 
   ///
   sjplayer.Context CreatePlayerContext(
-      vec2i winsz, sjplayer.ProgramSet programs) const {
+      sjplayer.PostEffect posteffect, sjplayer.ProgramSet programs) const {
     return sjplayer.CreateContextFromText(
-        script_path_.readText, winsz, programs);
+        script_path_.readText, posteffect, programs);
   }
 
   ///

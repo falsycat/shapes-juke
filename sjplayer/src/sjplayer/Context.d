@@ -39,7 +39,12 @@ class Context {
            sjplayer.CircleElement,
            sjplayer.SquareElement,
            sjplayer.TriangleElement;
+    // FIXME: fucking solution
     auto factories = tuple(
+        tuple(
+          "variable",
+          VarStoreScheduledControllerFactory(varstore),
+        ),
         tuple(
           "actor",
           ActorControllerFactory(varstore, actor_),
@@ -65,10 +70,6 @@ class Context {
           "triangle",
           TriangleElementScheduledControllerFactory(programs, varstore),
         ),
-        tuple(
-          "variable",
-          VarStoreScheduledControllerFactory(varstore),
-        ),
       );
     foreach (ref factory; factories) {
       factory[1].
@@ -84,8 +85,8 @@ class Context {
     drawers_     = builder.drawers[];
     controllers_ = builder.controllers[];
 
-    actor_controller_      = factories[0][1].product;
-    posteffect_controller_ = factories[1][1].product;
+    actor_controller_      = factories[1][1].product;
+    posteffect_controller_ = factories[2][1].product;
   }
   ///
   ~this() {

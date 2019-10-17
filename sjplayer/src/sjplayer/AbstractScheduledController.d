@@ -26,9 +26,22 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
   }
 
   override void Operate(float time) {
-    FinalizeCurrentOperationIfEnded(time);
-    PrepareNextOperationIfStarted(time);
-    ProcessCurrentOperationIfAvailable(time);
+    while (true) {
+      if (next_operation_index_ >= 1) {
+        const current = &operations_[next_operation_index_-1];
+        ProcessOperation(
+            current.period.ConvertToRelativeTime(time), *current);
+        if (current.period.end > time) return;
+        FinalizeOperation(*current);
+      }
+
+      if (next_operation_index_ >= operations_.length) return;
+
+      const next = &operations_[next_operation_index_];
+      if (next.period.start > time) return;
+      ++next_operation_index_;
+      PrepareOperation(*next);
+    }
   }
 
  protected:
@@ -87,33 +100,6 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
   }
 
  private:
-  void FinalizeCurrentOperationIfEnded(float time) {
-    if (next_operation_index_ < 1) return;
-
-    const current = &operations_[next_operation_index_-1];
-    if (current.period.end > time) return;
-
-    FinalizeOperation(*current);
-  }
-  void PrepareNextOperationIfStarted(float time) {
-    if (next_operation_index_ >= operations_.length) return;
-
-    const next = &operations_[next_operation_index_];
-    if (next.period.start > time) return;
-
-    ++next_operation_index_;
-    PrepareOperation(*next);
-  }
-  void ProcessCurrentOperationIfAvailable(float time) {
-    if (next_operation_index_ < 1) return;
-
-    const current = &operations_[next_operation_index_-1];
-    if (current.period.end <= time) return;
-
-    ProcessOperation(
-        current.period.ConvertToRelativeTime(time), *current);
-  }
-
   const VarStoreInterface varstore_;
 
   const ParametersBlock[] operations_;

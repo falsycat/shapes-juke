@@ -4,22 +4,22 @@ actor [0..1] {
   clip_left := 0.1;
 }
 background [0..1] {
-  inner_r = 0.8;
-  inner_g = 0.8;
-  inner_b = 0.8;
-  inner_a = 1;
+  inner_r := 0.8;
+  inner_g := 0.8;
+  inner_b := 0.8;
+  inner_a := 1;
 
-  outer_r = 0;
-  outer_g = 0;
-  outer_b = 0;
-  outer_a = 1;
+  outer_r := 0;
+  outer_g := 0;
+  outer_b := 0;
+  outer_a := 1;
 }
 posteffect [0..1] {
   clip_left  := 0.1;
   clip_right := 0.1;
 }
-variable [0..3.5] {
-  hoge = 1-time;
+variable [0..1] {
+  hoge = 1;
 }
 
 $repeat i 2 {

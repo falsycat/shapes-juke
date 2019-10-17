@@ -22,6 +22,7 @@ class VarStoreScheduledController : AbstractScheduledController {
     varstore_ = varstore;
   }
 
+ protected:
   override void SetParameter(
       ref in Parameter param,
       ref in AbstractScheduledController.VarStore vars) {

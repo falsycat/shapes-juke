@@ -101,6 +101,7 @@ class LoadingScene : SceneInterface {
     return this;
   }
   override void Draw() {
+    if (anime_.isFinished) return;
     lobby_.Draw();
     loading_text_.Draw(lobby_.Projection, lobby_.view.Create());
   }

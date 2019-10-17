@@ -4,6 +4,7 @@ module sj.SelectScene;
 import std.conv,
        std.math,
        std.random,
+       std.typecons,
        std.variant;
 
 import derelict.sfml2.audio;
@@ -383,7 +384,7 @@ private class MusicPlayState : AbstractSceneState {
     if (anime_.isFinished) {
       music_.StopPlaying();
 
-      owner.load_scene_.Initialize(music_, 0);
+      owner.load_scene_.Initialize(music_, 0, No.FastLoad);
       return CreateResult(owner.load_scene_);
     }
     return CreateResult(this);

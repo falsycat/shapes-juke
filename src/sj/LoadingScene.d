@@ -1,7 +1,8 @@
 /// License: MIT
 module sj.LoadingScene;
 
-import std.math;
+import std.math,
+       std.typecons;
 
 import gl4d;
 
@@ -24,6 +25,8 @@ class LoadingScene : SceneInterface {
  public:
   ///
   enum AnimeFrames = 300;
+  ///
+  enum FastLoadAnimeFrames = 30;
   ///
   enum CubeRotationSpeed = vec3(PI/200, PI/20, PI/200);
   ///
@@ -63,11 +66,11 @@ class LoadingScene : SceneInterface {
   }
 
   ///
-  void Initialize(Music music, float offset_beat) {
+  void Initialize(Music music, float offset_beat, Flag!"FastLoad" fastload) {
     music_       = music;
     offset_beat_ = offset_beat;
 
-    anime_ = Animation(AnimeFrames);
+    anime_ = Animation(fastload? FastLoadAnimeFrames: AnimeFrames);
 
     with (lobby_) {
       bg_inner_ease_ = Easing!vec4(

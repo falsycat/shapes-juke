@@ -5,7 +5,8 @@ import std.algorithm,
        std.exception,
        std.file,
        std.json,
-       std.path;
+       std.path,
+       std.typecons;
 
 import gl4d;
 
@@ -60,7 +61,9 @@ class Game : AbstractGame {
     if (args.debug_music_index >= 0) {
       enforce(args.debug_music_index < music_list.length);
       load_.Initialize(
-          music_list_[args.debug_music_index], args.debug_music_offset_beat);
+          music_list_[args.debug_music_index],
+          args.debug_music_offset_beat,
+          Yes.FastLoad);
       super(load_);
 
     } else {

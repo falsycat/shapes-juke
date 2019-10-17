@@ -30,7 +30,7 @@ abstract class AbstractScheduledController : ScheduledControllerInterface {
       if (next_operation_index_ >= 1) {
         const current = &operations_[next_operation_index_-1];
         ProcessOperation(
-            current.period.ConvertToRelativeTime(time), *current);
+            current.period.ConvertToRelativeTime(time).clamp(0f, 1f), *current);
         if (current.period.end > time) return;
         FinalizeOperation(*current);
       }

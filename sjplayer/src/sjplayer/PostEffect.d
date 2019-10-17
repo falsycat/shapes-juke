@@ -25,7 +25,7 @@ class PostEffect {
     align(16) vec4 contrast = vec4(1, 1, 1, 1);
 
     ///
-    align(16) vec4 blur = vec4(0.1, 0.1, 0.1, 0);
+    align(16) vec4 blur = vec4(0.2, 0.2, 0.2, 0);
   }
 
   ///

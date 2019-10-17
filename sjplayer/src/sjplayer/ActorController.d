@@ -23,7 +23,7 @@ class ActorController : ActorScheduledController, ActorControllerInterface {
   ///
   enum MaxSpeed = 0.03;
   ///
-  enum SpeedAttenuation = 0.05;
+  enum SpeedAttenuation = 0.08;
 
   ///
   this(

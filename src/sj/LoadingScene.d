@@ -1,6 +1,8 @@
 /// License: MIT
 module sj.LoadingScene;
 
+import core.memory;
+
 import std.math,
        std.typecons;
 
@@ -95,6 +97,8 @@ class LoadingScene : SceneInterface {
     if (anime_.isFinished) {
       // TODO: parallelize context creation
       auto context = music_.CreatePlayerContext(posteffect_, programs_.player);
+      GC.collect();
+
       play_scene_.Initialize(music_, context, offset_beat_);
       return play_scene_;
     }

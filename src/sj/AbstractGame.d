@@ -11,13 +11,17 @@ class AbstractGame {
  public:
   ///
   this(SceneInterface first_scene) in (first_scene) {
-    next_scene_ = first_scene;
+    scene_ = first_scene;
   }
 
   ///
   void Update(KeyInput input) {
-    scene_      = next_scene_;
-    next_scene_ = scene_.Update(input);
+    while (true) {
+      auto next_scene = scene_.Update(input);
+      if (next_scene is scene_) break;
+
+      scene_ = next_scene;
+    }
   }
   ///
   void Draw() {
@@ -26,6 +30,4 @@ class AbstractGame {
 
  private:
   SceneInterface scene_;
-
-  SceneInterface next_scene_;
 }

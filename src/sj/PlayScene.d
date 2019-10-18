@@ -49,6 +49,8 @@ class PlayScene : SceneInterface {
     beat_ = music_.beat;
 
     if (beat_ >= context_.length) {
+      context_.destroy();
+
       music_.StopPlaying();
       posteffect_.Initialize();
 
@@ -80,10 +82,6 @@ class PlayScene : SceneInterface {
     context_.DrawBackground();
     context_.DrawElements();
     context_.DrawActor();
-
-    if (beat_ >= context_.length) {
-      context_.destroy();
-    }
   }
 
  private:

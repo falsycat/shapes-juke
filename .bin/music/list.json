@@ -1,17 +1,5 @@
 [
   {
-    "name": "test-60bpm",
-    "bpm": 60,
-    "music":  "test-60bpm.ogg",
-    "script": "test-60bpm.sj",
-
-    "preview": {
-      "play-offset": 0,
-      "bg-inner-color": [0.8, 0.8, 0.8, 1],
-      "bg-outer-color": [0.1, 0.1, 0.1, 1]
-    }
-  },
-  {
     "name": "Cranky - V.L.S.I.",
     "bpm": 160,
     "music":  "Cranky-VLSI_short.ogg",

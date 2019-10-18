@@ -1,5 +1,5 @@
-$define damage_ratio   {1.0}
-$define nearness_ratio {0.01}
+$define damage_ratio   {0.75}
+$define nearness_ratio {1.0}
 
 // ---- TEMPLATE DECLARATION ----
 $define main_color {
@@ -56,7 +56,6 @@ $repeat i 3 {
   square [$beat..$beat+4] {
     $main_square
 
-    damage := $damage_ratio*0.01;
     color_a = step(0.5, sin(PI*(1-pow(time, 2))*10));
   }
   square [$beat+4..$beat+26] {
@@ -659,7 +658,7 @@ $repeat i 16 {
     rotation_z :=
       atan2(actor_y - translation_y, actor_x - translation_x) - PI/2;
 
-    damage = $damage_ratio * pow(time, 2);
+    damage = $damage_ratio * pow(time, 4) * 0.1;
   }
   $repeat x 2 {
     $repeat y 2 {

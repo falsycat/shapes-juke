@@ -167,6 +167,7 @@ class ResultScene : SceneInterface {
   static dstring GetRankLetter(int score) {
     const ratio = score*1f / RankCalculationRatio;
     if (ratio < 0.60) return "D"d;
+    if (ratio < 0.70) return "C"d;
     if (ratio < 0.80) return "B"d;
     if (ratio < 0.95) return "A"d;
     return "S";

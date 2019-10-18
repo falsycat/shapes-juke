@@ -16,9 +16,9 @@ import sj.KeyInput,
 class PlayScene : SceneInterface {
  public:
   ///
-  enum BaseScore = 100000;
+  enum BaseScore = 10000;
   ///
-  enum DamageScoreRatio = 10;
+  enum DamageScoreRatio = 100;
   ///
   enum NearnessScoreRatio = 10;
 

@@ -131,7 +131,7 @@ struct ShapeElementProgramInstance {
   ///
   align(1) float weight = 1;
   ///
-  align(1) float smooth = 0.001;
+  align(1) float smooth = 0.01;
   ///
   align(1) vec4 color = vec4(0, 0, 0, 0);
 }

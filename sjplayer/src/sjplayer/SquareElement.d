@@ -58,8 +58,8 @@ alias SquareElementProgram = ShapeElementProgram!(q{
     float w = 1-weight_;
     float s = smooth_;
     return clamp(
-        smoothstep(w-s, w, abs(uv_.x)) +
-        smoothstep(w-s, w, abs(uv_.y)), 0, 1);
+        smoothstep(w-s, w, abs(uv_.x))*(1-smoothstep(1-s, 1, abs(uv_.x))) +
+        smoothstep(w-s, w, abs(uv_.y))*(1-smoothstep(1-s, 1, abs(uv_.y))), 0, 1);
   });
 
 ///

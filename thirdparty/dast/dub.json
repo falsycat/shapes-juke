@@ -1,0 +1,6 @@
+{
+  "name": "dast",
+
+  "targetType": "library",
+  "targetPath": ".bin"
+}

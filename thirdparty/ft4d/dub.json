@@ -1,0 +1,14 @@
+{
+  "name": "ft4d",
+  "license": "Boost",
+
+  "targetType": "library",
+  "targetPath": ".bin",
+
+  "dependencies": {
+    "bindbc-freetype": "~>0.7.0"
+  },
+
+  "versions": ["BindFT_Static"],
+  "libs": ["freetype"]
+}

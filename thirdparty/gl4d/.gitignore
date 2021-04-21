@@ -1,0 +1,8 @@
+/.bin
+/.dub
+/dub.selections.json
+
+/docs
+/docs.json
+
+*.swp

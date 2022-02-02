@@ -6,7 +6,7 @@ import std.conv,
 
 import gl4d;
 
-static import sjplayer;
+import sjplayer;
 
 import sj.KeyInput,
        sj.LobbyWorld,
@@ -40,7 +40,7 @@ class TitleScene : SceneInterface {
   enum Contrast = vec4(1.2, 1.2, 1.2, 1);
 
   ///
-  this(sjplayer.PostEffect posteffect, LobbyWorld lobby, ProgramSet program) {
+  this(PostEffect posteffect, LobbyWorld lobby, sj.ProgramSet.ProgramSet program) {
     posteffect_ = posteffect;
     lobby_      = lobby;
     title_      = program.Get!TitleTextProgram;
@@ -89,7 +89,7 @@ class TitleScene : SceneInterface {
  private:
   SelectScene select_scene_;
 
-  sjplayer.PostEffect posteffect_;
+  PostEffect posteffect_;
 
   LobbyWorld lobby_;
 

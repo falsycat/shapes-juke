@@ -8,7 +8,7 @@ import std.math,
 
 import gl4d;
 
-static import sjplayer;
+import sjplayer;
 
 import sj.FontSet,
        sj.KeyInput,
@@ -40,10 +40,10 @@ class LoadingScene : SceneInterface {
 
   ///
   this(
-      LobbyWorld          lobby,
-      sjplayer.PostEffect posteffect,
-      ProgramSet          programs,
-      FontSet             fonts) {
+      LobbyWorld               lobby,
+      PostEffect               posteffect,
+      sj.ProgramSet.ProgramSet programs,
+      FontSet                  fonts) {
     lobby_      = lobby;
     posteffect_ = posteffect;
     programs_   = programs;
@@ -110,9 +110,9 @@ class LoadingScene : SceneInterface {
   }
 
  private:
-  sjplayer.PostEffect posteffect_;
+  PostEffect posteffect_;
 
-  ProgramSet programs_;
+  sj.ProgramSet.ProgramSet programs_;
 
   LobbyWorld lobby_;
 

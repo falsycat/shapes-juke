@@ -5,7 +5,7 @@ import std.conv;
 
 import gl4d;
 
-static import sjplayer;
+import sjplayer;
 
 import sj.KeyInput,
        sj.Music,
@@ -23,7 +23,7 @@ class PlayScene : SceneInterface {
   enum NearnessScoreRatio = 10;
 
   ///
-  this(sjplayer.PostEffect posteffect) {
+  this(PostEffect posteffect) {
     posteffect_ = posteffect;
   }
   ~this() {
@@ -36,7 +36,7 @@ class PlayScene : SceneInterface {
   }
 
   ///
-  void Initialize(Music music, sjplayer.Context context, float offset_beat) {
+  void Initialize(Music music, Context context, float offset_beat) {
     music_   = music;
     context_ = context;
 
@@ -94,12 +94,12 @@ class PlayScene : SceneInterface {
     return result;
   }
 
-  sjplayer.PostEffect posteffect_;
+  PostEffect posteffect_;
 
   ResultScene result_scene_;
 
-  Music            music_;
-  sjplayer.Context context_;
+  Music   music_;
+  Context context_;
 
   float beat_;
   int   score_;

@@ -3,7 +3,8 @@ module sjscript.Token;
 
 import std.algorithm,
        std.array,
-       std.ascii;
+       std.ascii,
+       std.conv;
 
 import dast.tokenize;
 

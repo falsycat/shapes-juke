@@ -14,7 +14,7 @@ import derelict.sfml2.audio,
 
 import gl4d;
 
-static import sjplayer;
+import sjplayer;
 
 ///
 class Music {
@@ -82,9 +82,8 @@ class Music {
   }
 
   ///
-  sjplayer.Context CreatePlayerContext(
-      sjplayer.PostEffect posteffect, sjplayer.ProgramSet programs) const {
-    return sjplayer.CreateContextFromText(
+  Context CreatePlayerContext(PostEffect posteffect, ProgramSet programs) const {
+    return CreateContextFromText(
         script_path_.readText, posteffect, programs);
   }
 

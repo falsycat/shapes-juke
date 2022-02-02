@@ -10,7 +10,7 @@ import std.algorithm,
 
 import gl4d;
 
-static import sjplayer;
+import sjplayer;
 
 import sj.AbstractGame,
        sj.Args,
@@ -38,10 +38,10 @@ class Game : AbstractGame {
     // To prevent working GC, all objects should be created at here.
 
     fonts_    = new FontSet;
-    programs_ = new ProgramSet;
+    programs_ = new sj.ProgramSet.ProgramSet;
 
-    posteffect_ = new sjplayer.PostEffect(
-        programs_.Get!(sjplayer.PostEffectProgram),
+    posteffect_ = new PostEffect(
+        programs_.Get!PostEffectProgram,
         vec2i(args.window_size, args.window_size));
 
     lobby_ = new LobbyWorld(programs_);
@@ -108,11 +108,11 @@ class Game : AbstractGame {
  private:
   Music[] music_list_;
 
-  FontSet    fonts_;
-  ProgramSet programs_;
+  FontSet                  fonts_;
+  sj.ProgramSet.ProgramSet programs_;
 
-  sjplayer.PostEffect posteffect_;
-  LobbyWorld          lobby_;
+  PostEffect posteffect_;
+  LobbyWorld lobby_;
 
   TitleScene   title_;
   SelectScene  select_;

@@ -119,7 +119,7 @@ do {
 
     T[] new_items;
     foreach (item; items) {
-      const type =
+      auto type =
         !item.canAdvance || item.next.isTerminal? null: item.next.nonTerminalType;
       if (resolved_types[].canFind!"a is b"(type)) continue;
 

@@ -1,6 +1,8 @@
 Shapes Juke
 ====
 
+**UPDATE: I updated the codebase to follow the latest dmd v2.098.1.**
+
 Shapes Juke is an action game, which I made years ago. Players just move crosshair with arrow keys not to touch red shapes...
 
 I just uploaded this repository slept in my backup USB after removing files with issues regarding of copyrights such as music.

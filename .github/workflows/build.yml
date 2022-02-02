@@ -1,0 +1,35 @@
+name: build
+on:
+  push:
+
+jobs:
+  build-on-ubuntu:
+    strategy:
+      fail-fast: false
+      matrix:
+        mode:
+          - debug
+          - release
+        env:
+          - ubuntu
+          - macOS
+
+    name: ${{ matrix.mode }} ${{ matrix.env }}
+    runs-on: ${{ matrix.env }}-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: setup dlang
+        uses: dlang-community/setup-dlang@v1
+        with:
+          compiler: dmd-latest
+
+      - name: build
+        run : dub build --build=${{ matrix.mode }}
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: sj-${{ matrix.env }}-${{ matrix.mode }}
+          path: .build/
